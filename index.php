@@ -5,9 +5,11 @@ Plugin URI: https://wpusermanager.com/
 Description: Crée et gère un tableau de données pour l'ISTeP
 Author: Robin Simonneau, Arbër Jonuzi
 Version: 1.0
-Author URI: https://robin-sim.fr/
+Author URI: https://axphyr.github.io/
 */
 error_reporting(E_ALL); ini_set('display_errors', '1');
+wp_enqueue_script('data-table-js',plugins_url('data-table.js',__FILE__),array(), false, true);
+
 
 /**
  * Créer le fichier xls lors de l'activation du plugin
@@ -130,43 +132,109 @@ function download_annual_table(): string {
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form','form_annual_table');
-
-function form_annual_table(): string
+function isRegistered(): bool
 {
-	$html = <<<HTML
-	<h4>Formulaire ajout ligne à table</h4>
+	$file = fopen( '../../../..//wp-admin/tableau-annuel/data-table.csv', 'r' );
 
-	<form method="POST" class="data-table-form">
-	
-	<h5>Informations générales</h5>
+	$res = array_search(wp_get_current_user()->last_name, fgetcsv($file));
+
+	fclose($file);
+
+	if($res === false){
+		return $res;
+	}else{
+		return true;
+	}
+}
+
+function user_id_in_csv_file(): int
+{
+	if(isRegistered()){
+		$file = fopen( '/wp-admin/tableau-annuel/data-table.csv', 'r' );
+		fclose($file);
+		return array_search(wp_get_current_user()->last_name, fgetcsv($file));
+	}else{
+		return -1;
+	}
+}
+
+function replace_or_pushes_values(array $values): void
+{
+	if(isRegistered()){
+		$file = fopen('/wp-admin/tableau-annuel/data-table.csv', 'r+');
+
+		while (($row = fgetcsv($file)) !== false) {
+
+			if ($row[0] == user_id_in_csv_file()) {
+
+				for ($i = count($row); $i < count($values); $i++) {
+					$row[$i] = $values[$i];
+				}
+
+				$row[count($row)+1] = "|";
+
+				fseek($file, -strlen(implode(',', $row)), SEEK_CUR);
+
+				fputcsv($file, $row);
+
+				break;
+			}
+		}
+	}else{
+		$file = fopen('/wp-admin/tableau-annuel/data-table.csv', 'a');
+
+		fputcsv($file, $values);
+
+	}
+	fclose($file);
+}
+
+add_shortcode('add_istep_annual_table_form','block1');
+
+function block1(): string{
+	$name = ucfirst(_wp_get_current_user()->first_name);
+	$last_name = ucfirst(_wp_get_current_user()->last_name);
+
+	if(isset($_POST["submit1"])){
+		replace_or_pushes_values([$_POST["last_name"], $_POST["name"],
+			$_POST["equipe1"], $_POST["equipe2"], $_POST["equipe3"],
+			$_POST["fonction"], $_POST["corps"], $_POST["rang"],
+			date("Y", strtotime($_POST["date_entree"])), date("Y", strtotime($_POST["date_sortie"])), date("Y", strtotime($_POST["annee_naissance"])),
+			date("Y", strtotime($_POST["annee_obtention_these"])), date("Y", strtotime($_POST["annee_obtention_hdr"])), date("Y", strtotime($_POST["annee_obtention_these_etat"]))]);
+	}
+
+	return <<<HTML
+	<h4>Formulaire Informations Générales</h4>
+
+	<form method="POST" class="data-table-form_1">
+		<h5>Informations générales</h5>
 		<label for="last_name">Nom
-			<input type="text" name="last_name" required>
+			<input type="text" name="last_name" value="$last_name" required disabled>
 		</label>
 		<label for="name">Prénom
-			<input type="text" name="name" required>
+			<input type="text" name="name" value="$name" required disabled>
 		</label>
 		<label for="equipe1">Equipe 2017-2022</label>
 		<select name="equipe1">
-			<option value="0"></option>
-			<option value="1">DEMO</option>
-			<option value="2">PGM2</option>
-			<option value="3">PPB</option>
+			<option value=" "></option>
+			<option value="DEMO">DEMO</option>
+			<option value="PGM2">PGM2</option>
+			<option value="PPB">PPB</option>
 		</select>
 		<label for="equipe2">Equipe 2022-2025</label>
 		<select name="equipe2">
-			<option value="0"></option>
-			<option value="1">PETRODYN</option>
-			<option value="2">TECTO</option>
-			<option value="3">TERMER</option>
+			<option value=" "></option>
+			<option value="PETRODYN">PETRODYN</option>
+			<option value="TECTO">TECTO</option>
+			<option value="TERMER">TERMER</option>
 		</select>
 		<label for="equipe3">Equipe 2025-…</label>
 		<select name="equipe3">
-			<option value="0"></option>
-			<option value="1">PETRODYN</option>
-			<option value="2">TECTO</option>
-			<option value="3">TERMER</option>
-			<option value="4">PRISME</option>
+			<option value=" "></option>
+			<option value="PETRODYN">PETRODYN</option>
+			<option value="TECTO">TECTO</option>
+			<option value="TERMER">TERMER</option>
+			<option value="PRISME">PRISME</option>
 		</select>
 		<label for="fonction">Fonction exercée</label>
 			<input type="text" name="fonction" required>
@@ -186,16 +254,45 @@ function form_annual_table(): string
 			<input type="date" name="annee_obtention_hdr" required>
 		<label for="annee_obtention_these_etat">année obtention Thèse d'état</label>
 			<input type="date" name="annee_obtention_these_etat" required>
-			
+		<button type="submit" name="submit1">Envoyer</button>
+	</form>
+HTML;
+}
+
+function block2(): string{
+	return <<<HTML
+	<h4>Formulaire Discipline</h4>
+
+	<form method="POST" class="data-table-form_2">
 		<h5>Discipline</h5>
 		<label for="discipline1">Discipline 1</label>
 			<input type="text" name="discipline1" required>
 		<label for="discipline2">Discipline 2</label>
 			<input type="text" name="discipline2" required>
-			
+	<button type="submit" name="submit2">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block3(): string{
+	return <<<HTML
+	<h4>Formulaire Thème de recherche</h4>
+
+	<form method="POST" class="data-table-form_3">
 		<h5>Thèmes de recherche (80 mots max)</h5>
-			<input type="text" name="theme_recherche" required>
-		
+			<input type="text" name="theme_recherche" id="theme_recherche" oninput="limitWords()" required>
+		<button type="submit" name="submit3">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block4(): string{
+	return <<<HTML
+	<h4>Formulaire Publications 1</h4>
+
+	<form method="POST" class="data-table-form_4">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
 		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
 			<input type="number" name="nb_publi_rang_a1" required>
@@ -211,7 +308,17 @@ function form_annual_table(): string
 			<input type="text" name="h_factor_google" required>
 		<label for="nb_resume_conference">Nbre de résumé à conférence avec comité de lecture</label>
 			<input type="number" name="nb_resume_conference" required>
-		
+		<button type="submit" name="submit4">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block5(): string{
+	return <<<HTML
+	<h4>Formulaire Publications 2</h4>
+
+	<form method="POST" class="data-table-form_5">
 		<h5>Détail des publications par année depuis 2022</h5>
 		<label for="nb_publi_rang_a2">Nombre total de publi de rang A</label>
 			<input type="number" name="nb_publi_rang_a2" required>
@@ -225,7 +332,33 @@ function form_annual_table(): string
 			<input type="text" name="chapitre_ouvrage" required>
 		<label for="nb_resume_comite_lecture">Nbre de résumé à des congrès avec comité de lecture</label>
 			<input type="number" name="nb_resume_comite_lecture" required>
-		
+		<button type="submit" name="submit5">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block6(): string{
+	return <<<HTML
+	<h4>Formulaire Discipline</h4>
+
+	<form method="POST" class="data-table-form_6">
+		<h5>Discipline</h5>
+		<label for="discipline1">Discipline 1</label>
+			<input type="text" name="discipline1" required>
+		<label for="discipline2">Discipline 2</label>
+			<input type="text" name="discipline2" required>
+		<button type="submit" name="submit6">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block7(): string{
+	return <<<HTML
+	<h4>Formulaire Enseignement</h4>
+
+	<form method="POST" class="data-table-form_7">
 		<h5>Enseignement</h5>
 		<label for="enseignement1">nb heures enseignées 2022-2023</label>
 			<input type="number" name="enseignement1" required>
@@ -235,7 +368,17 @@ function form_annual_table(): string
 			<input type="number" name="enseignement3" required>
 		<label for="enseignement4">nb heures enseignées 2025-2026</label>
 			<input type="number" name="enseignement4" required>
-		
+		<button type="submit" name="submit7">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block8(): string{
+	return <<<HTML
+	<h4>Formulaire Master 1</h4>
+
+	<form method="POST" class="data-table-form_8">
 		<h5>Encadrement Master 1 (à partir de 2022)</h5>
 		<label for="master1_nom">Nom</label>
 			<input type="text" name="master1_nom" required>
@@ -247,7 +390,17 @@ function form_annual_table(): string
 			<input type="text" name="master1_nom_prenom_co-encadrants" required>
 		<label for="master1_sujet">Titre sujet (indiquer si hors ISTeP)</label>
 			<input type="text" name="master1_sujet" required>
-		
+		<button type="submit" name="submit8">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block9(): string{
+	return <<<HTML
+	<h4>Formulaire Master 2</h4>
+
+	<form method="POST" class="data-table-form_9">
 		<h5>Encadrement Master 2 (à partir de 2022)</h5>
 		<label for="master2_nom">Nom</label>
 			<input type="text" name="master2_nom" required>
@@ -259,7 +412,17 @@ function form_annual_table(): string
 			<input type="text" name="master2_nom_prenom_co-encadrants" required>
 		<label for="master2_sujet">Titre sujet (indiquer si hors ISTeP)</label>
 			<input type="text" name="master2_sujet" required>
-		
+		<button type="submit" name="submit9">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block10(): string{
+	return <<<HTML
+	<h4>Formulaire Encadrement thèse ISTeP</h4>
+
+	<form method="POST" class="data-table-form_10">
 		<h5>Encadrement thèse ISTeP à partir de 2022</h5>
 		<label for="encadrement_istep_nom">Nom</label>
 			<input type="text" name="encadrement_istep_nom" required>
@@ -267,8 +430,8 @@ function form_annual_table(): string
 			<input type="text" name="encadrement_istep_prenom" required>
 		<label for="encadrement_istep_hf">H/F</label>
 			<select name="sexe">
-				<option value="1">Homme</option>
-				<option value="2">Femme</option>
+				<option value="Homme">Homme</option>
+				<option value="Femme">Femme</option>
 			</select>
 		<label for="encadrement_istep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
 			<input type="date" name="encadrement_istep_date_inscription_these" required>
@@ -286,7 +449,17 @@ function form_annual_table(): string
 			<input type="text" name="encadrement_istep_financement_doctorat" required>
 		<label for="encadrement_istep_fonction">Fonction de direction ou encadrement ?</label>
 			<input type="text" name="encadrement_istep_fonction" required>
-		
+		<button type="submit" name="submit10">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block11(): string{
+	return <<<HTML
+	<h4>Formulaire Encadrement thèse hors ISTeP</h4>
+
+	<form method="POST" class="data-table-form_11">
 		<h5>Encadrement thèse hors ISTeP à partir de 2022</h5>
 		<label for="encadrement_histep_nom">Nom</label>
 			<input type="text" name="encadrement_histep_nom" required>
@@ -294,8 +467,8 @@ function form_annual_table(): string
 			<input type="text" name="encadrement_histep_prenom" required>
 		<label for="encadrement_histep_hf">H/F</label>
 			<select name="sexe">
-				<option value="1">Homme</option>
-				<option value="2">Femme</option>
+				<option value="Homme">Homme</option>
+				<option value="Femme">Femme</option>
 			</select>
 		<label for="encadrement_histep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
 			<input type="date" name="encadrement_histep_date_inscription_these" required>
@@ -315,7 +488,17 @@ function form_annual_table(): string
 			<input type="text" name="encadrement_histep_financement_doctorat" required>
 		<label for="encadrement_histep_fonction">Fonction de direction ou encadrement ?</label>
 			<input type="text" name="encadrement_histep_fonction" required>
-		
+		<button type="submit" name="submit11">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block12(): string{
+	return <<<HTML
+	<h4>Formulaire Encadrement post-doctorats</h4>
+
+	<form method="POST" class="data-table-form_12">
 		<h5>Encadrement de post-doctorats à partir de 2022</h5>
 		<label for="encadrement_pd_nom">Nom</label>
 			<input type="text" name="encadrement_pd_nom" required>
@@ -323,8 +506,8 @@ function form_annual_table(): string
 			<input type="text" name="encadrement_pd_prenom" required>
 		<label for="encadrement_pd_hf">H/F</label>
 			<select name="sexe">
-				<option value="1">Homme</option>
-				<option value="2">Femme</option>
+				<option value="Homme">Homme</option>
+				<option value="Femme">Femme</option>
 			</select>
 		<label for="encadrement_pd_date_entree">Date d'entrée (MM/AAAA)</label>
 			<input type="date" name="encadrement_pd_date_entree" required>
@@ -334,37 +517,96 @@ function form_annual_table(): string
 			<input type="date" name="encadrement_pd_annee_naissance" required>
 		<label for="encadrement_pd_employeur">Etablissement ou organisme employeur</label>
 			<input type="text" name="encadrement_pd_employeur" required>
-		
+		<button type="submit" name="submit12">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block13(): string{
+	return <<<HTML
+	<h4>Formulaire Prix ou Distinctions</h4>
+
+	<form method="POST" class="data-table-form_13">
 		<h5>Prix ou distinctions scientifiques</h5>
 		<label for="distinction_intitule">Intitulé de l'élément de distinction (nom du prix par exemple)</label>
 			<input type="text" name="distinction_intitule" required>
 		<label for="distinction_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="distinction_annee" required>
-		
+		<button type="submit" name="submit13">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block14(): string{
+	return <<<HTML
+	<h4>Formulaire Appartenance IUF</h4>
+
+	<form method="POST" class="data-table-form_14">
 		<h5>Appartenance à l'IUF</h5>
 		<label for="iuf_intitule">Intitulé de l'élément (membre, fonction …)</label>
 			<input type="text" name="iuf_intitule" required>
 		<label for="iuf_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="iuf_annee" required>
-		
+		<button type="submit" name="submit14">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block15(): string{
+	return <<<HTML
+	<h4>Formulaire Séjours</h4>
+
+	<form method="POST" class="data-table-form_15">
 		<h5>Séjours dans des laboratoires étrangers</h5>
 		<label for="sejour_lieu">Lieu, fonction</label>
 			<input type="text" name="sejour_lieu" required>
 		<label for="sejour_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="sejour_annee" required>
-		
+		<button type="submit" name="submit15">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block16(): string{
+	return <<<HTML
+	<h4>Formulaire Colloques/Congrès</h4>
+
+	<form method="POST" class="data-table-form_16">
 		<h5>Organisations de colloques/congrès internationaux</h5>
 		<label for="organisation_nom">Nom de l'évènement, fonction</label>
 			<input type="text" name="organisation_nom" required>
 		<label for="organisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="organisation_annee" required>
-		
+		<button type="submit" name="submit16">Envoyer</button>
+	</form>
+
+HTML;
+}
+function block17(): string{
+	return <<<HTML
+	<h4>Formulaire Sociétés Savantes</h4>
+
+	<form method="POST" class="data-table-form_17">
 		<h5>Responsabilités dans des sociétés savantes</h5>
 		<label for="societe_savantes_nom">Nom de la société, fonction</label>
 			<input type="text" name="societe_savantes_nom" required>
 		<label for="societe_savantes_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="societe_savantes_annee" required>
-		
+		<button type="submit" name="submit17">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block18(): string{
+	return <<<HTML
+	<h4>Formulaire Responsabilités de projets de recherche</h4>
+
+	<form method="POST" class="data-table-form_18">
 		<h4>Responsabilité de projets de recherche (ou tasks indépendantes)</h4>
 		
 		<h5>Régional et local</h5>
@@ -390,7 +632,17 @@ function form_annual_table(): string
 			<input type="number" name="responsabilite1_partenariat_montant" required>
 		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
 			<input type="text" name="responsabilite1_partenariat_nom" required>
-		
+		<button type="submit" name="submit18">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block19(): string{
+	return <<<HTML
+	<h4>Formulaire Discipline</h4>
+
+	<form method="POST" class="data-table-form_19">
 		<h4>Responsabilités, Expertises & administration de la recherche</h4>
 		
 		<h5>Locale</h5>
@@ -410,30 +662,69 @@ function form_annual_table(): string
 			<input type="text" name="responsabilite2_international_intitule" required>
 		<label for="responsabilite2_international_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="responsabilite2_international_annee" required>
-		
+		<button type="submit" name="submit19">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block20(): string{
+	return <<<HTML
+	<h4>Formulaire Responsabilités administratives</h4>
+
+	<form method="POST" class="data-table-form_20">
 		<h5>Responsabilités & administration de la formation/enseignement</h5>
 		<label for="responsabilite3_intitule">Intitulé de l'élément et votre fonction</label>
 			<input type="text" name="responsabilite3_intitule" required>
 		<label for="responsabilite3_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="responsabilite3_annee" required>
-		
+		<button type="submit" name="submit20">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block21(): string{
+	return <<<HTML
+	<h4>Formulaire Vulgarisation</h4>
+
+	<form method="POST" class="data-table-form_21">
 		<h5>Vulgarisation, dissémination scientifique</h5>
 		<label for="vulgarisation_intitule">Intitulé de l'élément (évènement, vidéo, livre, …) et fonction</label>
 			<input type="text" name="vulgarisation_intitule" required>
 		<label for="vulgarisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="vulgarisation_annee" required>
-		
+		<button type="submit" name="submit21">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block22(): string{
+	return <<<HTML
+	<h4>Formulaire Rayonnement</h4>
+
+	<form method="POST" class="data-table-form_22">
 		<h5>Rayonnement / résultats majeurs sur la période à mettre en avant</h5>
 			<input type="text" name="rayonnement" required>
-		
+		<button type="submit" name="submit22">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+function block23(): string{
+	return <<<HTML
+	<h4>Formulaire Brevet</h4>
+
+	<form method="POST" class="data-table-form_23">
 		<h5>Brevet</h5>
 		<label for="brevet_intitule">Intitulé de l'élément et votre fonction</label>
 			<input type="text" name="brevet_intitule" required>
 		<label for="brevet_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="brevet_annee" required>
-			
+		<button type="submit" name="submit23">Envoyer</button>
 	</form>
-HTML;
 
-	return $html;
+HTML;
 }
