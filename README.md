@@ -1,11 +1,11 @@
 
 # Tiny Directory
 
-Wordpress plugin used to add the possibility to add new fields to a user account. This project was made for the research laboratory ISTeP.
+Wordpress plugin that creates a data table in CSV in which users can add their datas.
 
 ## Authors
 
-- [@Rob1Sim](https://github.com/Rob1Sim)
+- [@Axphyr](https://github.com/Axphyr)
 - 
 
 
@@ -16,7 +16,7 @@ Clone this repo into your plugins folder
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/Rob1Sim/more-userdata-for-istep.git
+git clone https://github.com/Axphyr/annual_table_wp-plugin.git
 ```
     
 
