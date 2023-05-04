@@ -100,10 +100,7 @@ function annual_data_table_install(): void
 			"Intitulé de l'élément et votre fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
 			"Intitulé de l'élément (évènement, vidéo, livre, …) et fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
 			'Rayonnement / résultats majeurs sur la période à mettre en avant', '|',
-			"Intitulé de l'élément et votre fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|'),
-		array('John Doe', 'john@example.com', '123-456-7890'),
-		array('Jane Smith', 'jane@example.com', '555-555-5555'),
-		array('Bob Johnson', 'bob@example.com', '111-222-3333')
+			"Intitulé de l'élément et votre fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|')
 	);
 
 	// Ouvre le fichier pour l'écriture
@@ -132,59 +129,61 @@ function download_annual_table(): string {
 HTML;
 }
 
-function isRegistered(): bool
-{
-	$file = fopen( '../../../..//wp-admin/tableau-annuel/data-table.csv', 'r' );
+function isRegistered(): bool {
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$is_registered = false;
+	$last_name = wp_get_current_user()->last_name;
 
-	$res = array_search(wp_get_current_user()->last_name, fgetcsv($file));
+	while (($row = fgetcsv($file)) !== false) {
+		if (in_array($last_name, $row)) {
+			$is_registered = true;
+			break;
+		}
+	}
 
 	fclose($file);
-
-	if($res === false){
-		return $res;
-	}else{
-		return true;
-	}
+	return $is_registered;
 }
 
 function user_id_in_csv_file(): int
 {
-	if(isRegistered()){
-		$file = fopen( '/wp-admin/tableau-annuel/data-table.csv', 'r' );
-		fclose($file);
-		return array_search(wp_get_current_user()->last_name, fgetcsv($file));
-	}else{
-		return -1;
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$id = 1;
+
+	while (($row = fgetcsv($file)) !== false) {
+		if (in_array(wp_get_current_user()->last_name, $row)) {
+			fclose($file);
+			return $id;
+		}
+		$id++;
 	}
+	fclose($file);
+	return 0;
 }
 
-function replace_or_pushes_values(array $values): void
+function replace_or_pushes_values(int $column, array $values): void
 {
+	$values[] = "|";
 	if(isRegistered()){
-		$file = fopen('/wp-admin/tableau-annuel/data-table.csv', 'r+');
-
+		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r+');
+		$index = 0;
 		while (($row = fgetcsv($file)) !== false) {
-
-			if ($row[0] == user_id_in_csv_file()) {
-
-				for ($i = count($row); $i < count($values); $i++) {
-					$row[$i] = $values[$i];
+			if ($index === user_id_in_csv_file()) {
+				// Replace the desired values in the row
+				for ($i = $column; $i < count($values); $i++) {
+					$row[$i] = $values[$i-$column];
 				}
-
-				$row[count($row)+1] = "|";
-
-				fseek($file, -strlen(implode(',', $row)), SEEK_CUR);
-
+				// Move the file pointer to the beginning of the row
+				fseek($file, -$index * strlen(implode(',', $row)), SEEK_CUR);
+				// Write the new row to the file
 				fputcsv($file, $row);
-
 				break;
 			}
+			$index++;
 		}
 	}else{
-		$file = fopen('/wp-admin/tableau-annuel/data-table.csv', 'a');
-
+		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
 		fputcsv($file, $values);
-
 	}
 	fclose($file);
 }
@@ -192,19 +191,46 @@ function replace_or_pushes_values(array $values): void
 add_shortcode('add_istep_annual_table_form','block1');
 
 function block1(): string{
-	$name = ucfirst(_wp_get_current_user()->first_name);
-	$last_name = ucfirst(_wp_get_current_user()->last_name);
+	$name = wp_get_current_user()->first_name;
+	$last_name = wp_get_current_user()->last_name;
 
 	if(isset($_POST["submit1"])){
-		replace_or_pushes_values([$_POST["last_name"], $_POST["name"],
-			$_POST["equipe1"], $_POST["equipe2"], $_POST["equipe3"],
+		replace_or_pushes_values(0, [$last_name, $name,
+			$_POST["equipe1"], $_POST["equipe2"], $_POST["equipe3"], $_POST["pole"],
 			$_POST["fonction"], $_POST["corps"], $_POST["rang"],
 			date("Y", strtotime($_POST["date_entree"])), date("Y", strtotime($_POST["date_sortie"])), date("Y", strtotime($_POST["annee_naissance"])),
 			date("Y", strtotime($_POST["annee_obtention_these"])), date("Y", strtotime($_POST["annee_obtention_hdr"])), date("Y", strtotime($_POST["annee_obtention_these_etat"]))]);
 	}
 
+	$roro = array();
+	$rowLength = 0;
+	$index = 1;
+	if(isRegistered()){
+		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r+');
+		while (($row = fgetcsv($file)) !== false) {
+			$rowLength = count($row);
+			$roro = $row;
+			var_dump(fgetcsv($file));
+			if ($index == user_id_in_csv_file()) {
+				$index = 20;
+				// Move the file pointer to the beginning of the row
+				fseek($file, -$index * strlen(implode(',', $row)), SEEK_CUR);
+				// Write the new row to the file
+				fputcsv($file, $row);
+				break;
+			}
+			$index++;
+		}
+	}
+
+	$usId = user_id_in_csv_file();
+
 	return <<<HTML
 	<h4>Formulaire Informations Générales</h4>
+	
+	<h1> index = {$index}</h1>
+	<h1> user row id = {$usId}</h1>
+	<h1> row = {$roro[3]}, length = {$rowLength}</h1>
 
 	<form method="POST" class="data-table-form_1">
 		<h5>Informations générales</h5>
@@ -236,6 +262,8 @@ function block1(): string{
 			<option value="TERMER">TERMER</option>
 			<option value="PRISME">PRISME</option>
 		</select>
+		<label for="pole">Pôles des services généraux (le cas échéant)</label>
+			<input type="text" name="pole" required>
 		<label for="fonction">Fonction exercée</label>
 			<input type="text" name="fonction" required>
 		<label for="corps">Corps</label>

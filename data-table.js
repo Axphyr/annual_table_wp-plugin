@@ -6,3 +6,4 @@ function limitWords() {
     input.value = words.slice(0, 80).join(" ");
     }
 }
+
