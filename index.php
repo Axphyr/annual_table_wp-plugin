@@ -230,12 +230,28 @@ function block1(): string{
 	$last_name = ucfirst(wp_get_current_user()->last_name);
 
 	if(isset($_POST["submit1"])){
-		replace_or_pushes_values(0, [$last_name, $name,
+		$data = [$last_name, $name,
 			$_POST["equipe1"], $_POST["equipe2"], $_POST["equipe3"], $_POST["pole"],
 			$_POST["fonction"], $_POST["corps"], $_POST["rang"],
 			date("m/Y", strtotime($_POST["date_entree"])), date("m/Y", strtotime($_POST["date_sortie"])), $_POST["annee_naissance"],
-			$_POST["annee_obtention_these"], $_POST["annee_obtention_hdr"], $_POST["annee_obtention_these_etat"]]);
+			$_POST["annee_obtention_these"], $_POST["annee_obtention_hdr"], $_POST["annee_obtention_these_etat"]];
+
+		if(!isRegistered()){
+			// searches the number of fields in the csv file and stocks it
+			$file = fopen( '/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r' );
+			fgetcsv($file);
+			$maxFields = count(fgetcsv($file));
+			fclose($file);
+
+			for($i = count($_POST) + 1; $i <= $maxFields - 1; $i++){
+				$data[] = ' ';
+			}
+
+			var_dump($data);
+		}
+		replace_or_pushes_values(0, $data);
 	}
+
 
 	$demo = "";
 	$pgm2 = "";
