@@ -132,7 +132,7 @@ HTML;
 function isRegistered(): bool {
 	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
 	$is_registered = false;
-	$last_name = wp_get_current_user()->last_name;
+	$last_name = ucfirst(wp_get_current_user()->last_name);
 
 	while (($row = fgetcsv($file)) !== false) {
 		if (in_array($last_name, $row)) {
@@ -151,91 +151,170 @@ function user_id_in_csv_file(): int
 	$id = 1;
 
 	while (($row = fgetcsv($file)) !== false) {
-		if (in_array(wp_get_current_user()->last_name, $row)) {
+		if (in_array(ucfirst(wp_get_current_user()->first_name), $row)) {
+			rewind($file);
 			fclose($file);
 			return $id;
 		}
 		$id++;
 	}
+	rewind($file);
 	fclose($file);
 	return 0;
+}
+
+function move_file_pointer_to_row($file, $rowNumber): void {
+	// Move the file pointer to the beginning of the file
+	rewind($file);
+
+	// Read each row until the desired row
+	for ($i = 1; $i < $rowNumber; $i++) {
+		fgetcsv($file);
+	}
+
+	// Get the position of the file pointer
+	$position = ftell($file);
+
+	// Move the file pointer to the beginning of the desired row
+	fseek($file, $position);
 }
 
 function replace_or_pushes_values(int $column, array $values): void
 {
 	$values[] = "|";
-	if(isRegistered()){
+	if (isRegistered()) {
 		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r+');
-		$index = 0;
-		while (($row = fgetcsv($file)) !== false) {
-			if ($index === user_id_in_csv_file()) {
-				// Replace the desired values in the row
-				for ($i = $column; $i < count($values); $i++) {
-					$row[$i] = $values[$i-$column];
-				}
-				// Move the file pointer to the beginning of the row
-				fseek($file, -$index * strlen(implode(',', $row)), SEEK_CUR);
-				// Write the new row to the file
-				fputcsv($file, $row);
-				break;
-			}
-			$index++;
+
+		// Skip the first rows
+		for ($i = 1; $i < user_id_in_csv_file(); $i++) {
+			fgetcsv($file);
 		}
-	}else{
-		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
-		fputcsv($file, $values);
+
+		// Get the nth row as an array
+		$row = fgetcsv($file);
+
+		// Move the file pointer back to the start of the nth row
+		move_file_pointer_to_row($file, user_id_in_csv_file());
+
+		// Delete the nth row from the CSV file and closes it
+		ftruncate($file, ftell($file));
+		fclose($file);
 	}
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
+	fputcsv($file, $values);
 	fclose($file);
+}
+
+function getCell(int $column): string {
+	$file = fopen( '/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r' );
+
+	$id = 1;
+	while (($row = fgetcsv($file)) !== false) {
+		if ($id == user_id_in_csv_file()) {
+			if (isset($row[$column])) {
+				fclose($file);
+				return $row[$column];
+			}
+		}
+		$id++;
+	}
+	fclose( $file );
+
+	return "";
 }
 
 add_shortcode('add_istep_annual_table_form','block1');
 
 function block1(): string{
-	$name = wp_get_current_user()->first_name;
-	$last_name = wp_get_current_user()->last_name;
+	$name = ucfirst(wp_get_current_user()->first_name);
+	$last_name = ucfirst(wp_get_current_user()->last_name);
 
 	if(isset($_POST["submit1"])){
 		replace_or_pushes_values(0, [$last_name, $name,
 			$_POST["equipe1"], $_POST["equipe2"], $_POST["equipe3"], $_POST["pole"],
 			$_POST["fonction"], $_POST["corps"], $_POST["rang"],
-			date("Y", strtotime($_POST["date_entree"])), date("Y", strtotime($_POST["date_sortie"])), date("Y", strtotime($_POST["annee_naissance"])),
-			date("Y", strtotime($_POST["annee_obtention_these"])), date("Y", strtotime($_POST["annee_obtention_hdr"])), date("Y", strtotime($_POST["annee_obtention_these_etat"]))]);
+			date("m/Y", strtotime($_POST["date_entree"])), date("m/Y", strtotime($_POST["date_sortie"])), $_POST["annee_naissance"],
+			$_POST["annee_obtention_these"], $_POST["annee_obtention_hdr"], $_POST["annee_obtention_these_etat"]]);
 	}
 
-	$roro = array();
-	$rowLength = 0;
-	$index = 1;
-	if(isRegistered()){
-		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r+');
-		while (($row = fgetcsv($file)) !== false) {
-			$rowLength = count($row);
-			$roro = $row;
-			var_dump(fgetcsv($file));
-			if ($index == user_id_in_csv_file()) {
-				$index = 20;
-				// Move the file pointer to the beginning of the row
-				fseek($file, -$index * strlen(implode(',', $row)), SEEK_CUR);
-				// Write the new row to the file
-				fputcsv($file, $row);
-				break;
-			}
-			$index++;
-		}
+	$demo = "";
+	$pgm2 = "";
+	$ppb = "";
+
+	if(getCell(2) == "DEMO"){
+		$demo = "selected";
 	}
+	if(getCell(2) == "PGM2"){
+		$pgm2 = "selected";
+	}
+	if(getCell(2) == "PPB"){
+		$ppb = "selected";
+	}
+
+	$petrodyn = "";
+	$tecto = "";
+	$termer = "";
+
+	if(getCell(3) == "PETRODYN"){
+		$petrodyn = "selected";
+	}
+	if(getCell(3) == "TECTO"){
+		$tecto = "selected";
+	}
+	if(getCell(3) == "TERMER"){
+		$termer = "selected";
+	}
+
+	$petrodyn2 = "";
+	$tecto2 = "";
+	$termer2 = "";
+	$prisme = "";
+
+	if(getCell(4) == "PETRODYN"){
+		$petrodyn2 = "selected";
+	}
+	if(getCell(4) == "TECTO"){
+		$tecto2 = "selected";
+	}
+	if(getCell(4) == "TERMER"){
+		$termer2 = "selected";
+	}
+	if(getCell(4) == "PRISME"){
+		$prisme = "selected";
+	}
+
+	$pole = getCell(5);
+	$fonction = getCell(6);
+	$corps = getCell(7);
+	$rang = getCell(8);
+	$year = date('Y');
 
 	$usId = user_id_in_csv_file();
+
+	$annee_naissance = null;
+	$annee_these = null;
+	$annee_hdr = null;
+	$annee_etat = null;
+
+	if(isRegistered()){
+		$annee_naissance = (int)getCell(11);
+		$annee_these = (int)getCell(12);
+		$annee_hdr = (int)getCell(13);
+		$annee_etat = (int)getCell(14);
+	}
+
+	$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(9))));
+	$date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(10))));
 
 	return <<<HTML
 	<h4>Formulaire Informations Générales</h4>
 	
-	<h1> index = {$index}</h1>
 	<h1> user row id = {$usId}</h1>
-	<h1> row = {$roro[3]}, length = {$rowLength}</h1>
 
 	<form method="POST" class="data-table-form_1">
 		<h5>Informations générales</h5>
 		<label for="last_name">Nom
-			<input type="text" name="last_name" value="$last_name" required disabled>
+			<input type="text" name="last_name" value="$last_name" class="ninja-forms-field nf-element" required disabled>
 		</label>
 		<label for="name">Prénom
 			<input type="text" name="name" value="$name" required disabled>
@@ -243,45 +322,45 @@ function block1(): string{
 		<label for="equipe1">Equipe 2017-2022</label>
 		<select name="equipe1">
 			<option value=" "></option>
-			<option value="DEMO">DEMO</option>
-			<option value="PGM2">PGM2</option>
-			<option value="PPB">PPB</option>
+    		<option value="DEMO" {$demo}>DEMO</option>
+    		<option value="PGM2" {$pgm2}>PGM2</option>
+    		<option value="PPB" {$ppb}>PPB</option>
 		</select>
 		<label for="equipe2">Equipe 2022-2025</label>
 		<select name="equipe2">
 			<option value=" "></option>
-			<option value="PETRODYN">PETRODYN</option>
-			<option value="TECTO">TECTO</option>
-			<option value="TERMER">TERMER</option>
+			<option value="PETRODYN" {$petrodyn}>PETRODYN</option>
+			<option value="TECTO" {$tecto}>TECTO</option>
+			<option value="TERMER" {$termer}>TERMER</option>
 		</select>
 		<label for="equipe3">Equipe 2025-…</label>
 		<select name="equipe3">
 			<option value=" "></option>
-			<option value="PETRODYN">PETRODYN</option>
-			<option value="TECTO">TECTO</option>
-			<option value="TERMER">TERMER</option>
-			<option value="PRISME">PRISME</option>
+			<option value="PETRODYN" {$petrodyn2}>PETRODYN</option>
+			<option value="TECTO" {$tecto2}>TECTO</option>
+			<option value="TERMER" {$termer2}>TERMER</option>
+			<option value="PRISME" {$prisme}>PRISME</option>
 		</select>
 		<label for="pole">Pôles des services généraux (le cas échéant)</label>
-			<input type="text" name="pole" required>
+			<input type="text" name="pole" value="{$pole}" required>
 		<label for="fonction">Fonction exercée</label>
-			<input type="text" name="fonction" required>
+			<input type="text" name="fonction" value="{$fonction}" required>
 		<label for="corps">Corps</label>
-			<input type="text" name="corps" required>
+			<input type="text" name="corps" value="{$corps}" required>
 		<label for="rang">Rang</label>
-			<input type="text" name="rang" required>
+			<input type="text" name="rang" value="{$rang}" required>
 		<label for="date_entree">Date entrée (MM/AAAA)</label>
-			<input type="date" name="date_entree" required>
+			<input type="date" name="date_entree" value="{$date_entree}" required>
 		<label for="date_sortie">Date sortie (MM/AAAA)</label>
-			<input type="date" name="date_sortie" required>
+			<input type="date" name="date_sortie" value="{$date_sortie}" required>
 		<label for="annee_naissance">année naissance</label>
-			<input type="date" name="annee_naissance" required>
+			<input type="number" min="1900" max="{$year}" name="annee_naissance" value="{$annee_naissance}" required>
 		<label for="annee_obtention_these">année obtention thèse</label>
-			<input type="date" name="annee_obtention_these" required>
+			<input type="number" min="1900" max="{$year}" name="annee_obtention_these" value="{$annee_these}" required>
 		<label for="annee_obtention_hdr">année obtention HDR</label>
-			<input type="date" name="annee_obtention_hdr" required>
+			<input type="number" min="1900" max="{$year}" name="annee_obtention_hdr" value="{$annee_hdr}" required>
 		<label for="annee_obtention_these_etat">année obtention Thèse d'état</label>
-			<input type="date" name="annee_obtention_these_etat" required>
+			<input type="number" min="1900" max="{$year}" name="annee_obtention_these_etat" value="{$annee_etat}" required>
 		<button type="submit" name="submit1">Envoyer</button>
 	</form>
 HTML;
