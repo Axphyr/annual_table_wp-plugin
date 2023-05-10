@@ -179,6 +179,31 @@ function move_file_pointer_to_row($file, $rowNumber): void {
 	fseek($file, $position);
 }
 
+function deleteAndInsertRowInCSV($file, $rowNumber, $newRow): void {
+	// Read the original file
+	$rows = [];
+	if (($handle = fopen($file, 'r')) !== false) {
+		while (($data = fgetcsv($handle)) !== false) {
+			$rows[] = $data;
+		}
+		fclose($handle);
+	}
+
+	// Delete the row at the specified position
+	unset($rows[$rowNumber - 1]);
+
+	// Insert the new row at the specified position
+	array_splice($rows, $rowNumber - 1, 0, [$newRow]);
+
+	// Write the updated contents back to the file
+	if (($handle = fopen($file, 'w')) !== false) {
+		foreach ($rows as $row) {
+			fputcsv($handle, $row);
+		}
+		fclose($handle);
+	}
+}
+
 function replace_or_pushes_values(int $column, array $values): void
 {
 	$values[] = "|";
@@ -193,13 +218,6 @@ function replace_or_pushes_values(int $column, array $values): void
 		// Get the nth row as an array
 		$row = fgetcsv($file);
 
-		// Move the file pointer back to the start of the nth row
-		move_file_pointer_to_row($file, user_id_in_csv_file());
-
-		// Delete the nth row from the CSV file and closes it
-		ftruncate($file, ftell($file));
-		fclose($file);
-
 		// Modify the original array if needed
 		if(count($row) <= $column + count($values)) {
 			for($i = 0; $i < $column + count($values); $i++) {
@@ -212,9 +230,8 @@ function replace_or_pushes_values(int $column, array $values): void
 			$row[$i] = $values[$i-$column];
 		}
 
-		// Adds the new array back to the file
-		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
-		fputcsv($file, $row);
+		deleteAndInsertRowInCSV('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', user_id_in_csv_file(), $row);
+
 	} else{
 		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
 		fputcsv($file, $values);
@@ -267,9 +284,9 @@ function block1(): string{
 	}
 
 
-	$demo = "";
-	$pgm2 = "";
-	$ppb = "";
+	$demo = null;
+	$pgm2 = null;
+	$ppb = null;
 
 	if(getCell(2) == "DEMO"){
 		$demo = "selected";
@@ -281,9 +298,9 @@ function block1(): string{
 		$ppb = "selected";
 	}
 
-	$petrodyn = "";
-	$tecto = "";
-	$termer = "";
+	$petrodyn = null;
+	$tecto = null;
+	$termer = null;
 
 	if(getCell(3) == "PETRODYN"){
 		$petrodyn = "selected";
@@ -295,10 +312,10 @@ function block1(): string{
 		$termer = "selected";
 	}
 
-	$petrodyn2 = "";
-	$tecto2 = "";
-	$termer2 = "";
-	$prisme = "";
+	$petrodyn2 = null;
+	$tecto2 = null;
+	$termer2 = null;
+	$prisme = null;
 
 	if(getCell(4) == "PETRODYN"){
 		$petrodyn2 = "selected";
@@ -407,8 +424,8 @@ function block2(): string{
 		replace_or_pushes_values(16, $data);
 	}
 
-	$disc1 = "";
-	$disc2 = "";
+	$disc1 = null;
+	$disc2 = null;
 
 	if(getCell(16) !== " "){
 		$disc1 = getCell(16);
@@ -480,9 +497,9 @@ function block4(): string{
 	$nb_publi_rang_a1 = null;
 	$nb_publi_rang_premier = null;
 	$nb_citations_isi = null;
-	$h_factor_isi = " ";
+	$h_factor_isi = null;
 	$nb_citations_isi_google = null;
-	$h_factor_google = " ";
+	$h_factor_google = null;
 	$nb_resume_conference = null;
 
 	if(getCell(21) !== " "){
@@ -538,24 +555,70 @@ function block4(): string{
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_5','block5');
 function block5(): string{
+
+	if(isset($_POST["submit5"])){
+		$data = [
+			$_POST["nb_publi_rang_a2"],
+			$_POST["nb_publi_premier"],
+			$_POST["nb_article_doctorant"],
+			$_POST["nb_article_rang_a_collab"],
+			$_POST["chapitre_ouvrage"],
+			$_POST["nb_resume_comite_lecture"],
+		];
+		replace_or_pushes_values(29, $data);
+	}
+
+	$nb_publi_rang_a2 = null;
+	$nb_publi_premier = null;
+	$nb_article_doctorant = null;
+	$nb_article_rang_a_collab = null;
+	$chapitre_ouvrage = null;
+	$nb_resume_comite_lecture = null;
+
+	if(getCell(29) !== " "){
+		$nb_publi_rang_a2 = (int)getCell(29);
+	}
+
+	if(getCell(30) !== " "){
+		$nb_publi_premier = (int)getCell(30);
+	}
+
+	if(getCell(31) !== " "){
+		$nb_article_doctorant = (int)getCell(31);
+	}
+
+	if(getCell(32) !== " "){
+		$nb_article_rang_a_collab = (int)getCell(32);
+	}
+
+	if(getCell(33) !== " "){
+		$chapitre_ouvrage = getCell(33);
+	}
+
+	if(getCell(34) !== " "){
+		$nb_resume_comite_lecture = (int)getCell(34);
+	}
+
+
 	return <<<HTML
 	<h4>Formulaire Publications 2</h4>
 
 	<form method="POST" class="data-table-form_5">
 		<h5>Détail des publications par année depuis 2022</h5>
 		<label for="nb_publi_rang_a2">Nombre total de publi de rang A</label>
-			<input type="number" name="nb_publi_rang_a2" required>
+			<input type="number" name="nb_publi_rang_a2" value="{$nb_publi_rang_a2}" required>
 		<label for="nb_publi_premier">Nbre article en 1er auteur</label>
-			<input type="number" name="nb_publi_premier" required>
+			<input type="number" name="nb_publi_premier" value="{$nb_publi_premier}" required>
 		<label for="nb_article_doctorant">Nbre article  derrière un doctorant</label>
-			<input type="number" name="nb_article_doctorant" required>
+			<input type="number" name="nb_article_doctorant" value="{$nb_article_doctorant}" required>
 		<label for="nb_article_rang_a_collab">Nbre d'articles rang A avec des collab. (autres laboratoires)</label>
-			<input type="number" name="nb_article_rang_a_collab" required>
+			<input type="number" name="nb_article_rang_a_collab" value="{$nb_article_rang_a_collab}" required>
 		<label for="chapitre_ouvrage">Chapitre d'ouvrage / livre</label>
-			<input type="text" name="chapitre_ouvrage" required>
+			<input type="text" name="chapitre_ouvrage" value="{$chapitre_ouvrage}" required>
 		<label for="nb_resume_comite_lecture">Nbre de résumé à des congrès avec comité de lecture</label>
-			<input type="number" name="nb_resume_comite_lecture" required>
+			<input type="number" name="nb_resume_comite_lecture" value="{$nb_resume_comite_lecture}" required>
 		<button type="submit" name="submit5">Envoyer</button>
 	</form>
 
