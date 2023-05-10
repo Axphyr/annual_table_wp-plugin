@@ -199,9 +199,26 @@ function replace_or_pushes_values(int $column, array $values): void
 		// Delete the nth row from the CSV file and closes it
 		ftruncate($file, ftell($file));
 		fclose($file);
+
+		// Modify the original array if needed
+		if(count($row) <= $column + count($values)) {
+			for($i = 0; $i < $column + count($values); $i++) {
+				$row[] = " ";
+			}
+		}
+
+		// Modify the original values
+		for($i = $column; $i < count($values) + $column; $i++){
+			$row[$i] = $values[$i-$column];
+		}
+
+		// Adds the new array back to the file
+		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
+		fputcsv($file, $row);
+	} else{
+		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
+		fputcsv($file, $values);
 	}
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
-	fputcsv($file, $values);
 	fclose($file);
 }
 
@@ -223,8 +240,7 @@ function getCell(int $column): string {
 	return "";
 }
 
-add_shortcode('add_istep_annual_table_form','block1');
-
+add_shortcode('add_istep_annual_table_form_block_1','block1');
 function block1(): string{
 	$name = ucfirst(wp_get_current_user()->first_name);
 	$last_name = ucfirst(wp_get_current_user()->last_name);
@@ -246,8 +262,6 @@ function block1(): string{
 			for($i = count($_POST) + 1; $i <= $maxFields - 1; $i++){
 				$data[] = ' ';
 			}
-
-			var_dump($data);
 		}
 		replace_or_pushes_values(0, $data);
 	}
@@ -382,55 +396,142 @@ function block1(): string{
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_2','block2');
 function block2(): string{
+
+	if(isset($_POST["submit2"])) {
+		$data = [
+			$_POST["discipline1"],
+			$_POST["discipline2"]
+		];
+		replace_or_pushes_values(16, $data);
+	}
+
+	$disc1 = "";
+	$disc2 = "";
+
+	if(getCell(16) !== " "){
+		$disc1 = getCell(16);
+	}
+
+	if(getCell(17) !== " "){
+		$disc2 = getCell(17);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Discipline</h4>
 
 	<form method="POST" class="data-table-form_2">
 		<h5>Discipline</h5>
 		<label for="discipline1">Discipline 1</label>
-			<input type="text" name="discipline1" required>
+			<input type="text" name="discipline1" value="{$disc1}" required>
 		<label for="discipline2">Discipline 2</label>
-			<input type="text" name="discipline2" required>
+			<input type="text" name="discipline2" value="{$disc2}" required>
 	<button type="submit" name="submit2">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_3','block3');
 function block3(): string{
+
+	if(isset($_POST["submit3"])){
+		$data = [
+			$_POST["theme_recherche"]
+		];
+		replace_or_pushes_values(19, $data);
+	}
+
+	$theme = "";
+
+	if(getCell(19) !== " "){
+		$theme = getCell(19);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Thème de recherche</h4>
 
 	<form method="POST" class="data-table-form_3">
 		<h5>Thèmes de recherche (80 mots max)</h5>
-			<input type="text" name="theme_recherche" id="theme_recherche" oninput="limitWords()" required>
+			<input type="text" name="theme_recherche" value="{$theme}" id="theme_recherche" oninput="limitWords()" required>
 		<button type="submit" name="submit3">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_4','block4');
 function block4(): string{
+
+	if(isset($_POST["submit4"])){
+		$data = [
+			$_POST["nb_publi_rang_a1"],
+			$_POST["nb_publi_rang_premier"],
+			$_POST["nb_citations_isi"],
+			$_POST["h_factor_isi"],
+			$_POST["nb_citations_isi_google"],
+			$_POST["h_factor_google"],
+			$_POST["nb_resume_conference"]
+		];
+		replace_or_pushes_values(21, $data);
+	}
+
+	$nb_publi_rang_a1 = null;
+	$nb_publi_rang_premier = null;
+	$nb_citations_isi = null;
+	$h_factor_isi = " ";
+	$nb_citations_isi_google = null;
+	$h_factor_google = " ";
+	$nb_resume_conference = null;
+
+	if(getCell(21) !== " "){
+		$nb_publi_rang_a1 = (int)getCell(21);
+	}
+
+	if(getCell(22) !== " "){
+		$nb_publi_rang_premier = (int)getCell(22);
+	}
+
+	if(getCell(23) !== " "){
+		$nb_citations_isi = (int)getCell(23);
+	}
+
+	if(getCell(24) !== " "){
+		$h_factor_isi = getCell(24);
+	}
+
+	if(getCell(25) !== " "){
+		$nb_citations_isi_google = (int)getCell(25);
+	}
+
+	if(getCell(26) !== " "){
+		$h_factor_google = getCell(26);
+	}
+
+	if(getCell(27) !== " "){
+		$nb_resume_conference = (int)getCell(27);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Publications 1</h4>
 
 	<form method="POST" class="data-table-form_4">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
 		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
-			<input type="number" name="nb_publi_rang_a1" required>
+			<input type="number" name="nb_publi_rang_a1" value="{$nb_publi_rang_a1}" required>
 		<label for="nb_publi_rang_premier">Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant</label>
-			<input type="number" name="nb_publi_rang_premier" required>
+			<input type="number" name="nb_publi_rang_premier" value="{$nb_publi_rang_premier}" required>
 		<label for="nb_citations_isi">nombre de citations (isi-web of science)</label>
-			<input type="number" name="nb_citations_isi" required>
+			<input type="number" name="nb_citations_isi" value="{$nb_citations_isi}" required>
 		<label for="h_factor_isi">h-factor (Isi-Web)</label>
-			<input type="text" name="h_factor_isi" required>
+			<input type="text" name="h_factor_isi" value="{$h_factor_isi}" required>
 		<label for="nb_citations_isi_google">nombre de citations (google scholar)</label>
-			<input type="number" name="nb_citations_isi_google" required>
+			<input type="number" name="nb_citations_isi_google" value="{$nb_citations_isi_google}" required>
 		<label for="h_factor_google">h-factor (google scholar)</label>
-			<input type="text" name="h_factor_google" required>
+			<input type="text" name="h_factor_google" value="{$h_factor_google}" required>
 		<label for="nb_resume_conference">Nbre de résumé à conférence avec comité de lecture</label>
-			<input type="number" name="nb_resume_conference" required>
+			<input type="number" name="nb_resume_conference" value="{$nb_resume_conference}" required>
 		<button type="submit" name="submit4">Envoyer</button>
 	</form>
 
