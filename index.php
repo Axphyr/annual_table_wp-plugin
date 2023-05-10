@@ -601,7 +601,6 @@ function block5(): string{
 		$nb_resume_comite_lecture = (int)getCell(34);
 	}
 
-
 	return <<<HTML
 	<h4>Formulaire Publications 2</h4>
 
@@ -625,117 +624,296 @@ function block5(): string{
 HTML;
 }
 
-function block6(): string{
-	return <<<HTML
-	<h4>Formulaire Discipline</h4>
-
-	<form method="POST" class="data-table-form_6">
-		<h5>Discipline</h5>
-		<label for="discipline1">Discipline 1</label>
-			<input type="text" name="discipline1" required>
-		<label for="discipline2">Discipline 2</label>
-			<input type="text" name="discipline2" required>
-		<button type="submit" name="submit6">Envoyer</button>
-	</form>
-
-HTML;
-}
-
+add_shortcode('add_istep_annual_table_form_block_7','block7');
 function block7(): string{
+
+	if(isset($_POST["submit7"])){
+		$data = [
+			$_POST["enseignement1"],
+			$_POST["enseignement2"],
+			$_POST["enseignement3"],
+			$_POST["enseignement4"],
+		];
+		replace_or_pushes_values(36, $data);
+	}
+
+	$enseignement1 = null;
+	$enseignement2 = null;
+	$enseignement3 = null;
+	$enseignement4 = null;
+
+	if(getCell(36) !== " "){
+		$enseignement1 = (int)getCell(36);
+	}
+
+	if(getCell(37) !== " "){
+		$enseignement2 = (int)getCell(37);
+	}
+
+	if(getCell(38) !== " "){
+		$enseignement3 = (int)getCell(38);
+	}
+
+	if(getCell(39) !== " "){
+		$enseignement4 = (int)getCell(39);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Enseignement</h4>
 
 	<form method="POST" class="data-table-form_7">
 		<h5>Enseignement</h5>
 		<label for="enseignement1">nb heures enseignées 2022-2023</label>
-			<input type="number" name="enseignement1" required>
+			<input type="number" name="enseignement1" value="{$enseignement1}" required>
 		<label for="enseignement2">nb heures enseignées 2023-2024</label>
-			<input type="number" name="enseignement2" required>
+			<input type="number" name="enseignement2" value="{$enseignement2}" required>
 		<label for="enseignement3">nb heures enseignées 2024-2025</label>
-			<input type="number" name="enseignement3" required>
+			<input type="number" name="enseignement3" value="{$enseignement3}" required>
 		<label for="enseignement4">nb heures enseignées 2025-2026</label>
-			<input type="number" name="enseignement4" required>
+			<input type="number" name="enseignement4" value="{$enseignement4}" required>
 		<button type="submit" name="submit7">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_8','block8');
 function block8(): string{
+
+	if(isset($_POST["submit8"])){
+		$data = [
+			$_POST["master1_nom"],
+			$_POST["master1_prenom"],
+			$_POST["master1_annee"],
+			$_POST["master1_nom_prenom_co-encadrants"],
+			$_POST["master1_sujet"]
+		];
+		replace_or_pushes_values(41, $data);
+	}
+
+	$master1_nom = null;
+	$master1_prenom = null;
+	$master1_annee = null;
+	$master1_nom_prenom_co_encadrants = null;
+	$master1_sujet = null;
+
+	if(getCell(41) !== " "){
+		$master1_nom = getCell(41);
+	}
+
+	if(getCell(42) !== " "){
+		$master1_prenom = getCell(42);
+	}
+
+	if(getCell(43) !== " "){
+		$master1_annee = (int)getCell(43);
+	}
+
+	if(getCell(44) !== " "){
+		$master1_nom_prenom_co_encadrants = getCell(44);
+	}
+
+	if(getCell(45) !== " "){
+		$master1_sujet = getCell(45);
+	}
+
+	$year = date('Y');
+
 	return <<<HTML
 	<h4>Formulaire Master 1</h4>
 
 	<form method="POST" class="data-table-form_8">
 		<h5>Encadrement Master 1 (à partir de 2022)</h5>
 		<label for="master1_nom">Nom</label>
-			<input type="text" name="master1_nom" required>
+			<input type="text" name="master1_nom" value="{$master1_nom}" required>
 		<label for="master1_prenom">Prénom</label>
-			<input type="text" name="master1_prenom" required>
+			<input type="text" name="master1_prenom" value="{$master1_prenom}" required>
 		<label for="master1_annee">Année</label>
-			<input type="date" name="master1_annee" required>
+			<input type="number" min="2022" max="{$year}" name="master1_annee" value="{$master1_annee}" required>
 		<label for="master1_nom_prenom_co-encadrants">NOM Prénom des Co-encadrants</label>
-			<input type="text" name="master1_nom_prenom_co-encadrants" required>
+			<input type="text" name="master1_nom_prenom_co-encadrants" value="{$master1_nom_prenom_co_encadrants}" required>
 		<label for="master1_sujet">Titre sujet (indiquer si hors ISTeP)</label>
-			<input type="text" name="master1_sujet" required>
+			<input type="text" name="master1_sujet" value="{$master1_sujet}" required>
 		<button type="submit" name="submit8">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_9','block9');
 function block9(): string{
+
+	if(isset($_POST["submit9"])){
+		$data = [
+			$_POST["master2_nom"],
+			$_POST["master2_prenom"],
+			$_POST["master2_annee"],
+			$_POST["master2_nom_prenom_co-encadrants"],
+			$_POST["master2_sujet"]
+		];
+		replace_or_pushes_values(47, $data);
+	}
+
+	$master2_nom = null;
+	$master2_prenom = null;
+	$master2_annee = null;
+	$master2_nom_prenom_co_encadrants = null;
+	$master2_sujet = null;
+
+	if(getCell(47) !== " "){
+		$master2_nom = getCell(47);
+	}
+
+	if(getCell(48) !== " "){
+		$master2_prenom = getCell(48);
+	}
+
+	if(getCell(49) !== " "){
+		$master2_annee = (int)getCell(49);
+	}
+
+	if(getCell(50) !== " "){
+		$master2_nom_prenom_co_encadrants = getCell(50);
+	}
+
+	if(getCell(51) !== " "){
+		$master2_sujet = getCell(51);
+	}
+
+	$year = date('Y');
 	return <<<HTML
 	<h4>Formulaire Master 2</h4>
 
 	<form method="POST" class="data-table-form_9">
 		<h5>Encadrement Master 2 (à partir de 2022)</h5>
 		<label for="master2_nom">Nom</label>
-			<input type="text" name="master2_nom" required>
+			<input type="text" name="master2_nom" value="{$master2_nom}" required>
 		<label for="master2_prenom">Prénom</label>
-			<input type="text" name="master2_prenom" required>
+			<input type="text" name="master2_prenom" value="{$master2_prenom}" required>
 		<label for="master2_annee">Année</label>
-			<input type="date" name="master2_annee" required>
+			<input type="number" min="2022" max="{$year}" name="master2_annee" value="{$master2_annee}" required>
 		<label for="master2_nom_prenom_co-encadrants">NOM Prénom des Co-encadrants</label>
-			<input type="text" name="master2_nom_prenom_co-encadrants" required>
+			<input type="text" name="master2_nom_prenom_co-encadrants" value="{$master2_nom_prenom_co_encadrants}" required>
 		<label for="master2_sujet">Titre sujet (indiquer si hors ISTeP)</label>
-			<input type="text" name="master2_sujet" required>
+			<input type="text" name="master2_sujet" value="{$master2_sujet}" required>
 		<button type="submit" name="submit9">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_10','block10');
 function block10(): string{
+
+	if(isset($_POST["submit10"])){
+		$data = [
+			$_POST["encadrement_istep_nom"],
+			$_POST["encadrement_istep_prenom"],
+			$_POST["sexe"],
+			$_POST["encadrement_istep_date_inscription_these"],
+			$_POST["encadrement_istep_date_soutenance"],
+			$_POST["encadrement_istep_nom_prenom_co-directerurs"],
+			$_POST["encadrement_istep_titre_these"],
+			$_POST["encadrement_istep_etablissement"],
+			$_POST["encadrement_istep_numero_ed"],
+			$_POST["encadrement_istep_financement_doctorat"],
+			$_POST["encadrement_istep_fonction"]
+		];
+		replace_or_pushes_values(53, $data);
+	}
+
+	$encadrement_istep_nom = null;
+	$encadrement_istep_prenom = null;
+	$homme = null;
+	$femme = null;
+	$encadrement_istep_date_inscription_these = null;
+	$encadrement_istep_date_soutenance = null;
+	$encadrement_istep_nom_prenom_co = null;
+	$encadrement_istep_titre_these = null;
+	$encadrement_istep_etablissement = null;
+	$encadrement_istep_numero_ed = null;
+	$encadrement_istep_financement_doctorat = null;
+	$encadrement_istep_fonction = null;
+
+
+	if(getCell(53) !== " "){
+		$encadrement_istep_nom = getCell(53);
+	}
+
+	if(getCell(54) !== " "){
+		$encadrement_istep_prenom = getCell(54);
+	}
+
+	if(getCell(55) === "Homme"){
+		$homme = "selected";
+	}
+	if(getCell(55) === "Femme"){
+		$femme = "selected";
+	}
+
+	if(getCell(56) !== " "){
+		$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(56))));
+	}
+
+	if(getCell(57) !== " "){
+		$encadrement_istep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(57))));
+	}
+
+	if(getCell(58) !== " "){
+		$encadrement_istep_nom_prenom_co = getCell(58);
+	}
+
+	if(getCell(59) !== " "){
+		$encadrement_istep_titre_these = getCell(59);
+	}
+
+	if(getCell(60) !== " "){
+		$encadrement_istep_etablissement = getCell(60);
+	}
+	if(getCell(61) !== " "){
+		$encadrement_istep_numero_ed = getCell(61);
+	}
+
+	if(getCell(62) !== " "){
+		$encadrement_istep_financement_doctorat = getCell(62);
+	}
+
+	if(getCell(63) !== " "){
+		$encadrement_istep_fonction = getCell(63);
+	}
+
+
 	return <<<HTML
 	<h4>Formulaire Encadrement thèse ISTeP</h4>
 
 	<form method="POST" class="data-table-form_10">
 		<h5>Encadrement thèse ISTeP à partir de 2022</h5>
 		<label for="encadrement_istep_nom">Nom</label>
-			<input type="text" name="encadrement_istep_nom" required>
+			<input type="text" name="encadrement_istep_nom" value="{$encadrement_istep_nom}" required>
 		<label for="encadrement_istep_prenom">Prénom</label>
-			<input type="text" name="encadrement_istep_prenom" required>
+			<input type="text" name="encadrement_istep_prenom" value="{$encadrement_istep_prenom}" required>
 		<label for="encadrement_istep_hf">H/F</label>
 			<select name="sexe">
-				<option value="Homme">Homme</option>
-				<option value="Femme">Femme</option>
+				<option value=" "></option>
+				<option value="Homme" {$homme}>Homme</option>
+				<option value="Femme" {$femme}>Femme</option>
 			</select>
 		<label for="encadrement_istep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_istep_date_inscription_these" required>
+			<input type="date" name="encadrement_istep_date_inscription_these" value="{$encadrement_istep_date_inscription_these}" required>
 		<label for="encadrement_istep_date_soutenance">Date de soutenance (MM/AAAA)</label>
-			<input type="date" name="encadrement_istep_date_soutenance" required>
+			<input type="date" name="encadrement_istep_date_soutenance" value="{$encadrement_istep_date_soutenance}" required>
 		<label for="encadrement_istep_nom_prenom_co-directerurs">NOM Prénom des Co-directeurs</label>
-			<input type="text" name="encadrement_istep_nom_prenom_co-directerurs" required>
+			<input type="text" name="encadrement_istep_nom_prenom_co-directerurs" value="{$encadrement_istep_nom_prenom_co}" required>
 		<label for="encadrement_istep_titre_these">Titre thèse</label>
-			<input type="text" name="encadrement_istep_titre_these" required>
+			<input type="text" name="encadrement_istep_titre_these" value="{$encadrement_istep_titre_these}" required>
 		<label for="encadrement_istep_etablissement">Établissement ayant délivré le master (ou diplôme équivalent)</label>
-			<input type="text" name="encadrement_istep_etablissement" required>
+			<input type="text" name="encadrement_istep_etablissement" value="{$encadrement_istep_etablissement}" required>
 		<label for="encadrement_istep_numero_ed">Numéro de l'ED de rattachement</label>
-			<input type="text" name="encadrement_istep_numero_ed" required>
+			<input type="text" name="encadrement_istep_numero_ed" value="{$encadrement_istep_numero_ed}" required>
 		<label for="encadrement_istep_financement_doctorat">Financement du doctorat</label>
-			<input type="text" name="encadrement_istep_financement_doctorat" required>
+			<input type="text" name="encadrement_istep_financement_doctorat" value="{$encadrement_istep_financement_doctorat}" required>
 		<label for="encadrement_istep_fonction">Fonction de direction ou encadrement ?</label>
-			<input type="text" name="encadrement_istep_fonction" required>
+			<input type="text" name="encadrement_istep_fonction" value="{$encadrement_istep_fonction}" required>
 		<button type="submit" name="submit10">Envoyer</button>
 	</form>
 
@@ -754,6 +932,7 @@ function block11(): string{
 			<input type="text" name="encadrement_histep_prenom" required>
 		<label for="encadrement_histep_hf">H/F</label>
 			<select name="sexe">
+				<option value=" "></option>
 				<option value="Homme">Homme</option>
 				<option value="Femme">Femme</option>
 			</select>
