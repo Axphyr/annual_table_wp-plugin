@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: Semi-annual to annual data table in csv for ISTeP
-Plugin URI: https://wpusermanager.com/
+Plugin URI: https://axphyr.github.io/
 Description: Crée et gère un tableau de données pour l'ISTeP
-Author: Robin Simonneau, Arbër Jonuzi
+Author: Arbër Jonuzi
 Version: 1.0
 Author URI: https://axphyr.github.io/
 */
 error_reporting(E_ALL); ini_set('display_errors', '1');
 wp_enqueue_script('data-table-js',plugins_url('data-table.js',__FILE__),array(), false, true);
-
+wp_enqueue_style('style',plugins_url('style.css',__FILE__));
 
 /**
  * Créer le fichier xls lors de l'activation du plugin
@@ -125,7 +125,7 @@ add_shortcode('add_istep_annual_table_download','download_annual_table');
 
 function download_annual_table(): string {
 	return <<<HTML
-	<button><a href="/wp-admin/tableau-annuel/data-table.csv" download>Access File</a></button>
+	<button><a href="/wp-admin/tableau-annuel/data-table.csv" download> Access File </a></button>
 HTML;
 }
 
@@ -810,8 +810,8 @@ function block10(): string{
 			$_POST["encadrement_istep_nom"],
 			$_POST["encadrement_istep_prenom"],
 			$_POST["sexe"],
-			$_POST["encadrement_istep_date_inscription_these"],
-			$_POST["encadrement_istep_date_soutenance"],
+			date("m/Y", strtotime($_POST["encadrement_istep_date_inscription_these"])),
+			date("m/Y", strtotime($_POST["encadrement_istep_date_soutenance"])),
 			$_POST["encadrement_istep_nom_prenom_co-directerurs"],
 			$_POST["encadrement_istep_titre_these"],
 			$_POST["encadrement_istep_etablissement"],
@@ -920,155 +920,453 @@ function block10(): string{
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_11','block11');
 function block11(): string{
+
+	if(isset($_POST["submit11"])){
+		$data = [
+			$_POST["encadrement_histep_nom"],
+			$_POST["encadrement_histep_prenom"],
+			$_POST["sexe"],
+			date("m/Y", strtotime($_POST["encadrement_histep_date_inscription_these"])),
+			date("m/Y", strtotime($_POST["encadrement_histep_date_soutenance"])),
+			$_POST["encadrement_histep_direction_these"],
+			$_POST["encadrement_histep_titre_these"],
+			$_POST["encadrement_histep_etablissement"],
+			$_POST["encadrement_histep_numero_ed"],
+			$_POST["encadrement_histep_etablissement_rattachement_direction_these"],
+			$_POST["encadrement_histep_financement_doctorat"],
+			$_POST["encadrement_histep_fonction"]
+		];
+		replace_or_pushes_values(65, $data);
+	}
+
+	$encadrement_histep_nom = null;
+	$encadrement_histep_prenom = null;
+	$homme = null;
+	$femme = null;
+	$encadrement_histep_date_inscription_these = null;
+	$encadrement_histep_date_soutenance = null;
+	$encadrement_histep_direction_these = null;
+	$encadrement_histep_titre_these = null;
+	$encadrement_histep_etablissement = null;
+	$encadrement_histep_numero_ed = null;
+	$encadrement_histep_etablissement_rattachement_direction_these = null;
+	$encadrement_histep_financement_doctorat = null;
+	$encadrement_histep_fonction = null;
+
+
+	if(getCell(65) !== " "){
+		$encadrement_histep_nom = getCell(65);
+	}
+
+	if(getCell(66) !== " "){
+		$encadrement_histep_prenom = getCell(66);
+	}
+
+	if(getCell(67) === "Homme"){
+		$homme = "selected";
+	}
+	if(getCell(67) === "Femme"){
+		$femme = "selected";
+	}
+
+	if(getCell(68) !== " "){
+		$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(68))));
+	}
+
+	if(getCell(69) !== " "){
+		$encadrement_histep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(69))));
+	}
+
+	if(getCell(70) !== " "){
+		$encadrement_histep_direction_these = getCell(70);
+	}
+
+	if(getCell(71) !== " "){
+		$encadrement_histep_titre_these = getCell(71);
+	}
+
+	if(getCell(72) !== " "){
+		$encadrement_histep_etablissement = getCell(72);
+	}
+	if(getCell(73) !== " "){
+		$encadrement_histep_numero_ed = getCell(73);
+	}
+
+	if(getCell(74) !== " "){
+		$encadrement_histep_etablissement_rattachement_direction_these = getCell(74);
+	}
+
+	if(getCell(75) !== " "){
+		$encadrement_histep_financement_doctorat = getCell(75);
+	}
+
+	if(getCell(76) !== " "){
+		$encadrement_histep_fonction = getCell(76);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Encadrement thèse hors ISTeP</h4>
 
 	<form method="POST" class="data-table-form_11">
 		<h5>Encadrement thèse hors ISTeP à partir de 2022</h5>
 		<label for="encadrement_histep_nom">Nom</label>
-			<input type="text" name="encadrement_histep_nom" required>
+			<input type="text" name="encadrement_histep_nom" value="{$encadrement_histep_nom}" required>
 		<label for="encadrement_histep_prenom">Prénom</label>
-			<input type="text" name="encadrement_histep_prenom" required>
+			<input type="text" name="encadrement_histep_prenom" value="{$encadrement_histep_prenom}" required>
 		<label for="encadrement_histep_hf">H/F</label>
 			<select name="sexe">
 				<option value=" "></option>
-				<option value="Homme">Homme</option>
-				<option value="Femme">Femme</option>
+				<option value="Homme" {$homme}>Homme</option>
+				<option value="Femme" {$femme}>Femme</option>
 			</select>
 		<label for="encadrement_histep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_histep_date_inscription_these" required>
+			<input type="date" name="encadrement_histep_date_inscription_these" value="{$encadrement_histep_date_inscription_these}" required>
 		<label for="encadrement_histep_date_soutenance">Date de soutenance (MM/AAAA)</label>
-			<input type="date" name="encadrement_histep_date_soutenance" required>
+			<input type="date" name="encadrement_histep_date_soutenance" value="{$encadrement_histep_date_soutenance}" required>
 		<label for="encadrement_histep_direction_these">Direction de thèse (Nom, Prénom)</label>
-			<input type="text" name="encadrement_histep_direction_these" required>
+			<input type="text" name="encadrement_histep_direction_these" value="{$encadrement_histep_direction_these}" required>
 		<label for="encadrement_histep_titre_these">Titre thèse</label>
-			<input type="text" name="encadrement_histep_titre_these" required>
+			<input type="text" name="encadrement_histep_titre_these" value="{$encadrement_histep_titre_these}" required>
 		<label for="encadrement_histep_etablissement">Établissement ayant délivré le master (ou diplôme équivalent)</label>
-			<input type="text" name="encadrement_histep_etablissement" required>
+			<input type="text" name="encadrement_histep_etablissement" value="{$encadrement_histep_etablissement}" required>
 		<label for="encadrement_histep_numero_ed">Numéro de l'ED de rattachement</label>
-			<input type="text" name="encadrement_histep_numero_ed" required>
-		<label for="encadrement_histep_etablissement_rattachement_direction_these">Etablissement de rattachement de la direction de thèse<</label>
-			<input type="text" name="encadrement_histep_etablissement_rattachement_direction_these" required>
+			<input type="text" name="encadrement_histep_numero_ed" value="{$encadrement_histep_numero_ed}" required>
+		<label for="encadrement_histep_etablissement_rattachement_direction_these">Etablissement de rattachement de la direction de thèse</label>
+			<input type="text" name="encadrement_histep_etablissement_rattachement_direction_these" value="{$encadrement_histep_etablissement_rattachement_direction_these}" required>
 		<label for="encadrement_histep_financement_doctorat">Financement du doctorat</label>
-			<input type="text" name="encadrement_histep_financement_doctorat" required>
+			<input type="text" name="encadrement_histep_financement_doctorat" value="{$encadrement_histep_financement_doctorat}" required>
 		<label for="encadrement_histep_fonction">Fonction de direction ou encadrement ?</label>
-			<input type="text" name="encadrement_histep_fonction" required>
+			<input type="text" name="encadrement_histep_fonction" value="{$encadrement_histep_fonction}" required>
 		<button type="submit" name="submit11">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_12','block12');
 function block12(): string{
+	if(isset($_POST["submit12"])){
+		$data = [
+			$_POST["encadrement_pd_nom"],
+			$_POST["encadrement_pd_prenom"],
+			$_POST["sexe"],
+			date("m/Y", strtotime($_POST["encadrement_pd_date_entree"])),
+			date("m/Y", strtotime($_POST["encadrement_pd_date_sortie"])),
+			$_POST["encadrement_pd_annee_naissance"],
+			$_POST["encadrement_pd_employeur"]
+		];
+		replace_or_pushes_values(78, $data);
+	}
+
+	$encadrement_pd_nom = null;
+	$encadrement_pd_prenom = null;
+	$homme = null;
+	$femme = null;
+	$encadrement_pd_date_entree = null;
+	$encadrement_pd_date_sortie = null;
+	$encadrement_pd_annee_naissance = null;
+	$encadrement_pd_employeur = null;
+
+
+	if(getCell(78) !== " "){
+		$encadrement_pd_nom = getCell(78);
+	}
+
+	if(getCell(79) !== " "){
+		$encadrement_pd_prenom = getCell(79);
+	}
+
+	if(getCell(80) === "Homme"){
+		$homme = "selected";
+	}
+	if(getCell(80) === "Femme"){
+		$femme = "selected";
+	}
+
+	if(getCell(81) !== " "){
+		$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(81))));
+	}
+
+	if(getCell(82) !== " "){
+		$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(82))));
+	}
+
+	if(getCell(83) !== " "){
+		$encadrement_pd_annee_naissance = getCell(83);
+	}
+
+	if(getCell(84) !== " "){
+		$encadrement_pd_employeur = getCell(84);
+	}
+
+	$year = date('Y');
+
 	return <<<HTML
 	<h4>Formulaire Encadrement post-doctorats</h4>
 
 	<form method="POST" class="data-table-form_12">
 		<h5>Encadrement de post-doctorats à partir de 2022</h5>
 		<label for="encadrement_pd_nom">Nom</label>
-			<input type="text" name="encadrement_pd_nom" required>
+			<input type="text" name="encadrement_pd_nom" value="{$encadrement_pd_nom}" required>
 		<label for="encadrement_pd_prenom">Prénom</label>
-			<input type="text" name="encadrement_pd_prenom" required>
+			<input type="text" name="encadrement_pd_prenom" value="{$encadrement_pd_prenom}" required>
 		<label for="encadrement_pd_hf">H/F</label>
 			<select name="sexe">
-				<option value="Homme">Homme</option>
-				<option value="Femme">Femme</option>
+				<option value=""></option>
+				<option value="Homme" {$homme}>Homme</option>
+				<option value="Femme" {$femme}>Femme</option>
 			</select>
 		<label for="encadrement_pd_date_entree">Date d'entrée (MM/AAAA)</label>
-			<input type="date" name="encadrement_pd_date_entree" required>
+			<input type="date" name="encadrement_pd_date_entree" value="{$encadrement_pd_date_entree}" required>
 		<label for="encadrement_pd_date_sortie">Date de sortie (MM/AAAA)</label>
-			<input type="date" name="encadrement_pd_date_sortie" required>
+			<input type="date" name="encadrement_pd_date_sortie" value="{$encadrement_pd_date_sortie}" required>
 		<label for="encadrement_pd_annee_naissance">Année de naissance</label>
-			<input type="date" name="encadrement_pd_annee_naissance" required>
+			<input type="number" min="1900" max="{$year}" name="encadrement_pd_annee_naissance" value="{$encadrement_pd_annee_naissance}" required>
 		<label for="encadrement_pd_employeur">Etablissement ou organisme employeur</label>
-			<input type="text" name="encadrement_pd_employeur" required>
+			<input type="text" name="encadrement_pd_employeur" value="{$encadrement_pd_employeur}" required>
 		<button type="submit" name="submit12">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_13','block13');
 function block13(): string{
+	if(isset($_POST["submit13"])){
+		$data = [
+			$_POST["distinction_intitule"],
+			$_POST["distinction_annee"]
+		];
+		replace_or_pushes_values(86, $data);
+	}
+
+	$distinction_intitule = null;
+	$distinction_annee = null;
+
+	if(getCell(86) !== " "){
+		$distinction_intitule = getCell(86);
+	}
+
+	if(getCell(87) !== " "){
+		$distinction_annee = getCell(87);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Prix ou Distinctions</h4>
 
 	<form method="POST" class="data-table-form_13">
 		<h5>Prix ou distinctions scientifiques</h5>
 		<label for="distinction_intitule">Intitulé de l'élément de distinction (nom du prix par exemple)</label>
-			<input type="text" name="distinction_intitule" required>
+			<input type="text" name="distinction_intitule" value="{$distinction_intitule}" required>
 		<label for="distinction_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="distinction_annee" required>
+			<input type="text" name="distinction_annee" value="{$distinction_annee}" required>
 		<button type="submit" name="submit13">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_14','block14');
 function block14(): string{
+	if(isset($_POST["submit14"])){
+		$data = [
+			$_POST["iuf_intitule"],
+			$_POST["iuf_annee"]
+		];
+		replace_or_pushes_values(89, $data);
+	}
+
+	$iuf_intitule = null;
+	$iuf_annee = null;
+
+	if(getCell(89) !== " "){
+		$iuf_intitule = getCell(89);
+	}
+
+	if(getCell(90) !== " "){
+		$iuf_annee = getCell(90);
+	}
 	return <<<HTML
 	<h4>Formulaire Appartenance IUF</h4>
 
 	<form method="POST" class="data-table-form_14">
 		<h5>Appartenance à l'IUF</h5>
 		<label for="iuf_intitule">Intitulé de l'élément (membre, fonction …)</label>
-			<input type="text" name="iuf_intitule" required>
+			<input type="text" name="iuf_intitule" value="{$iuf_intitule}" required>
 		<label for="iuf_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="iuf_annee" required>
+			<input type="text" name="iuf_annee" value="{$iuf_annee}" required>
 		<button type="submit" name="submit14">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_15','block15');
 function block15(): string{
+	if(isset($_POST["submit15"])){
+		$data = [
+			$_POST["sejour_lieu"],
+			$_POST["sejour_annee"]
+		];
+		replace_or_pushes_values(92, $data);
+	}
+
+	$sejour_lieu = null;
+	$sejour_annee = null;
+
+	if(getCell(92) !== " "){
+		$sejour_lieu = getCell(92);
+	}
+
+	if(getCell(93) !== " "){
+		$sejour_annee = getCell(93);
+	}
 	return <<<HTML
 	<h4>Formulaire Séjours</h4>
 
 	<form method="POST" class="data-table-form_15">
 		<h5>Séjours dans des laboratoires étrangers</h5>
 		<label for="sejour_lieu">Lieu, fonction</label>
-			<input type="text" name="sejour_lieu" required>
+			<input type="text" name="sejour_lieu" value="{$sejour_lieu}" required>
 		<label for="sejour_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="sejour_annee" required>
+			<input type="text" name="sejour_annee" value="{$sejour_annee}" required>
 		<button type="submit" name="submit15">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_16','block16');
 function block16(): string{
+	if(isset($_POST["submit16"])){
+		$data = [
+			$_POST["organisation_nom"],
+			$_POST["organisation_annee"]
+		];
+		replace_or_pushes_values(95, $data);
+	}
+
+	$organisation_nom = null;
+	$organisation_annee = null;
+
+	if(getCell(95) !== " "){
+		$organisation_nom = getCell(95);
+	}
+
+	if(getCell(96) !== " "){
+		$organisation_annee = getCell(96);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Colloques/Congrès</h4>
 
 	<form method="POST" class="data-table-form_16">
 		<h5>Organisations de colloques/congrès internationaux</h5>
 		<label for="organisation_nom">Nom de l'évènement, fonction</label>
-			<input type="text" name="organisation_nom" required>
+			<input type="text" name="organisation_nom" value="{$organisation_nom}" required>
 		<label for="organisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="organisation_annee" required>
+			<input type="text" name="organisation_annee" value="{$organisation_annee}" required>
 		<button type="submit" name="submit16">Envoyer</button>
 	</form>
 
 HTML;
 }
+
+add_shortcode('add_istep_annual_table_form_block_17','block17');
 function block17(): string{
+	if(isset($_POST["submit17"])){
+		$data = [
+			$_POST["societe_savantes_nom"],
+			$_POST["societe_savantes_annee"]
+		];
+		replace_or_pushes_values(98, $data);
+	}
+
+	$societe_savantes_nom = null;
+	$societe_savantes_annee = null;
+
+	if(getCell(98) !== " "){
+		$societe_savantes_nom = getCell(98);
+	}
+
+	if(getCell(99) !== " "){
+		$societe_savantes_annee = getCell(99);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Sociétés Savantes</h4>
 
 	<form method="POST" class="data-table-form_17">
 		<h5>Responsabilités dans des sociétés savantes</h5>
 		<label for="societe_savantes_nom">Nom de la société, fonction</label>
-			<input type="text" name="societe_savantes_nom" required>
+			<input type="text" name="societe_savantes_nom" value="{$societe_savantes_nom}" required>
 		<label for="societe_savantes_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="societe_savantes_annee" required>
+			<input type="text" name="societe_savantes_annee" value="{$societe_savantes_annee}" required>
 		<button type="submit" name="submit17">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_18','block18');
 function block18(): string{
+	if(isset($_POST["submit18"])){
+		$data = [
+			$_POST["responsabilite1_region_montant"],
+			$_POST["responsabilite1_region_nom"],
+			$_POST["responsabilite1_national_montant"],
+			$_POST["responsabilite1_national_nom"],
+			$_POST["responsabilite1_international_montant"],
+			$_POST["responsabilite1_international_nom"],
+			$_POST["responsabilite1_partenariat_montant"],
+			$_POST["responsabilite1_partenariat_nom"]
+		];
+		replace_or_pushes_values(101, $data);
+	}
+
+	$responsabilite1_region_montant = null;
+	$responsabilite1_region_nom = null;
+	$responsabilite1_national_montant = null;
+	$responsabilite1_national_nom = null;
+	$responsabilite1_international_montant = null;
+	$responsabilite1_international_nom = null;
+	$responsabilite1_partenariat_montant = null;
+	$responsabilite1_partenariat_nom = null;
+
+	if(getCell(101) !== " "){
+		$responsabilite1_region_montant = getCell(101);
+	}
+
+	if(getCell(102) !== " "){
+		$responsabilite1_region_nom = getCell(102);
+	}
+
+	if(getCell(103) !== " "){
+		$responsabilite1_national_montant = getCell(103);
+	}
+
+	if(getCell(104) !== " "){
+		$responsabilite1_national_nom = getCell(104);
+	}
+
+	if(getCell(105) !== " "){
+		$responsabilite1_international_montant = getCell(105);
+	}
+
+	if(getCell(106) !== " "){
+		$responsabilite1_international_nom = getCell(106);
+	}
+
+	if(getCell(107) !== " "){
+		$responsabilite1_partenariat_montant = getCell(107);
+	}
+
+	if(getCell(108) !== " "){
+		$responsabilite1_partenariat_nom = getCell(108);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Responsabilités de projets de recherche</h4>
 
@@ -1077,34 +1375,78 @@ function block18(): string{
 		
 		<h5>Régional et local</h5>
 		<label for="responsabilite1_region_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_region_montant" required>
+			<input type="number" name="responsabilite1_region_montant" value="{$responsabilite1_region_montant}" required>
 		<label for="responsabilite1_region_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_region_nom" required>
+			<input type="text" name="responsabilite1_region_nom" value="{$responsabilite1_region_nom}" required>
 		
 		<h5>National</h5>
 		<label for="responsabilite1_national_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_national_montant" required>
+			<input type="number" name="responsabilite1_national_montant" value="{$responsabilite1_national_montant}" required>
 		<label for="responsabilite1_national_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_national_nom" required>
+			<input type="text" name="responsabilite1_national_nom" value="{$responsabilite1_national_nom}" required>
 		
 		<h5>International</h5>
 		<label for="responsabilite1_international_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_international_montant" required>
+			<input type="number" name="responsabilite1_international_montant" value="{$responsabilite1_international_montant}" required>
 		<label for="responsabilite1_international_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_international_nom" required>		<h5>International</h5>
+			<input type="text" name="responsabilite1_international_nom" value="{$responsabilite1_international_nom}" required>
 		
 		<h5>Partenariat (industrie, EPIC)</h5>
 		<label for="responsabilite1_partenariat_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_partenariat_montant" required>
+			<input type="number" name="responsabilite1_partenariat_montant" value="{$responsabilite1_partenariat_montant}" required>
 		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_partenariat_nom" required>
+			<input type="text" name="responsabilite1_partenariat_nom" value="{$responsabilite1_partenariat_nom}" required>
 		<button type="submit" name="submit18">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_19','block19');
 function block19(): string{
+	if(isset($_POST["submit19"])){
+		$data = [
+			$_POST["responsabilite2_locale_intitule"],
+			$_POST["responsabilite2_locale_annee"],
+			$_POST["responsabilite2_regional_intitule"],
+			$_POST["responsabilite2_regional_annee"],
+			$_POST["responsabilite2_international_intitule"],
+			$_POST["responsabilite2_international_annee"],
+		];
+		replace_or_pushes_values(110, $data);
+	}
+
+	$responsabilite2_locale_intitule = null;
+	$responsabilite2_locale_annee = null;
+	$responsabilite2_regional_intitule = null;
+	$responsabilite2_regional_annee = null;
+	$responsabilite2_international_intitule = null;
+	$responsabilite2_international_annee = null;
+
+	if(getCell(110) !== " "){
+		$responsabilite2_locale_intitule = getCell(110);
+	}
+
+	if(getCell(111) !== " "){
+		$responsabilite2_locale_annee = getCell(111);
+	}
+
+	if(getCell(112) !== " "){
+		$responsabilite2_regional_intitule = getCell(112);
+	}
+
+	if(getCell(113) !== " "){
+		$responsabilite2_regional_annee = getCell(113);
+	}
+
+	if(getCell(114) !== " "){
+		$responsabilite2_international_intitule = getCell(114);
+	}
+
+	if(getCell(115) !== " "){
+		$responsabilite2_international_annee = getCell(115);
+	}
+
 	return <<<HTML
 	<h4>Formulaire Discipline</h4>
 
@@ -1113,21 +1455,21 @@ function block19(): string{
 		
 		<h5>Locale</h5>
 		<label for="responsabilite2_locale_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_locale_intitule" required>
+			<input type="text" name="responsabilite2_locale_intitule" value="{$responsabilite2_locale_intitule}" required>
 		<label for="responsabilite2_locale_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_locale_annee" required>
+			<input type="text" name="responsabilite2_locale_annee" value="{$responsabilite2_locale_annee}" required>
 		
 		<h5>Régional</h5>
 		<label for="responsabilite2_regional_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_regional_intitule" required>
+			<input type="text" name="responsabilite2_regional_intitule" value="{$responsabilite2_regional_intitule}" required>
 		<label for="responsabilite2_regional_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_regional_annee" required>
+			<input type="text" name="responsabilite2_regional_annee" value="{$responsabilite2_regional_annee}" required>
 		
 		<h5>Internationale</h5>
 		<label for="responsabilite2_international_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_international_intitule" required>
+			<input type="text" name="responsabilite2_international_intitule" value="{$responsabilite2_international_intitule}" required>
 		<label for="responsabilite2_international_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_international_annee" required>
+			<input type="text" name="responsabilite2_international_annee" value="{$responsabilite2_international_annee}" required>
 		<button type="submit" name="submit19">Envoyer</button>
 	</form>
 
