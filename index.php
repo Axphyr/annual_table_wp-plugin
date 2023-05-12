@@ -117,15 +117,34 @@ function annual_data_table_install(): void
 	// Retourne un messag à l'utilisateur
 	echo $res;
 
-
+	// ajout des pages pour les différents blocks
+	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"
+	];
+	for($i = 0; $i < 22; $i++){
+		create_custom_pages("Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
+	}
 }
 register_activation_hook( __FILE__, 'annual_data_table_install' );
 
 add_shortcode('add_istep_annual_table_download','download_annual_table');
 
+function create_custom_pages($title, $content): void {
+	$shortcode = "[" . $content . "]";
+	// Create the page post object
+	$page = array(
+		'post_title'    => $title,
+		'post_content'  => wp_kses_post($shortcode),
+		'post_status'   => 'publish',
+		'post_type'     => 'page',
+	);
+
+	// Insert the page into the database
+	$page_id = wp_insert_post($page);
+}
+
 function download_annual_table(): string {
 	return <<<HTML
-	<button><a href="/wp-admin/tableau-annuel/data-table.csv" download> Access File </a></button>
+	<button><a href="/wp-admin/tableau-annuel/data-table.csv" download> Accéder au fichier </a></button>
 HTML;
 }
 
@@ -336,36 +355,30 @@ function block1(): string{
 	$rang = getCell(8);
 	$year = date('Y');
 
-	$usId = user_id_in_csv_file();
-
 	$annee_naissance = null;
 	$annee_these = null;
 	$annee_hdr = null;
 	$annee_etat = null;
+	$date_entree = null;
+	$date_sortie = null;
 
 	if(isRegistered()){
 		$annee_naissance = (int)getCell(11);
 		$annee_these = (int)getCell(12);
 		$annee_hdr = (int)getCell(13);
 		$annee_etat = (int)getCell(14);
+		$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(9))));
+		$date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(10))));
 	}
 
-	$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(9))));
-	$date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(10))));
-
 	return <<<HTML
-	<h4>Formulaire Informations Générales</h4>
-	
-	<h1> user row id = {$usId}</h1>
-
-	<form method="POST" class="data-table-form_1">
+	<form method="POST" class="data-table-form">
 		<h5>Informations générales</h5>
-		<label for="last_name">Nom
+		<label for="last_name">Nom</label>
 			<input type="text" name="last_name" value="$last_name" class="ninja-forms-field nf-element" required disabled>
-		</label>
-		<label for="name">Prénom
+		<label for="name">Prénom</label>
 			<input type="text" name="name" value="$name" required disabled>
-		</label>
+		</br>
 		<label for="equipe1">Equipe 2017-2022</label>
 		<select name="equipe1">
 			<option value=" "></option>
@@ -436,9 +449,7 @@ function block2(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Discipline</h4>
-
-	<form method="POST" class="data-table-form_2">
+	<form method="POST" class="data-table-form">
 		<h5>Discipline</h5>
 		<label for="discipline1">Discipline 1</label>
 			<input type="text" name="discipline1" value="{$disc1}" required>
@@ -467,9 +478,7 @@ function block3(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Thème de recherche</h4>
-
-	<form method="POST" class="data-table-form_3">
+	<form method="POST" class="data-table-form">
 		<h5>Thèmes de recherche (80 mots max)</h5>
 			<input type="text" name="theme_recherche" value="{$theme}" id="theme_recherche" oninput="limitWords()" required>
 		<button type="submit" name="submit3">Envoyer</button>
@@ -531,9 +540,7 @@ function block4(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Publications 1</h4>
-
-	<form method="POST" class="data-table-form_4">
+	<form method="POST" class="data-table-form">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
 		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
 			<input type="number" name="nb_publi_rang_a1" value="{$nb_publi_rang_a1}" required>
@@ -602,9 +609,7 @@ function block5(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Publications 2</h4>
-
-	<form method="POST" class="data-table-form_5">
+	<form method="POST" class="data-table-form">
 		<h5>Détail des publications par année depuis 2022</h5>
 		<label for="nb_publi_rang_a2">Nombre total de publi de rang A</label>
 			<input type="number" name="nb_publi_rang_a2" value="{$nb_publi_rang_a2}" required>
@@ -624,10 +629,10 @@ function block5(): string{
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_7','block7');
-function block7(): string{
+add_shortcode('add_istep_annual_table_form_block_6','block6');
+function block6(): string{
 
-	if(isset($_POST["submit7"])){
+	if(isset($_POST["submit6"])){
 		$data = [
 			$_POST["enseignement1"],
 			$_POST["enseignement2"],
@@ -659,9 +664,7 @@ function block7(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Enseignement</h4>
-
-	<form method="POST" class="data-table-form_7">
+	<form method="POST" class="data-table-form">
 		<h5>Enseignement</h5>
 		<label for="enseignement1">nb heures enseignées 2022-2023</label>
 			<input type="number" name="enseignement1" value="{$enseignement1}" required>
@@ -671,16 +674,16 @@ function block7(): string{
 			<input type="number" name="enseignement3" value="{$enseignement3}" required>
 		<label for="enseignement4">nb heures enseignées 2025-2026</label>
 			<input type="number" name="enseignement4" value="{$enseignement4}" required>
-		<button type="submit" name="submit7">Envoyer</button>
+		<button type="submit" name="submit6">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_8','block8');
-function block8(): string{
+add_shortcode('add_istep_annual_table_form_block_7','block7');
+function block7(): string{
 
-	if(isset($_POST["submit8"])){
+	if(isset($_POST["submit7"])){
 		$data = [
 			$_POST["master1_nom"],
 			$_POST["master1_prenom"],
@@ -720,9 +723,7 @@ function block8(): string{
 	$year = date('Y');
 
 	return <<<HTML
-	<h4>Formulaire Master 1</h4>
-
-	<form method="POST" class="data-table-form_8">
+	<form method="POST" class="data-table-form">
 		<h5>Encadrement Master 1 (à partir de 2022)</h5>
 		<label for="master1_nom">Nom</label>
 			<input type="text" name="master1_nom" value="{$master1_nom}" required>
@@ -734,16 +735,16 @@ function block8(): string{
 			<input type="text" name="master1_nom_prenom_co-encadrants" value="{$master1_nom_prenom_co_encadrants}" required>
 		<label for="master1_sujet">Titre sujet (indiquer si hors ISTeP)</label>
 			<input type="text" name="master1_sujet" value="{$master1_sujet}" required>
-		<button type="submit" name="submit8">Envoyer</button>
+		<button type="submit" name="submit7">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_9','block9');
-function block9(): string{
+add_shortcode('add_istep_annual_table_form_block_8','block8');
+function block8(): string{
 
-	if(isset($_POST["submit9"])){
+	if(isset($_POST["submit8"])){
 		$data = [
 			$_POST["master2_nom"],
 			$_POST["master2_prenom"],
@@ -782,9 +783,7 @@ function block9(): string{
 
 	$year = date('Y');
 	return <<<HTML
-	<h4>Formulaire Master 2</h4>
-
-	<form method="POST" class="data-table-form_9">
+	<form method="POST" class="data-table-form">
 		<h5>Encadrement Master 2 (à partir de 2022)</h5>
 		<label for="master2_nom">Nom</label>
 			<input type="text" name="master2_nom" value="{$master2_nom}" required>
@@ -796,16 +795,16 @@ function block9(): string{
 			<input type="text" name="master2_nom_prenom_co-encadrants" value="{$master2_nom_prenom_co_encadrants}" required>
 		<label for="master2_sujet">Titre sujet (indiquer si hors ISTeP)</label>
 			<input type="text" name="master2_sujet" value="{$master2_sujet}" required>
-		<button type="submit" name="submit9">Envoyer</button>
+		<button type="submit" name="submit8">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_10','block10');
-function block10(): string{
+add_shortcode('add_istep_annual_table_form_block_9','block9');
+function block9(): string{
 
-	if(isset($_POST["submit10"])){
+	if(isset($_POST["submit9"])){
 		$data = [
 			$_POST["encadrement_istep_nom"],
 			$_POST["encadrement_istep_prenom"],
@@ -882,11 +881,8 @@ function block10(): string{
 		$encadrement_istep_fonction = getCell(63);
 	}
 
-
 	return <<<HTML
-	<h4>Formulaire Encadrement thèse ISTeP</h4>
-
-	<form method="POST" class="data-table-form_10">
+	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse ISTeP à partir de 2022</h5>
 		<label for="encadrement_istep_nom">Nom</label>
 			<input type="text" name="encadrement_istep_nom" value="{$encadrement_istep_nom}" required>
@@ -914,16 +910,16 @@ function block10(): string{
 			<input type="text" name="encadrement_istep_financement_doctorat" value="{$encadrement_istep_financement_doctorat}" required>
 		<label for="encadrement_istep_fonction">Fonction de direction ou encadrement ?</label>
 			<input type="text" name="encadrement_istep_fonction" value="{$encadrement_istep_fonction}" required>
-		<button type="submit" name="submit10">Envoyer</button>
+		<button type="submit" name="submit9">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_11','block11');
-function block11(): string{
+add_shortcode('add_istep_annual_table_form_block_10','block10');
+function block10(): string{
 
-	if(isset($_POST["submit11"])){
+	if(isset($_POST["submit10"])){
 		$data = [
 			$_POST["encadrement_histep_nom"],
 			$_POST["encadrement_histep_prenom"],
@@ -1007,9 +1003,7 @@ function block11(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Encadrement thèse hors ISTeP</h4>
-
-	<form method="POST" class="data-table-form_11">
+	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse hors ISTeP à partir de 2022</h5>
 		<label for="encadrement_histep_nom">Nom</label>
 			<input type="text" name="encadrement_histep_nom" value="{$encadrement_histep_nom}" required>
@@ -1039,15 +1033,15 @@ function block11(): string{
 			<input type="text" name="encadrement_histep_financement_doctorat" value="{$encadrement_histep_financement_doctorat}" required>
 		<label for="encadrement_histep_fonction">Fonction de direction ou encadrement ?</label>
 			<input type="text" name="encadrement_histep_fonction" value="{$encadrement_histep_fonction}" required>
-		<button type="submit" name="submit11">Envoyer</button>
+		<button type="submit" name="submit10">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_12','block12');
-function block12(): string{
-	if(isset($_POST["submit12"])){
+add_shortcode('add_istep_annual_table_form_block_11','block11');
+function block11(): string{
+	if(isset($_POST["submit11"])){
 		$data = [
 			$_POST["encadrement_pd_nom"],
 			$_POST["encadrement_pd_prenom"],
@@ -1104,9 +1098,7 @@ function block12(): string{
 	$year = date('Y');
 
 	return <<<HTML
-	<h4>Formulaire Encadrement post-doctorats</h4>
-
-	<form method="POST" class="data-table-form_12">
+	<form method="POST" class="data-table-form">
 		<h5>Encadrement de post-doctorats à partir de 2022</h5>
 		<label for="encadrement_pd_nom">Nom</label>
 			<input type="text" name="encadrement_pd_nom" value="{$encadrement_pd_nom}" required>
@@ -1126,15 +1118,15 @@ function block12(): string{
 			<input type="number" min="1900" max="{$year}" name="encadrement_pd_annee_naissance" value="{$encadrement_pd_annee_naissance}" required>
 		<label for="encadrement_pd_employeur">Etablissement ou organisme employeur</label>
 			<input type="text" name="encadrement_pd_employeur" value="{$encadrement_pd_employeur}" required>
-		<button type="submit" name="submit12">Envoyer</button>
+		<button type="submit" name="submit11">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_13','block13');
-function block13(): string{
-	if(isset($_POST["submit13"])){
+add_shortcode('add_istep_annual_table_form_block_12','block12');
+function block12(): string{
+	if(isset($_POST["submit12"])){
 		$data = [
 			$_POST["distinction_intitule"],
 			$_POST["distinction_annee"]
@@ -1154,23 +1146,21 @@ function block13(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Prix ou Distinctions</h4>
-
-	<form method="POST" class="data-table-form_13">
+	<form method="POST" class="data-table-form">
 		<h5>Prix ou distinctions scientifiques</h5>
 		<label for="distinction_intitule">Intitulé de l'élément de distinction (nom du prix par exemple)</label>
 			<input type="text" name="distinction_intitule" value="{$distinction_intitule}" required>
 		<label for="distinction_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="distinction_annee" value="{$distinction_annee}" required>
-		<button type="submit" name="submit13">Envoyer</button>
+		<button type="submit" name="submit12">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_14','block14');
-function block14(): string{
-	if(isset($_POST["submit14"])){
+add_shortcode('add_istep_annual_table_form_block_13','block13');
+function block13(): string{
+	if(isset($_POST["submit13"])){
 		$data = [
 			$_POST["iuf_intitule"],
 			$_POST["iuf_annee"]
@@ -1188,24 +1178,23 @@ function block14(): string{
 	if(getCell(90) !== " "){
 		$iuf_annee = getCell(90);
 	}
-	return <<<HTML
-	<h4>Formulaire Appartenance IUF</h4>
 
-	<form method="POST" class="data-table-form_14">
+	return <<<HTML
+	<form method="POST" class="data-table-form">
 		<h5>Appartenance à l'IUF</h5>
 		<label for="iuf_intitule">Intitulé de l'élément (membre, fonction …)</label>
 			<input type="text" name="iuf_intitule" value="{$iuf_intitule}" required>
 		<label for="iuf_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="iuf_annee" value="{$iuf_annee}" required>
-		<button type="submit" name="submit14">Envoyer</button>
+		<button type="submit" name="submit13">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_15','block15');
-function block15(): string{
-	if(isset($_POST["submit15"])){
+add_shortcode('add_istep_annual_table_form_block_14','block14');
+function block14(): string{
+	if(isset($_POST["submit14"])){
 		$data = [
 			$_POST["sejour_lieu"],
 			$_POST["sejour_annee"]
@@ -1223,24 +1212,23 @@ function block15(): string{
 	if(getCell(93) !== " "){
 		$sejour_annee = getCell(93);
 	}
-	return <<<HTML
-	<h4>Formulaire Séjours</h4>
 
-	<form method="POST" class="data-table-form_15">
+	return <<<HTML
+	<form method="POST" class="data-table-form">
 		<h5>Séjours dans des laboratoires étrangers</h5>
 		<label for="sejour_lieu">Lieu, fonction</label>
 			<input type="text" name="sejour_lieu" value="{$sejour_lieu}" required>
 		<label for="sejour_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="sejour_annee" value="{$sejour_annee}" required>
-		<button type="submit" name="submit15">Envoyer</button>
+		<button type="submit" name="submit14">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_16','block16');
-function block16(): string{
-	if(isset($_POST["submit16"])){
+add_shortcode('add_istep_annual_table_form_block_15','block15');
+function block15(): string{
+	if(isset($_POST["submit15"])){
 		$data = [
 			$_POST["organisation_nom"],
 			$_POST["organisation_annee"]
@@ -1260,23 +1248,21 @@ function block16(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Colloques/Congrès</h4>
-
-	<form method="POST" class="data-table-form_16">
+	<form method="POST" class="data-table-form">
 		<h5>Organisations de colloques/congrès internationaux</h5>
 		<label for="organisation_nom">Nom de l'évènement, fonction</label>
 			<input type="text" name="organisation_nom" value="{$organisation_nom}" required>
 		<label for="organisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="organisation_annee" value="{$organisation_annee}" required>
-		<button type="submit" name="submit16">Envoyer</button>
+		<button type="submit" name="submit15">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_17','block17');
-function block17(): string{
-	if(isset($_POST["submit17"])){
+add_shortcode('add_istep_annual_table_form_block_16','block16');
+function block16(): string{
+	if(isset($_POST["submit16"])){
 		$data = [
 			$_POST["societe_savantes_nom"],
 			$_POST["societe_savantes_annee"]
@@ -1296,23 +1282,21 @@ function block17(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Sociétés Savantes</h4>
-
-	<form method="POST" class="data-table-form_17">
+	<form method="POST" class="data-table-form">
 		<h5>Responsabilités dans des sociétés savantes</h5>
 		<label for="societe_savantes_nom">Nom de la société, fonction</label>
 			<input type="text" name="societe_savantes_nom" value="{$societe_savantes_nom}" required>
 		<label for="societe_savantes_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="societe_savantes_annee" value="{$societe_savantes_annee}" required>
-		<button type="submit" name="submit17">Envoyer</button>
+		<button type="submit" name="submit16">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_18','block18');
-function block18(): string{
-	if(isset($_POST["submit18"])){
+add_shortcode('add_istep_annual_table_form_block_17','block17');
+function block17(): string{
+	if(isset($_POST["submit17"])){
 		$data = [
 			$_POST["responsabilite1_region_montant"],
 			$_POST["responsabilite1_region_nom"],
@@ -1368,9 +1352,7 @@ function block18(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Responsabilités de projets de recherche</h4>
-
-	<form method="POST" class="data-table-form_18">
+	<form method="POST" class="data-table-form">
 		<h4>Responsabilité de projets de recherche (ou tasks indépendantes)</h4>
 		
 		<h5>Régional et local</h5>
@@ -1396,15 +1378,15 @@ function block18(): string{
 			<input type="number" name="responsabilite1_partenariat_montant" value="{$responsabilite1_partenariat_montant}" required>
 		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
 			<input type="text" name="responsabilite1_partenariat_nom" value="{$responsabilite1_partenariat_nom}" required>
-		<button type="submit" name="submit18">Envoyer</button>
+		<button type="submit" name="submit17">Envoyer</button>
 	</form>
 
 HTML;
 }
 
-add_shortcode('add_istep_annual_table_form_block_19','block19');
-function block19(): string{
-	if(isset($_POST["submit19"])){
+add_shortcode('add_istep_annual_table_form_block_18','block18');
+function block18(): string{
+	if(isset($_POST["submit18"])){
 		$data = [
 			$_POST["responsabilite2_locale_intitule"],
 			$_POST["responsabilite2_locale_annee"],
@@ -1448,9 +1430,7 @@ function block19(): string{
 	}
 
 	return <<<HTML
-	<h4>Formulaire Discipline</h4>
-
-	<form method="POST" class="data-table-form_19">
+	<form method="POST" class="data-table-form">
 		<h4>Responsabilités, Expertises & administration de la recherche</h4>
 		
 		<h5>Locale</h5>
@@ -1470,68 +1450,133 @@ function block19(): string{
 			<input type="text" name="responsabilite2_international_intitule" value="{$responsabilite2_international_intitule}" required>
 		<label for="responsabilite2_international_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
 			<input type="text" name="responsabilite2_international_annee" value="{$responsabilite2_international_annee}" required>
+		<button type="submit" name="submit18">Envoyer</button>
+	</form>
+
+HTML;
+}
+
+add_shortcode('add_istep_annual_table_form_block_19','block19');
+function block19(): string{
+	if(isset($_POST["submit19"])){
+		$data = [
+			$_POST["responsabilite3_intitule"],
+			$_POST["responsabilite3_annee"]
+		];
+		replace_or_pushes_values(117, $data);
+	}
+
+	$responsabilite3_intitule = null;
+	$responsabilite3_annee = null;
+
+	if(getCell(117) !== " "){
+		$responsabilite3_intitule = getCell(117);
+	}
+
+	if(getCell(118) !== " "){
+		$responsabilite3_annee = getCell(118);
+	}
+
+	return <<<HTML
+	<form method="POST" class="data-table-form">
+		<h5>Responsabilités & administration de la formation/enseignement</h5>
+		<label for="responsabilite3_intitule">Intitulé de l'élément et votre fonction</label>
+			<input type="text" name="responsabilite3_intitule" value="{$responsabilite3_intitule}" required>
+		<label for="responsabilite3_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
+			<input type="text" name="responsabilite3_annee" value="{$responsabilite3_annee}" required>
 		<button type="submit" name="submit19">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_20','block20');
 function block20(): string{
-	return <<<HTML
-	<h4>Formulaire Responsabilités administratives</h4>
+	if(isset($_POST["submit20"])){
+		$data = [
+			$_POST["vulgarisation_intitule"],
+			$_POST["vulgarisation_annee"]
+		];
+		replace_or_pushes_values(120, $data);
+	}
 
-	<form method="POST" class="data-table-form_20">
-		<h5>Responsabilités & administration de la formation/enseignement</h5>
-		<label for="responsabilite3_intitule">Intitulé de l'élément et votre fonction</label>
-			<input type="text" name="responsabilite3_intitule" required>
-		<label for="responsabilite3_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite3_annee" required>
+	$vulgarisation_intitule = null;
+	$vulgarisation_annee = null;
+
+	if(getCell(120) !== " "){
+		$vulgarisation_intitule = getCell(120);
+	}
+
+	if(getCell(121) !== " "){
+		$vulgarisation_annee = getCell(121);
+	}
+
+	return <<<HTML
+	<form method="POST" class="data-table-form">
+		<h5>Vulgarisation, dissémination scientifique</h5>
+		<label for="vulgarisation_intitule">Intitulé de l'élément (évènement, vidéo, livre, …) et fonction</label>
+			<input type="text" name="vulgarisation_intitule" value="{$vulgarisation_intitule}" required>
+		<label for="vulgarisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
+			<input type="text" name="vulgarisation_annee" value="{$vulgarisation_annee}" required>
 		<button type="submit" name="submit20">Envoyer</button>
 	</form>
 
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_21','block21');
 function block21(): string{
-	return <<<HTML
-	<h4>Formulaire Vulgarisation</h4>
+	if(isset($_POST["submit21"])){
+		$data = [
+			$_POST["rayonnement"]
+		];
+		replace_or_pushes_values(123, $data);
+	}
 
-	<form method="POST" class="data-table-form_21">
-		<h5>Vulgarisation, dissémination scientifique</h5>
-		<label for="vulgarisation_intitule">Intitulé de l'élément (évènement, vidéo, livre, …) et fonction</label>
-			<input type="text" name="vulgarisation_intitule" required>
-		<label for="vulgarisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="vulgarisation_annee" required>
+	$rayonnement = null;
+
+	if(getCell(123) !== " "){
+		$rayonnement = getCell(123);
+	}
+
+	return <<<HTML
+	<form method="POST" class="data-table-form">
+		<h5>Rayonnement / résultats majeurs sur la période à mettre en avant</h5>
+			<input type="text" name="rayonnement" value="{$rayonnement}" required>
 		<button type="submit" name="submit21">Envoyer</button>
 	</form>
-
 HTML;
 }
 
+add_shortcode('add_istep_annual_table_form_block_22','block22');
 function block22(): string{
+	if(isset($_POST["submit22"])){
+		$data = [
+			$_POST["brevet_intitule"],
+			$_POST["brevet_annee"]
+		];
+		replace_or_pushes_values(125, $data);
+	}
+
+	$brevet_intitule = null;
+	$brevet_annee = null;
+
+	if(getCell(125) !== " "){
+		$brevet_intitule = getCell(125);
+	}
+
+	if(getCell(126) !== " "){
+		$brevet_annee = getCell(126);
+	}
+
 	return <<<HTML
-	<h4>Formulaire Rayonnement</h4>
-
-	<form method="POST" class="data-table-form_22">
-		<h5>Rayonnement / résultats majeurs sur la période à mettre en avant</h5>
-			<input type="text" name="rayonnement" required>
-		<button type="submit" name="submit22">Envoyer</button>
-	</form>
-
-HTML;
-}
-
-function block23(): string{
-	return <<<HTML
-	<h4>Formulaire Brevet</h4>
-
-	<form method="POST" class="data-table-form_23">
+	<form method="POST" class="data-table-form">
 		<h5>Brevet</h5>
 		<label for="brevet_intitule">Intitulé de l'élément et votre fonction</label>
-			<input type="text" name="brevet_intitule" required>
+			<input type="text" name="brevet_intitule" value="{$brevet_intitule}" required>
 		<label for="brevet_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="brevet_annee" required>
-		<button type="submit" name="submit23">Envoyer</button>
+			<input type="text" name="brevet_annee" value="{$brevet_annee}" required>
+		<button type="submit" name="submit22">Envoyer</button>
 	</form>
 
 HTML;
