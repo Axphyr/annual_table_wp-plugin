@@ -118,13 +118,40 @@ function annual_data_table_install(): void
 	echo $res;
 
 	// ajout des pages pour les différents blocks
-	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"
-	];
+	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet" ];
 	for($i = 0; $i < 22; $i++){
-		create_custom_pages("Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
+		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
 	}
 }
 register_activation_hook( __FILE__, 'annual_data_table_install' );
+
+function delete_custom_pages(): void {
+	// Get all page IDs where the title starts with "(DT) Formulaire"
+	$args = array(
+		'post_type'      => 'page',
+		'posts_per_page' => -1,
+		'post_status'    => 'any',
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+		's'              => '(DT) Formulaire',
+	);
+
+	$query = new WP_Query($args);
+	$page_ids = array();
+
+	while ($query->have_posts()) {
+		$query->the_post();
+		$page_ids[] = get_the_ID();
+	}
+
+	wp_reset_postdata();
+
+	// Loop through the page IDs and delete the pages
+	foreach ($page_ids as $page_id) {
+		wp_delete_post($page_id, true);
+	}
+}
+register_deactivation_hook(__FILE__, 'delete_custom_pages');
 
 add_shortcode('add_istep_annual_table_download','download_annual_table');
 
@@ -274,6 +301,34 @@ function getCell(int $column): string {
 	fclose( $file );
 
 	return "";
+}
+
+function transformString($str): string {
+	return trim(strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', iconv('UTF-8', 'ASCII//TRANSLIT', $str))), '-');
+}
+
+add_shortcode('add_istep_annual_table_summary','summary');
+function summary(): string{
+	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"];
+
+	$html = <<<HTML
+		<div class="annual_data_table_summary">
+			<p> Liste des formulaire de la table de données </p>
+			<div class="bouttons">
+HTML;
+
+	for ($i = 0; $i < count($lst); $i++) {
+		$page = transformString("(DT) Formulaire " . $lst[$i]);
+		$html .= <<<HTML
+				<button type="button"  onclick="window.location.href = '{$page}'">{$lst[$i]}</button>
+HTML;
+
+	}
+	$html .= <<<HTML
+			</div>
+		</div>
+HTML;
+	return $html;
 }
 
 add_shortcode('add_istep_annual_table_form_block_1','block1');
@@ -429,26 +484,27 @@ HTML;
 add_shortcode('add_istep_annual_table_form_block_2','block2');
 function block2(): string{
 
-	if(isset($_POST["submit2"])) {
-		$data = [
-			$_POST["discipline1"],
-			$_POST["discipline2"]
-		];
-		replace_or_pushes_values(16, $data);
-	}
+	if(isRegistered()){
+		if(isset($_POST["submit2"])) {
+			$data = [
+				$_POST["discipline1"],
+				$_POST["discipline2"]
+			];
+			replace_or_pushes_values(16, $data);
+		}
 
-	$disc1 = null;
-	$disc2 = null;
+		$disc1 = null;
+		$disc2 = null;
 
-	if(getCell(16) !== " "){
-		$disc1 = getCell(16);
-	}
+		if(getCell(16) !== " "){
+			$disc1 = getCell(16);
+		}
 
-	if(getCell(17) !== " "){
-		$disc2 = getCell(17);
-	}
+		if(getCell(17) !== " "){
+			$disc2 = getCell(17);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Discipline</h5>
 		<label for="discipline1">Discipline 1</label>
@@ -459,17 +515,24 @@ function block2(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_3','block3');
 function block3(): string{
 
-	if(isset($_POST["submit3"])){
-		$data = [
-			$_POST["theme_recherche"]
-		];
-		replace_or_pushes_values(19, $data);
-	}
+	if(isRegistered()){
+			if(isset($_POST["submit3"])){
+				$data = [
+					$_POST["theme_recherche"]
+				];
+				replace_or_pushes_values(19, $data);
+			}
 
 	$theme = "";
 
@@ -483,63 +546,69 @@ function block3(): string{
 			<input type="text" name="theme_recherche" value="{$theme}" id="theme_recherche" oninput="limitWords()" required>
 		<button type="submit" name="submit3">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_4','block4');
 function block4(): string{
 
-	if(isset($_POST["submit4"])){
-		$data = [
-			$_POST["nb_publi_rang_a1"],
-			$_POST["nb_publi_rang_premier"],
-			$_POST["nb_citations_isi"],
-			$_POST["h_factor_isi"],
-			$_POST["nb_citations_isi_google"],
-			$_POST["h_factor_google"],
-			$_POST["nb_resume_conference"]
-		];
-		replace_or_pushes_values(21, $data);
-	}
+	if(isRegistered()){
+		if(isset($_POST["submit4"])){
+			$data = [
+				$_POST["nb_publi_rang_a1"],
+				$_POST["nb_publi_rang_premier"],
+				$_POST["nb_citations_isi"],
+				$_POST["h_factor_isi"],
+				$_POST["nb_citations_isi_google"],
+				$_POST["h_factor_google"],
+				$_POST["nb_resume_conference"]
+			];
+			replace_or_pushes_values(21, $data);
+		}
 
-	$nb_publi_rang_a1 = null;
-	$nb_publi_rang_premier = null;
-	$nb_citations_isi = null;
-	$h_factor_isi = null;
-	$nb_citations_isi_google = null;
-	$h_factor_google = null;
-	$nb_resume_conference = null;
+		$nb_publi_rang_a1 = null;
+		$nb_publi_rang_premier = null;
+		$nb_citations_isi = null;
+		$h_factor_isi = null;
+		$nb_citations_isi_google = null;
+		$h_factor_google = null;
+		$nb_resume_conference = null;
 
-	if(getCell(21) !== " "){
-		$nb_publi_rang_a1 = (int)getCell(21);
-	}
+		if(getCell(21) !== " "){
+			$nb_publi_rang_a1 = (int)getCell(21);
+		}
 
-	if(getCell(22) !== " "){
-		$nb_publi_rang_premier = (int)getCell(22);
-	}
+		if(getCell(22) !== " "){
+			$nb_publi_rang_premier = (int)getCell(22);
+		}
 
-	if(getCell(23) !== " "){
-		$nb_citations_isi = (int)getCell(23);
-	}
+		if(getCell(23) !== " "){
+			$nb_citations_isi = (int)getCell(23);
+		}
 
-	if(getCell(24) !== " "){
-		$h_factor_isi = getCell(24);
-	}
+		if(getCell(24) !== " "){
+			$h_factor_isi = getCell(24);
+		}
 
-	if(getCell(25) !== " "){
-		$nb_citations_isi_google = (int)getCell(25);
-	}
+		if(getCell(25) !== " "){
+			$nb_citations_isi_google = (int)getCell(25);
+		}
 
-	if(getCell(26) !== " "){
-		$h_factor_google = getCell(26);
-	}
+		if(getCell(26) !== " "){
+			$h_factor_google = getCell(26);
+		}
 
-	if(getCell(27) !== " "){
-		$nb_resume_conference = (int)getCell(27);
-	}
+		if(getCell(27) !== " "){
+			$nb_resume_conference = (int)getCell(27);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
 		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
@@ -560,55 +629,62 @@ function block4(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_5','block5');
 function block5(): string{
 
-	if(isset($_POST["submit5"])){
-		$data = [
-			$_POST["nb_publi_rang_a2"],
-			$_POST["nb_publi_premier"],
-			$_POST["nb_article_doctorant"],
-			$_POST["nb_article_rang_a_collab"],
-			$_POST["chapitre_ouvrage"],
-			$_POST["nb_resume_comite_lecture"],
-		];
-		replace_or_pushes_values(29, $data);
-	}
+	if(isRegistered()){
+		if(isset($_POST["submit5"])){
+			$data = [
+				$_POST["nb_publi_rang_a2"],
+				$_POST["nb_publi_premier"],
+				$_POST["nb_article_doctorant"],
+				$_POST["nb_article_rang_a_collab"],
+				$_POST["chapitre_ouvrage"],
+				$_POST["nb_resume_comite_lecture"],
+			];
+			replace_or_pushes_values(29, $data);
+		}
 
-	$nb_publi_rang_a2 = null;
-	$nb_publi_premier = null;
-	$nb_article_doctorant = null;
-	$nb_article_rang_a_collab = null;
-	$chapitre_ouvrage = null;
-	$nb_resume_comite_lecture = null;
+		$nb_publi_rang_a2 = null;
+		$nb_publi_premier = null;
+		$nb_article_doctorant = null;
+		$nb_article_rang_a_collab = null;
+		$chapitre_ouvrage = null;
+		$nb_resume_comite_lecture = null;
 
-	if(getCell(29) !== " "){
-		$nb_publi_rang_a2 = (int)getCell(29);
-	}
+		if(getCell(29) !== " "){
+			$nb_publi_rang_a2 = (int)getCell(29);
+		}
 
-	if(getCell(30) !== " "){
-		$nb_publi_premier = (int)getCell(30);
-	}
+		if(getCell(30) !== " "){
+			$nb_publi_premier = (int)getCell(30);
+		}
 
-	if(getCell(31) !== " "){
-		$nb_article_doctorant = (int)getCell(31);
-	}
+		if(getCell(31) !== " "){
+			$nb_article_doctorant = (int)getCell(31);
+		}
 
-	if(getCell(32) !== " "){
-		$nb_article_rang_a_collab = (int)getCell(32);
-	}
+		if(getCell(32) !== " "){
+			$nb_article_rang_a_collab = (int)getCell(32);
+		}
 
-	if(getCell(33) !== " "){
-		$chapitre_ouvrage = getCell(33);
-	}
+		if(getCell(33) !== " "){
+			$chapitre_ouvrage = getCell(33);
+		}
 
-	if(getCell(34) !== " "){
-		$nb_resume_comite_lecture = (int)getCell(34);
-	}
+		if(getCell(34) !== " "){
+			$nb_resume_comite_lecture = (int)getCell(34);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Détail des publications par année depuis 2022</h5>
 		<label for="nb_publi_rang_a2">Nombre total de publi de rang A</label>
@@ -627,43 +703,50 @@ function block5(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_6','block6');
 function block6(): string{
 
-	if(isset($_POST["submit6"])){
-		$data = [
-			$_POST["enseignement1"],
-			$_POST["enseignement2"],
-			$_POST["enseignement3"],
-			$_POST["enseignement4"],
-		];
-		replace_or_pushes_values(36, $data);
-	}
+	if(isRegistered()){
+		if(isset($_POST["submit6"])){
+			$data = [
+				$_POST["enseignement1"],
+				$_POST["enseignement2"],
+				$_POST["enseignement3"],
+				$_POST["enseignement4"],
+			];
+			replace_or_pushes_values(36, $data);
+		}
 
-	$enseignement1 = null;
-	$enseignement2 = null;
-	$enseignement3 = null;
-	$enseignement4 = null;
+		$enseignement1 = null;
+		$enseignement2 = null;
+		$enseignement3 = null;
+		$enseignement4 = null;
 
-	if(getCell(36) !== " "){
-		$enseignement1 = (int)getCell(36);
-	}
+		if(getCell(36) !== " "){
+			$enseignement1 = (int)getCell(36);
+		}
 
-	if(getCell(37) !== " "){
-		$enseignement2 = (int)getCell(37);
-	}
+		if(getCell(37) !== " "){
+			$enseignement2 = (int)getCell(37);
+		}
 
-	if(getCell(38) !== " "){
-		$enseignement3 = (int)getCell(38);
-	}
+		if(getCell(38) !== " "){
+			$enseignement3 = (int)getCell(38);
+		}
 
-	if(getCell(39) !== " "){
-		$enseignement4 = (int)getCell(39);
-	}
+		if(getCell(39) !== " "){
+			$enseignement4 = (int)getCell(39);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Enseignement</h5>
 		<label for="enseignement1">nb heures enseignées 2022-2023</label>
@@ -678,51 +761,58 @@ function block6(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_7','block7');
 function block7(): string{
 
-	if(isset($_POST["submit7"])){
-		$data = [
-			$_POST["master1_nom"],
-			$_POST["master1_prenom"],
-			$_POST["master1_annee"],
-			$_POST["master1_nom_prenom_co-encadrants"],
-			$_POST["master1_sujet"]
-		];
-		replace_or_pushes_values(41, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit7"])){
+			$data = [
+				$_POST["master1_nom"],
+				$_POST["master1_prenom"],
+				$_POST["master1_annee"],
+				$_POST["master1_nom_prenom_co-encadrants"],
+				$_POST["master1_sujet"]
+			];
+			replace_or_pushes_values(41, $data);
+		}
 
-	$master1_nom = null;
-	$master1_prenom = null;
-	$master1_annee = null;
-	$master1_nom_prenom_co_encadrants = null;
-	$master1_sujet = null;
+		$master1_nom = null;
+		$master1_prenom = null;
+		$master1_annee = null;
+		$master1_nom_prenom_co_encadrants = null;
+		$master1_sujet = null;
 
-	if(getCell(41) !== " "){
-		$master1_nom = getCell(41);
-	}
+		if(getCell(41) !== " "){
+			$master1_nom = getCell(41);
+		}
 
-	if(getCell(42) !== " "){
-		$master1_prenom = getCell(42);
-	}
+		if(getCell(42) !== " "){
+			$master1_prenom = getCell(42);
+		}
 
-	if(getCell(43) !== " "){
-		$master1_annee = (int)getCell(43);
-	}
+		if(getCell(43) !== " "){
+			$master1_annee = (int)getCell(43);
+		}
 
-	if(getCell(44) !== " "){
-		$master1_nom_prenom_co_encadrants = getCell(44);
-	}
+		if(getCell(44) !== " "){
+			$master1_nom_prenom_co_encadrants = getCell(44);
+		}
 
-	if(getCell(45) !== " "){
-		$master1_sujet = getCell(45);
-	}
+		if(getCell(45) !== " "){
+			$master1_sujet = getCell(45);
+		}
 
-	$year = date('Y');
+		$year = date('Y');
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement Master 1 (à partir de 2022)</h5>
 		<label for="master1_nom">Nom</label>
@@ -739,50 +829,57 @@ function block7(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_8','block8');
 function block8(): string{
 
-	if(isset($_POST["submit8"])){
-		$data = [
-			$_POST["master2_nom"],
-			$_POST["master2_prenom"],
-			$_POST["master2_annee"],
-			$_POST["master2_nom_prenom_co-encadrants"],
-			$_POST["master2_sujet"]
-		];
-		replace_or_pushes_values(47, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit8"])){
+			$data = [
+				$_POST["master2_nom"],
+				$_POST["master2_prenom"],
+				$_POST["master2_annee"],
+				$_POST["master2_nom_prenom_co-encadrants"],
+				$_POST["master2_sujet"]
+			];
+			replace_or_pushes_values(47, $data);
+		}
 
-	$master2_nom = null;
-	$master2_prenom = null;
-	$master2_annee = null;
-	$master2_nom_prenom_co_encadrants = null;
-	$master2_sujet = null;
+		$master2_nom = null;
+		$master2_prenom = null;
+		$master2_annee = null;
+		$master2_nom_prenom_co_encadrants = null;
+		$master2_sujet = null;
 
-	if(getCell(47) !== " "){
-		$master2_nom = getCell(47);
-	}
+		if(getCell(47) !== " "){
+			$master2_nom = getCell(47);
+		}
 
-	if(getCell(48) !== " "){
-		$master2_prenom = getCell(48);
-	}
+		if(getCell(48) !== " "){
+			$master2_prenom = getCell(48);
+		}
 
-	if(getCell(49) !== " "){
-		$master2_annee = (int)getCell(49);
-	}
+		if(getCell(49) !== " "){
+			$master2_annee = (int)getCell(49);
+		}
 
-	if(getCell(50) !== " "){
-		$master2_nom_prenom_co_encadrants = getCell(50);
-	}
+		if(getCell(50) !== " "){
+			$master2_nom_prenom_co_encadrants = getCell(50);
+		}
 
-	if(getCell(51) !== " "){
-		$master2_sujet = getCell(51);
-	}
+		if(getCell(51) !== " "){
+			$master2_sujet = getCell(51);
+		}
 
-	$year = date('Y');
-	return <<<HTML
+		$year = date('Y');
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement Master 2 (à partir de 2022)</h5>
 		<label for="master2_nom">Nom</label>
@@ -799,89 +896,96 @@ function block8(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_9','block9');
 function block9(): string{
 
-	if(isset($_POST["submit9"])){
-		$data = [
-			$_POST["encadrement_istep_nom"],
-			$_POST["encadrement_istep_prenom"],
-			$_POST["sexe"],
-			date("m/Y", strtotime($_POST["encadrement_istep_date_inscription_these"])),
-			date("m/Y", strtotime($_POST["encadrement_istep_date_soutenance"])),
-			$_POST["encadrement_istep_nom_prenom_co-directerurs"],
-			$_POST["encadrement_istep_titre_these"],
-			$_POST["encadrement_istep_etablissement"],
-			$_POST["encadrement_istep_numero_ed"],
-			$_POST["encadrement_istep_financement_doctorat"],
-			$_POST["encadrement_istep_fonction"]
-		];
-		replace_or_pushes_values(53, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit9"])){
+			$data = [
+				$_POST["encadrement_istep_nom"],
+				$_POST["encadrement_istep_prenom"],
+				$_POST["sexe"],
+				date("m/Y", strtotime($_POST["encadrement_istep_date_inscription_these"])),
+				date("m/Y", strtotime($_POST["encadrement_istep_date_soutenance"])),
+				$_POST["encadrement_istep_nom_prenom_co-directerurs"],
+				$_POST["encadrement_istep_titre_these"],
+				$_POST["encadrement_istep_etablissement"],
+				$_POST["encadrement_istep_numero_ed"],
+				$_POST["encadrement_istep_financement_doctorat"],
+				$_POST["encadrement_istep_fonction"]
+			];
+			replace_or_pushes_values(53, $data);
+		}
 
-	$encadrement_istep_nom = null;
-	$encadrement_istep_prenom = null;
-	$homme = null;
-	$femme = null;
-	$encadrement_istep_date_inscription_these = null;
-	$encadrement_istep_date_soutenance = null;
-	$encadrement_istep_nom_prenom_co = null;
-	$encadrement_istep_titre_these = null;
-	$encadrement_istep_etablissement = null;
-	$encadrement_istep_numero_ed = null;
-	$encadrement_istep_financement_doctorat = null;
-	$encadrement_istep_fonction = null;
+		$encadrement_istep_nom = null;
+		$encadrement_istep_prenom = null;
+		$homme = null;
+		$femme = null;
+		$encadrement_istep_date_inscription_these = null;
+		$encadrement_istep_date_soutenance = null;
+		$encadrement_istep_nom_prenom_co = null;
+		$encadrement_istep_titre_these = null;
+		$encadrement_istep_etablissement = null;
+		$encadrement_istep_numero_ed = null;
+		$encadrement_istep_financement_doctorat = null;
+		$encadrement_istep_fonction = null;
 
 
-	if(getCell(53) !== " "){
-		$encadrement_istep_nom = getCell(53);
-	}
+		if(getCell(53) !== " "){
+			$encadrement_istep_nom = getCell(53);
+		}
 
-	if(getCell(54) !== " "){
-		$encadrement_istep_prenom = getCell(54);
-	}
+		if(getCell(54) !== " "){
+			$encadrement_istep_prenom = getCell(54);
+		}
 
-	if(getCell(55) === "Homme"){
-		$homme = "selected";
-	}
-	if(getCell(55) === "Femme"){
-		$femme = "selected";
-	}
+		if(getCell(55) === "Homme"){
+			$homme = "selected";
+		}
+		if(getCell(55) === "Femme"){
+			$femme = "selected";
+		}
 
-	if(getCell(56) !== " "){
-		$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(56))));
-	}
+		if(getCell(56) !== " "){
+			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(56))));
+		}
 
-	if(getCell(57) !== " "){
-		$encadrement_istep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(57))));
-	}
+		if(getCell(57) !== " "){
+			$encadrement_istep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(57))));
+		}
 
-	if(getCell(58) !== " "){
-		$encadrement_istep_nom_prenom_co = getCell(58);
-	}
+		if(getCell(58) !== " "){
+			$encadrement_istep_nom_prenom_co = getCell(58);
+		}
 
-	if(getCell(59) !== " "){
-		$encadrement_istep_titre_these = getCell(59);
-	}
+		if(getCell(59) !== " "){
+			$encadrement_istep_titre_these = getCell(59);
+		}
 
-	if(getCell(60) !== " "){
-		$encadrement_istep_etablissement = getCell(60);
-	}
-	if(getCell(61) !== " "){
-		$encadrement_istep_numero_ed = getCell(61);
-	}
+		if(getCell(60) !== " "){
+			$encadrement_istep_etablissement = getCell(60);
+		}
+		if(getCell(61) !== " "){
+			$encadrement_istep_numero_ed = getCell(61);
+		}
 
-	if(getCell(62) !== " "){
-		$encadrement_istep_financement_doctorat = getCell(62);
-	}
+		if(getCell(62) !== " "){
+			$encadrement_istep_financement_doctorat = getCell(62);
+		}
 
-	if(getCell(63) !== " "){
-		$encadrement_istep_fonction = getCell(63);
-	}
+		if(getCell(63) !== " "){
+			$encadrement_istep_fonction = getCell(63);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse ISTeP à partir de 2022</h5>
 		<label for="encadrement_istep_nom">Nom</label>
@@ -914,95 +1018,102 @@ function block9(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_10','block10');
 function block10(): string{
 
-	if(isset($_POST["submit10"])){
-		$data = [
-			$_POST["encadrement_histep_nom"],
-			$_POST["encadrement_histep_prenom"],
-			$_POST["sexe"],
-			date("m/Y", strtotime($_POST["encadrement_histep_date_inscription_these"])),
-			date("m/Y", strtotime($_POST["encadrement_histep_date_soutenance"])),
-			$_POST["encadrement_histep_direction_these"],
-			$_POST["encadrement_histep_titre_these"],
-			$_POST["encadrement_histep_etablissement"],
-			$_POST["encadrement_histep_numero_ed"],
-			$_POST["encadrement_histep_etablissement_rattachement_direction_these"],
-			$_POST["encadrement_histep_financement_doctorat"],
-			$_POST["encadrement_histep_fonction"]
-		];
-		replace_or_pushes_values(65, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit10"])){
+			$data = [
+				$_POST["encadrement_histep_nom"],
+				$_POST["encadrement_histep_prenom"],
+				$_POST["sexe"],
+				date("m/Y", strtotime($_POST["encadrement_histep_date_inscription_these"])),
+				date("m/Y", strtotime($_POST["encadrement_histep_date_soutenance"])),
+				$_POST["encadrement_histep_direction_these"],
+				$_POST["encadrement_histep_titre_these"],
+				$_POST["encadrement_histep_etablissement"],
+				$_POST["encadrement_histep_numero_ed"],
+				$_POST["encadrement_histep_etablissement_rattachement_direction_these"],
+				$_POST["encadrement_histep_financement_doctorat"],
+				$_POST["encadrement_histep_fonction"]
+			];
+			replace_or_pushes_values(65, $data);
+		}
 
-	$encadrement_histep_nom = null;
-	$encadrement_histep_prenom = null;
-	$homme = null;
-	$femme = null;
-	$encadrement_histep_date_inscription_these = null;
-	$encadrement_histep_date_soutenance = null;
-	$encadrement_histep_direction_these = null;
-	$encadrement_histep_titre_these = null;
-	$encadrement_histep_etablissement = null;
-	$encadrement_histep_numero_ed = null;
-	$encadrement_histep_etablissement_rattachement_direction_these = null;
-	$encadrement_histep_financement_doctorat = null;
-	$encadrement_histep_fonction = null;
+		$encadrement_histep_nom = null;
+		$encadrement_histep_prenom = null;
+		$homme = null;
+		$femme = null;
+		$encadrement_histep_date_inscription_these = null;
+		$encadrement_histep_date_soutenance = null;
+		$encadrement_histep_direction_these = null;
+		$encadrement_histep_titre_these = null;
+		$encadrement_histep_etablissement = null;
+		$encadrement_histep_numero_ed = null;
+		$encadrement_histep_etablissement_rattachement_direction_these = null;
+		$encadrement_histep_financement_doctorat = null;
+		$encadrement_histep_fonction = null;
 
 
-	if(getCell(65) !== " "){
-		$encadrement_histep_nom = getCell(65);
-	}
+		if(getCell(65) !== " "){
+			$encadrement_histep_nom = getCell(65);
+		}
 
-	if(getCell(66) !== " "){
-		$encadrement_histep_prenom = getCell(66);
-	}
+		if(getCell(66) !== " "){
+			$encadrement_histep_prenom = getCell(66);
+		}
 
-	if(getCell(67) === "Homme"){
-		$homme = "selected";
-	}
-	if(getCell(67) === "Femme"){
-		$femme = "selected";
-	}
+		if(getCell(67) === "Homme"){
+			$homme = "selected";
+		}
+		if(getCell(67) === "Femme"){
+			$femme = "selected";
+		}
 
-	if(getCell(68) !== " "){
-		$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(68))));
-	}
+		if(getCell(68) !== " "){
+			$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(68))));
+		}
 
-	if(getCell(69) !== " "){
-		$encadrement_histep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(69))));
-	}
+		if(getCell(69) !== " "){
+			$encadrement_histep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(69))));
+		}
 
-	if(getCell(70) !== " "){
-		$encadrement_histep_direction_these = getCell(70);
-	}
+		if(getCell(70) !== " "){
+			$encadrement_histep_direction_these = getCell(70);
+		}
 
-	if(getCell(71) !== " "){
-		$encadrement_histep_titre_these = getCell(71);
-	}
+		if(getCell(71) !== " "){
+			$encadrement_histep_titre_these = getCell(71);
+		}
 
-	if(getCell(72) !== " "){
-		$encadrement_histep_etablissement = getCell(72);
-	}
-	if(getCell(73) !== " "){
-		$encadrement_histep_numero_ed = getCell(73);
-	}
+		if(getCell(72) !== " "){
+			$encadrement_histep_etablissement = getCell(72);
+		}
+		if(getCell(73) !== " "){
+			$encadrement_histep_numero_ed = getCell(73);
+		}
 
-	if(getCell(74) !== " "){
-		$encadrement_histep_etablissement_rattachement_direction_these = getCell(74);
-	}
+		if(getCell(74) !== " "){
+			$encadrement_histep_etablissement_rattachement_direction_these = getCell(74);
+		}
 
-	if(getCell(75) !== " "){
-		$encadrement_histep_financement_doctorat = getCell(75);
-	}
+		if(getCell(75) !== " "){
+			$encadrement_histep_financement_doctorat = getCell(75);
+		}
 
-	if(getCell(76) !== " "){
-		$encadrement_histep_fonction = getCell(76);
-	}
+		if(getCell(76) !== " "){
+			$encadrement_histep_fonction = getCell(76);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse hors ISTeP à partir de 2022</h5>
 		<label for="encadrement_histep_nom">Nom</label>
@@ -1037,67 +1148,74 @@ function block10(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_11','block11');
 function block11(): string{
-	if(isset($_POST["submit11"])){
-		$data = [
-			$_POST["encadrement_pd_nom"],
-			$_POST["encadrement_pd_prenom"],
-			$_POST["sexe"],
-			date("m/Y", strtotime($_POST["encadrement_pd_date_entree"])),
-			date("m/Y", strtotime($_POST["encadrement_pd_date_sortie"])),
-			$_POST["encadrement_pd_annee_naissance"],
-			$_POST["encadrement_pd_employeur"]
-		];
-		replace_or_pushes_values(78, $data);
-	}
+	if(isRegistered()){
+		if(isset($_POST["submit11"])){
+			$data = [
+				$_POST["encadrement_pd_nom"],
+				$_POST["encadrement_pd_prenom"],
+				$_POST["sexe"],
+				date("m/Y", strtotime($_POST["encadrement_pd_date_entree"])),
+				date("m/Y", strtotime($_POST["encadrement_pd_date_sortie"])),
+				$_POST["encadrement_pd_annee_naissance"],
+				$_POST["encadrement_pd_employeur"]
+			];
+			replace_or_pushes_values(78, $data);
+		}
 
-	$encadrement_pd_nom = null;
-	$encadrement_pd_prenom = null;
-	$homme = null;
-	$femme = null;
-	$encadrement_pd_date_entree = null;
-	$encadrement_pd_date_sortie = null;
-	$encadrement_pd_annee_naissance = null;
-	$encadrement_pd_employeur = null;
+		$encadrement_pd_nom = null;
+		$encadrement_pd_prenom = null;
+		$homme = null;
+		$femme = null;
+		$encadrement_pd_date_entree = null;
+		$encadrement_pd_date_sortie = null;
+		$encadrement_pd_annee_naissance = null;
+		$encadrement_pd_employeur = null;
 
 
-	if(getCell(78) !== " "){
-		$encadrement_pd_nom = getCell(78);
-	}
+		if(getCell(78) !== " "){
+			$encadrement_pd_nom = getCell(78);
+		}
 
-	if(getCell(79) !== " "){
-		$encadrement_pd_prenom = getCell(79);
-	}
+		if(getCell(79) !== " "){
+			$encadrement_pd_prenom = getCell(79);
+		}
 
-	if(getCell(80) === "Homme"){
-		$homme = "selected";
-	}
-	if(getCell(80) === "Femme"){
-		$femme = "selected";
-	}
+		if(getCell(80) === "Homme"){
+			$homme = "selected";
+		}
+		if(getCell(80) === "Femme"){
+			$femme = "selected";
+		}
 
-	if(getCell(81) !== " "){
-		$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(81))));
-	}
+		if(getCell(81) !== " "){
+			$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(81))));
+		}
 
-	if(getCell(82) !== " "){
-		$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(82))));
-	}
+		if(getCell(82) !== " "){
+			$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(82))));
+		}
 
-	if(getCell(83) !== " "){
-		$encadrement_pd_annee_naissance = getCell(83);
-	}
+		if(getCell(83) !== " "){
+			$encadrement_pd_annee_naissance = getCell(83);
+		}
 
-	if(getCell(84) !== " "){
-		$encadrement_pd_employeur = getCell(84);
-	}
+		if(getCell(84) !== " "){
+			$encadrement_pd_employeur = getCell(84);
+		}
 
-	$year = date('Y');
+		$year = date('Y');
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement de post-doctorats à partir de 2022</h5>
 		<label for="encadrement_pd_nom">Nom</label>
@@ -1122,30 +1240,37 @@ function block11(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_12','block12');
 function block12(): string{
-	if(isset($_POST["submit12"])){
-		$data = [
-			$_POST["distinction_intitule"],
-			$_POST["distinction_annee"]
-		];
-		replace_or_pushes_values(86, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit12"])){
+			$data = [
+				$_POST["distinction_intitule"],
+				$_POST["distinction_annee"]
+			];
+			replace_or_pushes_values(86, $data);
+		}
 
-	$distinction_intitule = null;
-	$distinction_annee = null;
+		$distinction_intitule = null;
+		$distinction_annee = null;
 
-	if(getCell(86) !== " "){
-		$distinction_intitule = getCell(86);
-	}
+		if(getCell(86) !== " "){
+			$distinction_intitule = getCell(86);
+		}
 
-	if(getCell(87) !== " "){
-		$distinction_annee = getCell(87);
-	}
+		if(getCell(87) !== " "){
+			$distinction_annee = getCell(87);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Prix ou distinctions scientifiques</h5>
 		<label for="distinction_intitule">Intitulé de l'élément de distinction (nom du prix par exemple)</label>
@@ -1154,32 +1279,38 @@ function block12(): string{
 			<input type="text" name="distinction_annee" value="{$distinction_annee}" required>
 		<button type="submit" name="submit12">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_13','block13');
 function block13(): string{
-	if(isset($_POST["submit13"])){
-		$data = [
-			$_POST["iuf_intitule"],
-			$_POST["iuf_annee"]
-		];
-		replace_or_pushes_values(89, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit13"])){
+			$data = [
+				$_POST["iuf_intitule"],
+				$_POST["iuf_annee"]
+			];
+			replace_or_pushes_values(89, $data);
+		}
 
-	$iuf_intitule = null;
-	$iuf_annee = null;
+		$iuf_intitule = null;
+		$iuf_annee = null;
 
-	if(getCell(89) !== " "){
-		$iuf_intitule = getCell(89);
-	}
+		if(getCell(89) !== " "){
+			$iuf_intitule = getCell(89);
+		}
 
-	if(getCell(90) !== " "){
-		$iuf_annee = getCell(90);
-	}
+		if(getCell(90) !== " "){
+			$iuf_annee = getCell(90);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Appartenance à l'IUF</h5>
 		<label for="iuf_intitule">Intitulé de l'élément (membre, fonction …)</label>
@@ -1188,32 +1319,38 @@ function block13(): string{
 			<input type="text" name="iuf_annee" value="{$iuf_annee}" required>
 		<button type="submit" name="submit13">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_14','block14');
 function block14(): string{
-	if(isset($_POST["submit14"])){
-		$data = [
-			$_POST["sejour_lieu"],
-			$_POST["sejour_annee"]
-		];
-		replace_or_pushes_values(92, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit14"])){
+			$data = [
+				$_POST["sejour_lieu"],
+				$_POST["sejour_annee"]
+			];
+			replace_or_pushes_values(92, $data);
+		}
 
-	$sejour_lieu = null;
-	$sejour_annee = null;
+		$sejour_lieu = null;
+		$sejour_annee = null;
 
-	if(getCell(92) !== " "){
-		$sejour_lieu = getCell(92);
-	}
+		if(getCell(92) !== " "){
+			$sejour_lieu = getCell(92);
+		}
 
-	if(getCell(93) !== " "){
-		$sejour_annee = getCell(93);
-	}
+		if(getCell(93) !== " "){
+			$sejour_annee = getCell(93);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Séjours dans des laboratoires étrangers</h5>
 		<label for="sejour_lieu">Lieu, fonction</label>
@@ -1224,30 +1361,37 @@ function block14(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_15','block15');
 function block15(): string{
-	if(isset($_POST["submit15"])){
-		$data = [
-			$_POST["organisation_nom"],
-			$_POST["organisation_annee"]
-		];
-		replace_or_pushes_values(95, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit15"])){
+			$data = [
+				$_POST["organisation_nom"],
+				$_POST["organisation_annee"]
+			];
+			replace_or_pushes_values(95, $data);
+		}
 
-	$organisation_nom = null;
-	$organisation_annee = null;
+		$organisation_nom = null;
+		$organisation_annee = null;
 
-	if(getCell(95) !== " "){
-		$organisation_nom = getCell(95);
-	}
+		if(getCell(95) !== " "){
+			$organisation_nom = getCell(95);
+		}
 
-	if(getCell(96) !== " "){
-		$organisation_annee = getCell(96);
-	}
+		if(getCell(96) !== " "){
+			$organisation_annee = getCell(96);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Organisations de colloques/congrès internationaux</h5>
 		<label for="organisation_nom">Nom de l'évènement, fonction</label>
@@ -1258,30 +1402,37 @@ function block15(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_16','block16');
 function block16(): string{
-	if(isset($_POST["submit16"])){
-		$data = [
-			$_POST["societe_savantes_nom"],
-			$_POST["societe_savantes_annee"]
-		];
-		replace_or_pushes_values(98, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit16"])){
+			$data = [
+				$_POST["societe_savantes_nom"],
+				$_POST["societe_savantes_annee"]
+			];
+			replace_or_pushes_values(98, $data);
+		}
 
-	$societe_savantes_nom = null;
-	$societe_savantes_annee = null;
+		$societe_savantes_nom = null;
+		$societe_savantes_annee = null;
 
-	if(getCell(98) !== " "){
-		$societe_savantes_nom = getCell(98);
-	}
+		if(getCell(98) !== " "){
+			$societe_savantes_nom = getCell(98);
+		}
 
-	if(getCell(99) !== " "){
-		$societe_savantes_annee = getCell(99);
-	}
+		if(getCell(99) !== " "){
+			$societe_savantes_annee = getCell(99);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Responsabilités dans des sociétés savantes</h5>
 		<label for="societe_savantes_nom">Nom de la société, fonction</label>
@@ -1290,68 +1441,74 @@ function block16(): string{
 			<input type="text" name="societe_savantes_annee" value="{$societe_savantes_annee}" required>
 		<button type="submit" name="submit16">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_17','block17');
 function block17(): string{
-	if(isset($_POST["submit17"])){
-		$data = [
-			$_POST["responsabilite1_region_montant"],
-			$_POST["responsabilite1_region_nom"],
-			$_POST["responsabilite1_national_montant"],
-			$_POST["responsabilite1_national_nom"],
-			$_POST["responsabilite1_international_montant"],
-			$_POST["responsabilite1_international_nom"],
-			$_POST["responsabilite1_partenariat_montant"],
-			$_POST["responsabilite1_partenariat_nom"]
-		];
-		replace_or_pushes_values(101, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit17"])){
+			$data = [
+				$_POST["responsabilite1_region_montant"],
+				$_POST["responsabilite1_region_nom"],
+				$_POST["responsabilite1_national_montant"],
+				$_POST["responsabilite1_national_nom"],
+				$_POST["responsabilite1_international_montant"],
+				$_POST["responsabilite1_international_nom"],
+				$_POST["responsabilite1_partenariat_montant"],
+				$_POST["responsabilite1_partenariat_nom"]
+			];
+			replace_or_pushes_values(101, $data);
+		}
 
-	$responsabilite1_region_montant = null;
-	$responsabilite1_region_nom = null;
-	$responsabilite1_national_montant = null;
-	$responsabilite1_national_nom = null;
-	$responsabilite1_international_montant = null;
-	$responsabilite1_international_nom = null;
-	$responsabilite1_partenariat_montant = null;
-	$responsabilite1_partenariat_nom = null;
+		$responsabilite1_region_montant = null;
+		$responsabilite1_region_nom = null;
+		$responsabilite1_national_montant = null;
+		$responsabilite1_national_nom = null;
+		$responsabilite1_international_montant = null;
+		$responsabilite1_international_nom = null;
+		$responsabilite1_partenariat_montant = null;
+		$responsabilite1_partenariat_nom = null;
 
-	if(getCell(101) !== " "){
-		$responsabilite1_region_montant = getCell(101);
-	}
+		if(getCell(101) !== " "){
+			$responsabilite1_region_montant = getCell(101);
+		}
 
-	if(getCell(102) !== " "){
-		$responsabilite1_region_nom = getCell(102);
-	}
+		if(getCell(102) !== " "){
+			$responsabilite1_region_nom = getCell(102);
+		}
 
-	if(getCell(103) !== " "){
-		$responsabilite1_national_montant = getCell(103);
-	}
+		if(getCell(103) !== " "){
+			$responsabilite1_national_montant = getCell(103);
+		}
 
-	if(getCell(104) !== " "){
-		$responsabilite1_national_nom = getCell(104);
-	}
+		if(getCell(104) !== " "){
+			$responsabilite1_national_nom = getCell(104);
+		}
 
-	if(getCell(105) !== " "){
-		$responsabilite1_international_montant = getCell(105);
-	}
+		if(getCell(105) !== " "){
+			$responsabilite1_international_montant = getCell(105);
+		}
 
-	if(getCell(106) !== " "){
-		$responsabilite1_international_nom = getCell(106);
-	}
+		if(getCell(106) !== " "){
+			$responsabilite1_international_nom = getCell(106);
+		}
 
-	if(getCell(107) !== " "){
-		$responsabilite1_partenariat_montant = getCell(107);
-	}
+		if(getCell(107) !== " "){
+			$responsabilite1_partenariat_montant = getCell(107);
+		}
 
-	if(getCell(108) !== " "){
-		$responsabilite1_partenariat_nom = getCell(108);
-	}
+		if(getCell(108) !== " "){
+			$responsabilite1_partenariat_nom = getCell(108);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h4>Responsabilité de projets de recherche (ou tasks indépendantes)</h4>
 		
@@ -1380,56 +1537,62 @@ function block17(): string{
 			<input type="text" name="responsabilite1_partenariat_nom" value="{$responsabilite1_partenariat_nom}" required>
 		<button type="submit" name="submit17">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_18','block18');
 function block18(): string{
-	if(isset($_POST["submit18"])){
-		$data = [
-			$_POST["responsabilite2_locale_intitule"],
-			$_POST["responsabilite2_locale_annee"],
-			$_POST["responsabilite2_regional_intitule"],
-			$_POST["responsabilite2_regional_annee"],
-			$_POST["responsabilite2_international_intitule"],
-			$_POST["responsabilite2_international_annee"],
-		];
-		replace_or_pushes_values(110, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit18"])){
+			$data = [
+				$_POST["responsabilite2_locale_intitule"],
+				$_POST["responsabilite2_locale_annee"],
+				$_POST["responsabilite2_regional_intitule"],
+				$_POST["responsabilite2_regional_annee"],
+				$_POST["responsabilite2_international_intitule"],
+				$_POST["responsabilite2_international_annee"],
+			];
+			replace_or_pushes_values(110, $data);
+		}
 
-	$responsabilite2_locale_intitule = null;
-	$responsabilite2_locale_annee = null;
-	$responsabilite2_regional_intitule = null;
-	$responsabilite2_regional_annee = null;
-	$responsabilite2_international_intitule = null;
-	$responsabilite2_international_annee = null;
+		$responsabilite2_locale_intitule = null;
+		$responsabilite2_locale_annee = null;
+		$responsabilite2_regional_intitule = null;
+		$responsabilite2_regional_annee = null;
+		$responsabilite2_international_intitule = null;
+		$responsabilite2_international_annee = null;
 
-	if(getCell(110) !== " "){
-		$responsabilite2_locale_intitule = getCell(110);
-	}
+		if(getCell(110) !== " "){
+			$responsabilite2_locale_intitule = getCell(110);
+		}
 
-	if(getCell(111) !== " "){
-		$responsabilite2_locale_annee = getCell(111);
-	}
+		if(getCell(111) !== " "){
+			$responsabilite2_locale_annee = getCell(111);
+		}
 
-	if(getCell(112) !== " "){
-		$responsabilite2_regional_intitule = getCell(112);
-	}
+		if(getCell(112) !== " "){
+			$responsabilite2_regional_intitule = getCell(112);
+		}
 
-	if(getCell(113) !== " "){
-		$responsabilite2_regional_annee = getCell(113);
-	}
+		if(getCell(113) !== " "){
+			$responsabilite2_regional_annee = getCell(113);
+		}
 
-	if(getCell(114) !== " "){
-		$responsabilite2_international_intitule = getCell(114);
-	}
+		if(getCell(114) !== " "){
+			$responsabilite2_international_intitule = getCell(114);
+		}
 
-	if(getCell(115) !== " "){
-		$responsabilite2_international_annee = getCell(115);
-	}
+		if(getCell(115) !== " "){
+			$responsabilite2_international_annee = getCell(115);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h4>Responsabilités, Expertises & administration de la recherche</h4>
 		
@@ -1452,32 +1615,38 @@ function block18(): string{
 			<input type="text" name="responsabilite2_international_annee" value="{$responsabilite2_international_annee}" required>
 		<button type="submit" name="submit18">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_19','block19');
 function block19(): string{
-	if(isset($_POST["submit19"])){
-		$data = [
-			$_POST["responsabilite3_intitule"],
-			$_POST["responsabilite3_annee"]
-		];
-		replace_or_pushes_values(117, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit19"])){
+			$data = [
+				$_POST["responsabilite3_intitule"],
+				$_POST["responsabilite3_annee"]
+			];
+			replace_or_pushes_values(117, $data);
+		}
 
-	$responsabilite3_intitule = null;
-	$responsabilite3_annee = null;
+		$responsabilite3_intitule = null;
+		$responsabilite3_annee = null;
 
-	if(getCell(117) !== " "){
-		$responsabilite3_intitule = getCell(117);
-	}
+		if(getCell(117) !== " "){
+			$responsabilite3_intitule = getCell(117);
+		}
 
-	if(getCell(118) !== " "){
-		$responsabilite3_annee = getCell(118);
-	}
+		if(getCell(118) !== " "){
+			$responsabilite3_annee = getCell(118);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Responsabilités & administration de la formation/enseignement</h5>
 		<label for="responsabilite3_intitule">Intitulé de l'élément et votre fonction</label>
@@ -1486,32 +1655,38 @@ function block19(): string{
 			<input type="text" name="responsabilite3_annee" value="{$responsabilite3_annee}" required>
 		<button type="submit" name="submit19">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_20','block20');
 function block20(): string{
-	if(isset($_POST["submit20"])){
-		$data = [
-			$_POST["vulgarisation_intitule"],
-			$_POST["vulgarisation_annee"]
-		];
-		replace_or_pushes_values(120, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit20"])){
+			$data = [
+				$_POST["vulgarisation_intitule"],
+				$_POST["vulgarisation_annee"]
+			];
+			replace_or_pushes_values(120, $data);
+		}
 
-	$vulgarisation_intitule = null;
-	$vulgarisation_annee = null;
+		$vulgarisation_intitule = null;
+		$vulgarisation_annee = null;
 
-	if(getCell(120) !== " "){
-		$vulgarisation_intitule = getCell(120);
-	}
+		if(getCell(120) !== " "){
+			$vulgarisation_intitule = getCell(120);
+		}
 
-	if(getCell(121) !== " "){
-		$vulgarisation_annee = getCell(121);
-	}
+		if(getCell(121) !== " "){
+			$vulgarisation_annee = getCell(121);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Vulgarisation, dissémination scientifique</h5>
 		<label for="vulgarisation_intitule">Intitulé de l'élément (évènement, vidéo, livre, …) et fonction</label>
@@ -1520,56 +1695,69 @@ function block20(): string{
 			<input type="text" name="vulgarisation_annee" value="{$vulgarisation_annee}" required>
 		<button type="submit" name="submit20">Envoyer</button>
 	</form>
-
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_21','block21');
 function block21(): string{
-	if(isset($_POST["submit21"])){
-		$data = [
-			$_POST["rayonnement"]
-		];
-		replace_or_pushes_values(123, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit21"])){
+			$data = [
+				$_POST["rayonnement"]
+			];
+			replace_or_pushes_values(123, $data);
+		}
 
-	$rayonnement = null;
+		$rayonnement = null;
 
-	if(getCell(123) !== " "){
-		$rayonnement = getCell(123);
-	}
+		if(getCell(123) !== " "){
+			$rayonnement = getCell(123);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Rayonnement / résultats majeurs sur la période à mettre en avant</h5>
 			<input type="text" name="rayonnement" value="{$rayonnement}" required>
 		<button type="submit" name="submit21">Envoyer</button>
 	</form>
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
 
 add_shortcode('add_istep_annual_table_form_block_22','block22');
 function block22(): string{
-	if(isset($_POST["submit22"])){
-		$data = [
-			$_POST["brevet_intitule"],
-			$_POST["brevet_annee"]
-		];
-		replace_or_pushes_values(125, $data);
-	}
+	if (isRegistered()){
+		if(isset($_POST["submit22"])){
+			$data = [
+				$_POST["brevet_intitule"],
+				$_POST["brevet_annee"]
+			];
+			replace_or_pushes_values(125, $data);
+		}
 
-	$brevet_intitule = null;
-	$brevet_annee = null;
+		$brevet_intitule = null;
+		$brevet_annee = null;
 
-	if(getCell(125) !== " "){
-		$brevet_intitule = getCell(125);
-	}
+		if(getCell(125) !== " "){
+			$brevet_intitule = getCell(125);
+		}
 
-	if(getCell(126) !== " "){
-		$brevet_annee = getCell(126);
-	}
+		if(getCell(126) !== " "){
+			$brevet_annee = getCell(126);
+		}
 
-	return <<<HTML
+		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Brevet</h5>
 		<label for="brevet_intitule">Intitulé de l'élément et votre fonction</label>
@@ -1580,4 +1768,10 @@ function block22(): string{
 	</form>
 
 HTML;
+	} else{
+		return <<<HTML
+			<p class="acces_denied">Accès non autorisé</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+	}
 }
