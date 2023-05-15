@@ -303,6 +303,54 @@ function getCell(int $column): string {
 	return "";
 }
 
+function getHeaders(): array {
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$headers = [];
+
+	// Skip the first row
+	fgetcsv($file);
+
+	// Read the second row and extract non-empty cells
+	$row = fgetcsv($file);
+	foreach ($row as $cell) {
+		if ($cell !== " " && $cell !== "|") {
+			$headers[] = $cell;
+		}
+	}
+
+	fclose($file);
+
+	return $headers;
+}
+
+function hasAnswered(): array {
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$answered = [];
+
+	// Skip the specified number of rows
+	for ($i = 1; $i < user_id_in_csv_file(); $i++) {
+		fgetcsv($file);
+	}
+
+	$numbers = [0, 16, 19, 21, 29, 36, 41, 47, 53, 65, 78, 86, 89, 92, 95, 98, 101, 110, 117, 120, 123, 125];
+
+	// Read the first row and check for elements after each given number
+	$row = fgetcsv($file);
+	if ($row !== false) {
+		foreach ($numbers as $number) {
+			if (isset($row[$number + 1]) && $row[$number + 1] !== " ") {
+				$answered[] = true;
+			} else {
+				$answered[] = false;
+			}
+		}
+	}
+
+	fclose($file);
+
+	return $answered;
+}
+
 function transformString($str): string {
 	return trim(strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', iconv('UTF-8', 'ASCII//TRANSLIT', $str))), '-');
 }
@@ -317,16 +365,36 @@ function summary(): string{
 			<div class="bouttons">
 HTML;
 
-	for ($i = 0; $i < count($lst); $i++) {
+	$count = count($lst);
+	if(!isRegistered()){
+		$count = 1;
+	}
+
+	$colored = hasAnswered();
+
+	for ($i = 0; $i < $count; $i++) {
 		$page = transformString("(DT) Formulaire " . $lst[$i]);
+		if($colored[$i]){
+			$class = 'class = "dt__green"';
+		}else{
+			$class = "";
+		}
 		$html .= <<<HTML
-				<button type="button"  onclick="window.location.href = '{$page}'">{$lst[$i]}</button>
+				<button type="button" {$class} onclick="window.location.href = '{$page}'">{$lst[$i]}</button>
+HTML;
+	}
+	$html .= "</div>";
+	$html .= <<<HTML
+				<p>Votre progression</p>
+				<div id="progress-container">
+					<div id="progress-bar"></div>
+				</div>
+				<p id="pourcent">0%</p>
 HTML;
 
-	}
 	$html .= <<<HTML
-			</div>
 		</div>
+		<div class="nb__buttons">{$count}</div>
 HTML;
 	return $html;
 }
