@@ -171,7 +171,7 @@ function create_custom_pages($title, $content): void {
 
 function download_annual_table(): string {
 	return <<<HTML
-	<button><a href="/wp-admin/tableau-annuel/data-table.csv" download> Accéder au fichier </a></button>
+	<button><a class="dt-download" href="/wp-admin/tableau-annuel/data-table.csv" download> Accéder au fichier </a></button>
 HTML;
 }
 
@@ -351,6 +351,94 @@ function hasAnswered(): array {
 	return $answered;
 }
 
+function getUsersFromCSV(): array {
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+
+	$users = [];
+
+	// Skip the header row if needed
+	fgetcsv($file);
+	fgetcsv($file);
+	fgetcsv($file);
+
+	while (($row = fgetcsv($file)) !== false) {
+		// Assuming the user's first name is in column 2 (index 1)
+		$firstName = $row[1];
+
+		// Assuming the user's last name is in column 3 (index 2)
+		$lastName = $row[0];
+
+		// Add the user to the array
+		$users[] = $firstName . ' ' . $lastName;
+	}
+
+	fclose($file);
+
+	return $users;
+}
+
+function getUsersFromWordPress($roles): array {
+	$args = array(
+		'role__in' => $roles,
+	);
+	$users = get_users($args);
+	var_dump($users);
+	$userList = [];
+
+	foreach ($users as $user) {
+		$firstName = ucfirst(get_user_meta($user->ID, 'first_name', true));
+		$lastName = ucfirst(get_user_meta($user->ID, 'last_name', true));
+
+		if ($firstName && $lastName) {
+			$userList[] = $firstName . ' ' . $lastName;
+		}
+	}
+
+	return $userList;
+}
+
+function getAbsentUsers(): array {
+	// Get all WordPress users
+	$wpUsers = getUsersFromWordPress(['subscriber']);
+
+	// Get the list of users from the CSV file (assuming you have a function to retrieve that)
+	$csvUsers = getUsersFromCSV();
+
+	// Return the absent users
+	return array_diff($wpUsers, $csvUsers);
+}
+
+add_shortcode('add_istep_annual_table_panel','panel');
+function panel(): string {
+
+	$nbUsers = round(count(getUsersFromCSV()) * 100 / count(get_users()));
+
+	$html = <<<HTML
+	<div class="col-div-4-1">
+		<div class="box-1">
+			<div class="content-box-1">
+				<p class="head-1">Nombre de personnes inscrites</p>
+				<div class="circle-wrap">
+				    <div class="circle">
+				        <div class="mask full">
+				            <div class="fill"></div>
+				        </div>
+				        <div class="mask half">
+				            <div class="fill"></div>
+				        </div>
+				        <div class="inside-circle"> {$nbUsers}% </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+<hr>
+HTML;
+
+
+	return $html;
+}
+
 function transformString($str): string {
 	return trim(strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', iconv('UTF-8', 'ASCII//TRANSLIT', $str))), '-');
 }
@@ -358,7 +446,6 @@ function transformString($str): string {
 add_shortcode('add_istep_annual_table_summary','summary');
 function summary(): string{
 	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"];
-
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
 			<p> Liste des formulaire de la table de données </p>
