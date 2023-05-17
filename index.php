@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Semi-annual to annual data table in csv for ISTeP
+Plugin Name: HCERES
 Plugin URI: https://axphyr.github.io/
 Description: Crée et gère un tableau de données pour l'ISTeP
 Author: Arbër Jonuzi
@@ -31,8 +31,6 @@ function annual_data_table_install(): void
 	$filename = 'data-table.csv';
 	$filepath = $dirName . '/' . $filename;
 
-	$res = "";
-
 	// Vérifie si le fichier existe déjà
 	if (file_exists($filepath)) {
 		// Supprime le fichier
@@ -45,7 +43,7 @@ function annual_data_table_install(): void
 
 	// Définit les données à inscrire dans le fichier CSV
 	$data = array(
-		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilité de projets de recherche (ou tasks indépendantes)', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilités, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
+		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilité de projets de recherche (ou tasks indépendantes)', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilités, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
 		// Catégories (un retour par catégories et espaces pour centrer)
 		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations générales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
 			'Discipline', ' ', '|',
@@ -61,6 +59,7 @@ function annual_data_table_install(): void
 			'Prix ou distinctions scientifiques	', ' ', '|',
 			"Appartenance à l'IUF", ' ', '|',
 			"Séjours dans des laboratoires étrangers", ' ', '|',
+			"Organisations de colloques/congrès internationaux", "", "|",
 			'Responsabilités dans des sociétés savantes', ' ', '|',
 			"Régional et local", ' ', '|',
 			'National', ' ', '|',
@@ -88,6 +87,7 @@ function annual_data_table_install(): void
 			'Nom', 'Prénom', 'Année', "Date d'entrée (MM/AAAA)", 'Date de sortie (MM/AAAA)', 'Année de naissance', 'Etablissement ou organisme employeur', '|',
 			"Intitulé de l'élément de distinction (nom du prix par exemple)",'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
 			"Intitulé de l'élément (membre, fonction …)", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
+			"Lieu, fonction", "Année ou période (début MM/AAAA - fin MM/AAAA)", "|",
 			"Nom de l'évènement, fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
 			'Nom de la société, fonction', 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
 			'montant (k€)', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)', '|',
@@ -166,7 +166,7 @@ function create_custom_pages($title, $content): void {
 	);
 
 	// Insert the page into the database
-	$page_id = wp_insert_post($page);
+	wp_insert_post($page);
 }
 
 function download_annual_table(): string {
@@ -207,22 +207,6 @@ function user_id_in_csv_file(): int
 	rewind($file);
 	fclose($file);
 	return 0;
-}
-
-function move_file_pointer_to_row($file, $rowNumber): void {
-	// Move the file pointer to the beginning of the file
-	rewind($file);
-
-	// Read each row until the desired row
-	for ($i = 1; $i < $rowNumber; $i++) {
-		fgetcsv($file);
-	}
-
-	// Get the position of the file pointer
-	$position = ftell($file);
-
-	// Move the file pointer to the beginning of the desired row
-	fseek($file, $position);
 }
 
 function deleteAndInsertRowInCSV($file, $rowNumber, $newRow): void {
@@ -303,26 +287,6 @@ function getCell(int $column): string {
 	return "";
 }
 
-function getHeaders(): array {
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
-	$headers = [];
-
-	// Skip the first row
-	fgetcsv($file);
-
-	// Read the second row and extract non-empty cells
-	$row = fgetcsv($file);
-	foreach ($row as $cell) {
-		if ($cell !== " " && $cell !== "|") {
-			$headers[] = $cell;
-		}
-	}
-
-	fclose($file);
-
-	return $headers;
-}
-
 function hasAnswered(): array {
 	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
 	$answered = [];
@@ -351,21 +315,110 @@ function hasAnswered(): array {
 	return $answered;
 }
 
-function getUsersFromCSV(): array {
+function checkArray($arr): bool {
+	foreach ($arr as $value) {
+		if ($value !== true) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function haveAnswered(): float {
 	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$res = 0;
+	$nbUsers = count(getUsersFromCSV());
 
-	$users = [];
+	$numbers = [0, 16, 19, 21, 29, 36, 41, 47, 53, 65, 78, 86, 89, 92, 95, 98, 101, 110, 117, 120, 123, 125];
 
-	// Skip the header row if needed
+	// Skip the header rows
 	fgetcsv($file);
 	fgetcsv($file);
 	fgetcsv($file);
 
 	while (($row = fgetcsv($file)) !== false) {
-		// Assuming the user's first name is in column 2 (index 1)
-		$firstName = $row[1];
+		$answered = [];
+		foreach ($numbers as $number) {
+			if (isset($row[$number + 1]) && $row[$number + 1] !== " ") {
+				$answered[] = true;
+			} else {
+				$answered[] = false;
+			}
+		}
+		if (checkArray($answered)){
+			$res++;
+		}
+	}
 
-		// Assuming the user's last name is in column 3 (index 2)
+	if($nbUsers === 0){
+		return 0;
+	}
+
+	return $res * 100 / $nbUsers;
+}
+
+function calculatePercentage($arr): float|int {
+	$totalElements = count($arr);
+	$trueCount = 0;
+
+	foreach ($arr as $value) {
+		if ($value === true) {
+			$trueCount++;
+		}
+	}
+
+	if ($totalElements > 0) {
+		return ($trueCount / $totalElements) * 100;
+	} else {
+		return 0;
+	}
+}
+
+
+function averageAnswer(): float{
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$res = 0;
+	$avg = 0;
+
+	$numbers = [0, 16, 19, 21, 29, 36, 41, 47, 53, 65, 78, 86, 89, 92, 95, 98, 101, 110, 117, 120, 123, 125];
+
+	// Skip the header rows
+	fgetcsv($file);
+	fgetcsv($file);
+	fgetcsv($file);
+
+	while (($row = fgetcsv($file)) !== false) {
+		$answered = [];
+		foreach ($numbers as $number) {
+			if (isset($row[$number + 1]) && $row[$number + 1] !== " ") {
+				$answered[] = true;
+			} else {
+				$answered[] = false;
+			}
+		}
+		$avg += calculatePercentage($answered);
+		$res++;
+	}
+
+	if ($res === 0){
+		return 0;
+	}
+
+	return $avg / $res;
+}
+
+function getUsersFromCSV(): array {
+	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+
+	$users = [];
+
+	// Skip the header rows
+	fgetcsv($file);
+	fgetcsv($file);
+	fgetcsv($file);
+
+	while (($row = fgetcsv($file)) !== false) {
+		$firstName = $row[1];
 		$lastName = $row[0];
 
 		// Add the user to the array
@@ -377,64 +430,118 @@ function getUsersFromCSV(): array {
 	return $users;
 }
 
-function getUsersFromWordPress($roles): array {
-	$args = array(
-		'role__in' => $roles,
-	);
-	$users = get_users($args);
-	var_dump($users);
-	$userList = [];
+function getUsersFromWordPress($roles = ''): array {
+	if ($roles === ''){
+		$users = get_users();
+	} else {
+		$args = array(
+			'role__in' => $roles,
+		);
+		$users = get_users($args);
+	}
 
-	foreach ($users as $user) {
-		$firstName = ucfirst(get_user_meta($user->ID, 'first_name', true));
-		$lastName = ucfirst(get_user_meta($user->ID, 'last_name', true));
+	return $users;
+}
 
-		if ($firstName && $lastName) {
-			$userList[] = $firstName . ' ' . $lastName;
+function getAbsentUsers($roles = ''): array {
+	$absent = [];
+
+	// Get all WordPress users
+	$wpUsers = getUsersFromWordPress($roles);
+
+	// Get the list of users from the CSV file
+	$csvUsers = getUsersFromCSV();
+
+	for ($i = 0; $i < count($wpUsers); $i++){
+		if(!in_array(ucfirst($wpUsers[$i]->first_name) . ucfirst($wpUsers[$i]->last_name), $csvUsers)){
+			$absent[] = $wpUsers[$i];
 		}
 	}
 
-	return $userList;
-}
-
-function getAbsentUsers(): array {
-	// Get all WordPress users
-	$wpUsers = getUsersFromWordPress(['subscriber']);
-
-	// Get the list of users from the CSV file (assuming you have a function to retrieve that)
-	$csvUsers = getUsersFromCSV();
-
 	// Return the absent users
-	return array_diff($wpUsers, $csvUsers);
+	return $absent;
 }
 
 add_shortcode('add_istep_annual_table_panel','panel');
 function panel(): string {
 
 	$nbUsers = round(count(getUsersFromCSV()) * 100 / count(get_users()));
+	$nbUsersDone = round(haveAnswered());
+	$avg = round(averageAnswer());
+	$absent = getAbsentUsers();
 
 	$html = <<<HTML
-	<div class="col-div-4-1">
-		<div class="box-1">
-			<div class="content-box-1">
-				<p class="head-1">Nombre de personnes inscrites</p>
-				<div class="circle-wrap">
-				    <div class="circle">
-				        <div class="mask full">
-				            <div class="fill"></div>
-				        </div>
-				        <div class="mask half">
-				            <div class="fill"></div>
-				        </div>
-				        <div class="inside-circle"> {$nbUsers}% </div>
-				    </div>
+	<div class="dt__panel">
+		<p>Panel HCERES</p>
+		<div class="col-div-4-1">
+			<div class="box-1">
+				<div class="content-box-1">
+					<h5 class="head-1">Pourcentage de personnes à avoir commencé le tableau</h5>
+					<div class="circle-wrap">
+					    <div class="circle">
+					        <div class="mask full">
+					            <div class="fill"></div>
+					        </div>
+					        <div class="mask half">
+					            <div class="fill"></div>
+					        </div>
+					        <div class="inside-circle"> $nbUsers% </div>
+					    </div>
+					</div>
+				</div>
+			</div>
+			<div class="box-1">
+				<div class="content-box-1">
+					<h5 class="head-1">Pourcentage de personnes à avoir complété le tableau</h5>
+					<div class="circle-wrap2">
+					    <div class="circle">
+					        <div class="mask full">
+					            <div class="fill"></div>
+					        </div>
+					        <div class="mask half">
+					            <div class="fill"></div>
+					        </div>
+					        <div class="inside-circle2"> $nbUsersDone% </div>
+					    </div>
+					</div>
+				</div>
+			</div>
+			<div class="box-1">
+				<div class="content-box-1">
+					<h5 class="head-1">Pourcentage de complétion moyen du tableau</h5>
+					<div class="circle-wrap3">
+					    <div class="circle">
+					        <div class="mask full">
+					            <div class="fill"></div>
+					        </div>
+					        <div class="mask half">
+					            <div class="fill"></div>
+					        </div>
+					        <div class="inside-circle3"> $avg% </div>
+					    </div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-<hr>
+		<p>Liste des personnes non inscrites</p>
+		<div class="dt__absent-users">
 HTML;
 
+	for ($i = 0; $i < count($absent); $i++) {
+		$user = $absent[$i];
+		$html .= <<<HTML
+			<div class="dt__absent-user">
+				<div class="dt__absent-user-name">$user->display_name</div>
+				<div class="dt__absent-user-email">$user->user_email</div>
+			</div>
+HTML;
+
+	}
+
+	$html .= <<<HTML
+		</div>
+	</div>
+HTML;
 
 	return $html;
 }
@@ -448,7 +555,7 @@ function summary(): string{
 	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"];
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
-			<p> Liste des formulaire de la table de données </p>
+			<p> Liste des formulaires HCERES</p>
 			<div class="bouttons">
 HTML;
 
@@ -467,7 +574,7 @@ HTML;
 			$class = "";
 		}
 		$html .= <<<HTML
-				<button type="button" {$class} onclick="window.location.href = '{$page}'">{$lst[$i]}</button>
+				<button type="button" $class onclick="window.location.href = '$page'">$lst[$i]</button>
 HTML;
 	}
 	$html .= "</div>";
@@ -481,7 +588,7 @@ HTML;
 
 	$html .= <<<HTML
 		</div>
-		<div class="nb__buttons">{$count}</div>
+		<div class="nb__buttons">$count</div>
 HTML;
 	return $html;
 }
@@ -492,11 +599,22 @@ function block1(): string{
 	$last_name = ucfirst(wp_get_current_user()->last_name);
 
 	if(isset($_POST["submit1"])){
-		$data = [$last_name, $name,
-			$_POST["equipe1"], $_POST["equipe2"], $_POST["equipe3"], $_POST["pole"],
-			$_POST["fonction"], $_POST["corps"], $_POST["rang"],
-			date("m/Y", strtotime($_POST["date_entree"])), date("m/Y", strtotime($_POST["date_sortie"])), $_POST["annee_naissance"],
-			$_POST["annee_obtention_these"], $_POST["annee_obtention_hdr"], $_POST["annee_obtention_these_etat"]];
+		$data = [$last_name,
+			$name,
+			$_POST["equipe1"],
+			$_POST["equipe2"],
+			$_POST["equipe3"],
+			$_POST["pole"],
+			$_POST["fonction"],
+			$_POST["corps"],
+			$_POST["rang"],
+			date("m/Y", strtotime($_POST["date_entree"])),
+			date("m/Y", strtotime($_POST["date_sortie"])),
+			$_POST["annee_naissance"],
+			$_POST["annee_obtention_these"],
+			$_POST["annee_obtention_hdr"],
+			$_POST["annee_obtention_these_etat"]
+		];
 
 		if(!isRegistered()){
 			// searches the number of fields in the csv file and stocks it
@@ -592,45 +710,45 @@ function block1(): string{
 		<label for="equipe1">Equipe 2017-2022</label>
 		<select name="equipe1">
 			<option value=" "></option>
-    		<option value="DEMO" {$demo}>DEMO</option>
-    		<option value="PGM2" {$pgm2}>PGM2</option>
-    		<option value="PPB" {$ppb}>PPB</option>
+    		<option value="DEMO" $demo>DEMO</option>
+    		<option value="PGM2" $pgm2>PGM2</option>
+    		<option value="PPB" $ppb>PPB</option>
 		</select>
 		<label for="equipe2">Equipe 2022-2025</label>
 		<select name="equipe2">
 			<option value=" "></option>
-			<option value="PETRODYN" {$petrodyn}>PETRODYN</option>
-			<option value="TECTO" {$tecto}>TECTO</option>
-			<option value="TERMER" {$termer}>TERMER</option>
+			<option value="PETRODYN" $petrodyn>PETRODYN</option>
+			<option value="TECTO" $tecto>TECTO</option>
+			<option value="TERMER" $termer>TERMER</option>
 		</select>
 		<label for="equipe3">Equipe 2025-…</label>
 		<select name="equipe3">
 			<option value=" "></option>
-			<option value="PETRODYN" {$petrodyn2}>PETRODYN</option>
-			<option value="TECTO" {$tecto2}>TECTO</option>
-			<option value="TERMER" {$termer2}>TERMER</option>
-			<option value="PRISME" {$prisme}>PRISME</option>
+			<option value="PETRODYN" $petrodyn2>PETRODYN</option>
+			<option value="TECTO" $tecto2>TECTO</option>
+			<option value="TERMER" $termer2>TERMER</option>
+			<option value="PRISME" $prisme>PRISME</option>
 		</select>
 		<label for="pole">Pôles des services généraux (le cas échéant)</label>
-			<input type="text" name="pole" value="{$pole}" required>
+			<input type="text" name="pole" value="$pole" required>
 		<label for="fonction">Fonction exercée</label>
-			<input type="text" name="fonction" value="{$fonction}" required>
+			<input type="text" name="fonction" value="$fonction" required>
 		<label for="corps">Corps</label>
-			<input type="text" name="corps" value="{$corps}" required>
+			<input type="text" name="corps" value="$corps" required>
 		<label for="rang">Rang</label>
-			<input type="text" name="rang" value="{$rang}" required>
+			<input type="text" name="rang" value="$rang" required>
 		<label for="date_entree">Date entrée (MM/AAAA)</label>
-			<input type="date" name="date_entree" value="{$date_entree}" required>
+			<input type="date" name="date_entree" value="$date_entree" required>
 		<label for="date_sortie">Date sortie (MM/AAAA)</label>
-			<input type="date" name="date_sortie" value="{$date_sortie}" required>
+			<input type="date" name="date_sortie" value="$date_sortie" required>
 		<label for="annee_naissance">année naissance</label>
-			<input type="number" min="1900" max="{$year}" name="annee_naissance" value="{$annee_naissance}" required>
+			<input type="number" min="1900" max="$year" name="annee_naissance" value="$annee_naissance" required>
 		<label for="annee_obtention_these">année obtention thèse</label>
-			<input type="number" min="1900" max="{$year}" name="annee_obtention_these" value="{$annee_these}" required>
+			<input type="number" min="1900" max="$year" name="annee_obtention_these" value="$annee_these" required>
 		<label for="annee_obtention_hdr">année obtention HDR</label>
-			<input type="number" min="1900" max="{$year}" name="annee_obtention_hdr" value="{$annee_hdr}" required>
+			<input type="number" min="1900" max="$year" name="annee_obtention_hdr" value="$annee_hdr" required>
 		<label for="annee_obtention_these_etat">année obtention Thèse d'état</label>
-			<input type="number" min="1900" max="{$year}" name="annee_obtention_these_etat" value="{$annee_etat}" required>
+			<input type="number" min="1900" max="$year" name="annee_obtention_these_etat" value="$annee_etat" required>
 		<button type="submit" name="submit1">Envoyer</button>
 	</form>
 HTML;
@@ -663,9 +781,9 @@ function block2(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Discipline</h5>
 		<label for="discipline1">Discipline 1</label>
-			<input type="text" name="discipline1" value="{$disc1}" required>
+			<input type="text" name="discipline1" value="$disc1" required>
 		<label for="discipline2">Discipline 2</label>
-			<input type="text" name="discipline2" value="{$disc2}" required>
+			<input type="text" name="discipline2" value="$disc2" required>
 	<button type="submit" name="submit2">Envoyer</button>
 	</form>
 
@@ -698,7 +816,7 @@ function block3(): string{
 	return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Thèmes de recherche (80 mots max)</h5>
-			<input type="text" name="theme_recherche" value="{$theme}" id="theme_recherche" oninput="limitWords()" required>
+			<input type="text" name="theme_recherche" value="$theme" id="theme_recherche" oninput="limitWords()" required>
 		<button type="submit" name="submit3">Envoyer</button>
 	</form>
 HTML;
@@ -767,19 +885,19 @@ function block4(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
 		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
-			<input type="number" name="nb_publi_rang_a1" value="{$nb_publi_rang_a1}" required>
+			<input type="number" name="nb_publi_rang_a1" min="0" value="$nb_publi_rang_a1" required>
 		<label for="nb_publi_rang_premier">Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant</label>
-			<input type="number" name="nb_publi_rang_premier" value="{$nb_publi_rang_premier}" required>
+			<input type="number" name="nb_publi_rang_premier" min="0" value="$nb_publi_rang_premier" required>
 		<label for="nb_citations_isi">nombre de citations (isi-web of science)</label>
-			<input type="number" name="nb_citations_isi" value="{$nb_citations_isi}" required>
+			<input type="number" name="nb_citations_isi" min="0" value="$nb_citations_isi" required>
 		<label for="h_factor_isi">h-factor (Isi-Web)</label>
-			<input type="text" name="h_factor_isi" value="{$h_factor_isi}" required>
+			<input type="text" name="h_factor_isi" value="$h_factor_isi" required>
 		<label for="nb_citations_isi_google">nombre de citations (google scholar)</label>
-			<input type="number" name="nb_citations_isi_google" value="{$nb_citations_isi_google}" required>
+			<input type="number" name="nb_citations_isi_google" min="0" value="$nb_citations_isi_google" required>
 		<label for="h_factor_google">h-factor (google scholar)</label>
-			<input type="text" name="h_factor_google" value="{$h_factor_google}" required>
+			<input type="text" name="h_factor_google" value="$h_factor_google" required>
 		<label for="nb_resume_conference">Nbre de résumé à conférence avec comité de lecture</label>
-			<input type="number" name="nb_resume_conference" value="{$nb_resume_conference}" required>
+			<input type="number" name="nb_resume_conference" min="0" value="$nb_resume_conference" required>
 		<button type="submit" name="submit4">Envoyer</button>
 	</form>
 
@@ -843,17 +961,17 @@ function block5(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Détail des publications par année depuis 2022</h5>
 		<label for="nb_publi_rang_a2">Nombre total de publi de rang A</label>
-			<input type="number" name="nb_publi_rang_a2" value="{$nb_publi_rang_a2}" required>
+			<input type="number" name="nb_publi_rang_a2" min="0" value="$nb_publi_rang_a2" required>
 		<label for="nb_publi_premier">Nbre article en 1er auteur</label>
-			<input type="number" name="nb_publi_premier" value="{$nb_publi_premier}" required>
+			<input type="number" name="nb_publi_premier" min="0" value="$nb_publi_premier" required>
 		<label for="nb_article_doctorant">Nbre article  derrière un doctorant</label>
-			<input type="number" name="nb_article_doctorant" value="{$nb_article_doctorant}" required>
+			<input type="number" name="nb_article_doctorant" min="0" value="$nb_article_doctorant" required>
 		<label for="nb_article_rang_a_collab">Nbre d'articles rang A avec des collab. (autres laboratoires)</label>
-			<input type="number" name="nb_article_rang_a_collab" value="{$nb_article_rang_a_collab}" required>
+			<input type="number" name="nb_article_rang_a_collab" min="0" value="$nb_article_rang_a_collab" required>
 		<label for="chapitre_ouvrage">Chapitre d'ouvrage / livre</label>
-			<input type="text" name="chapitre_ouvrage" value="{$chapitre_ouvrage}" required>
+			<input type="text" name="chapitre_ouvrage" value="$chapitre_ouvrage" required>
 		<label for="nb_resume_comite_lecture">Nbre de résumé à des congrès avec comité de lecture</label>
-			<input type="number" name="nb_resume_comite_lecture" value="{$nb_resume_comite_lecture}" required>
+			<input type="number" name="nb_resume_comite_lecture" min="0" value="$nb_resume_comite_lecture" required>
 		<button type="submit" name="submit5">Envoyer</button>
 	</form>
 
@@ -905,13 +1023,13 @@ function block6(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Enseignement</h5>
 		<label for="enseignement1">nb heures enseignées 2022-2023</label>
-			<input type="number" name="enseignement1" value="{$enseignement1}" required>
+			<input type="number" name="enseignement1" min="0" value="$enseignement1" required>
 		<label for="enseignement2">nb heures enseignées 2023-2024</label>
-			<input type="number" name="enseignement2" value="{$enseignement2}" required>
+			<input type="number" name="enseignement2" min="0" value="$enseignement2" required>
 		<label for="enseignement3">nb heures enseignées 2024-2025</label>
-			<input type="number" name="enseignement3" value="{$enseignement3}" required>
+			<input type="number" name="enseignement3" min="0" value="$enseignement3" required>
 		<label for="enseignement4">nb heures enseignées 2025-2026</label>
-			<input type="number" name="enseignement4" value="{$enseignement4}" required>
+			<input type="number" name="enseignement4" min="0" value="$enseignement4" required>
 		<button type="submit" name="submit6">Envoyer</button>
 	</form>
 
@@ -971,15 +1089,15 @@ function block7(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement Master 1 (à partir de 2022)</h5>
 		<label for="master1_nom">Nom</label>
-			<input type="text" name="master1_nom" value="{$master1_nom}" required>
+			<input type="text" name="master1_nom" value="$master1_nom" required>
 		<label for="master1_prenom">Prénom</label>
-			<input type="text" name="master1_prenom" value="{$master1_prenom}" required>
+			<input type="text" name="master1_prenom" value="$master1_prenom" required>
 		<label for="master1_annee">Année</label>
-			<input type="number" min="2022" max="{$year}" name="master1_annee" value="{$master1_annee}" required>
+			<input type="number" min="2022" max="$year" name="master1_annee" value="$master1_annee" required>
 		<label for="master1_nom_prenom_co-encadrants">NOM Prénom des Co-encadrants</label>
-			<input type="text" name="master1_nom_prenom_co-encadrants" value="{$master1_nom_prenom_co_encadrants}" required>
+			<input type="text" name="master1_nom_prenom_co-encadrants" value="$master1_nom_prenom_co_encadrants" required>
 		<label for="master1_sujet">Titre sujet (indiquer si hors ISTeP)</label>
-			<input type="text" name="master1_sujet" value="{$master1_sujet}" required>
+			<input type="text" name="master1_sujet" value="$master1_sujet" required>
 		<button type="submit" name="submit7">Envoyer</button>
 	</form>
 
@@ -1038,15 +1156,15 @@ function block8(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement Master 2 (à partir de 2022)</h5>
 		<label for="master2_nom">Nom</label>
-			<input type="text" name="master2_nom" value="{$master2_nom}" required>
+			<input type="text" name="master2_nom" value="$master2_nom" required>
 		<label for="master2_prenom">Prénom</label>
-			<input type="text" name="master2_prenom" value="{$master2_prenom}" required>
+			<input type="text" name="master2_prenom" value="$master2_prenom" required>
 		<label for="master2_annee">Année</label>
-			<input type="number" min="2022" max="{$year}" name="master2_annee" value="{$master2_annee}" required>
+			<input type="number" min="2022" max="$year" name="master2_annee" value="$master2_annee" required>
 		<label for="master2_nom_prenom_co-encadrants">NOM Prénom des Co-encadrants</label>
-			<input type="text" name="master2_nom_prenom_co-encadrants" value="{$master2_nom_prenom_co_encadrants}" required>
+			<input type="text" name="master2_nom_prenom_co-encadrants" value="$master2_nom_prenom_co_encadrants" required>
 		<label for="master2_sujet">Titre sujet (indiquer si hors ISTeP)</label>
-			<input type="text" name="master2_sujet" value="{$master2_sujet}" required>
+			<input type="text" name="master2_sujet" value="$master2_sujet" required>
 		<button type="submit" name="submit8">Envoyer</button>
 	</form>
 
@@ -1144,31 +1262,31 @@ function block9(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse ISTeP à partir de 2022</h5>
 		<label for="encadrement_istep_nom">Nom</label>
-			<input type="text" name="encadrement_istep_nom" value="{$encadrement_istep_nom}" required>
+			<input type="text" name="encadrement_istep_nom" value="$encadrement_istep_nom" required>
 		<label for="encadrement_istep_prenom">Prénom</label>
-			<input type="text" name="encadrement_istep_prenom" value="{$encadrement_istep_prenom}" required>
+			<input type="text" name="encadrement_istep_prenom" value="$encadrement_istep_prenom" required>
 		<label for="encadrement_istep_hf">H/F</label>
 			<select name="sexe">
 				<option value=" "></option>
-				<option value="Homme" {$homme}>Homme</option>
-				<option value="Femme" {$femme}>Femme</option>
+				<option value="Homme" $homme>Homme</option>
+				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_istep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_istep_date_inscription_these" value="{$encadrement_istep_date_inscription_these}" required>
+			<input type="date" name="encadrement_istep_date_inscription_these" value="$encadrement_istep_date_inscription_these" required>
 		<label for="encadrement_istep_date_soutenance">Date de soutenance (MM/AAAA)</label>
-			<input type="date" name="encadrement_istep_date_soutenance" value="{$encadrement_istep_date_soutenance}" required>
+			<input type="date" name="encadrement_istep_date_soutenance" value="$encadrement_istep_date_soutenance" required>
 		<label for="encadrement_istep_nom_prenom_co-directerurs">NOM Prénom des Co-directeurs</label>
-			<input type="text" name="encadrement_istep_nom_prenom_co-directerurs" value="{$encadrement_istep_nom_prenom_co}" required>
+			<input type="text" name="encadrement_istep_nom_prenom_co-directerurs" value="$encadrement_istep_nom_prenom_co" required>
 		<label for="encadrement_istep_titre_these">Titre thèse</label>
-			<input type="text" name="encadrement_istep_titre_these" value="{$encadrement_istep_titre_these}" required>
+			<input type="text" name="encadrement_istep_titre_these" value="$encadrement_istep_titre_these" required>
 		<label for="encadrement_istep_etablissement">Établissement ayant délivré le master (ou diplôme équivalent)</label>
-			<input type="text" name="encadrement_istep_etablissement" value="{$encadrement_istep_etablissement}" required>
+			<input type="text" name="encadrement_istep_etablissement" value="$encadrement_istep_etablissement" required>
 		<label for="encadrement_istep_numero_ed">Numéro de l'ED de rattachement</label>
-			<input type="text" name="encadrement_istep_numero_ed" value="{$encadrement_istep_numero_ed}" required>
+			<input type="text" name="encadrement_istep_numero_ed" value="$encadrement_istep_numero_ed" required>
 		<label for="encadrement_istep_financement_doctorat">Financement du doctorat</label>
-			<input type="text" name="encadrement_istep_financement_doctorat" value="{$encadrement_istep_financement_doctorat}" required>
+			<input type="text" name="encadrement_istep_financement_doctorat" value="$encadrement_istep_financement_doctorat" required>
 		<label for="encadrement_istep_fonction">Fonction de direction ou encadrement ?</label>
-			<input type="text" name="encadrement_istep_fonction" value="{$encadrement_istep_fonction}" required>
+			<input type="text" name="encadrement_istep_fonction" value="$encadrement_istep_fonction" required>
 		<button type="submit" name="submit9">Envoyer</button>
 	</form>
 
@@ -1272,33 +1390,33 @@ function block10(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse hors ISTeP à partir de 2022</h5>
 		<label for="encadrement_histep_nom">Nom</label>
-			<input type="text" name="encadrement_histep_nom" value="{$encadrement_histep_nom}" required>
+			<input type="text" name="encadrement_histep_nom" value="$encadrement_histep_nom" required>
 		<label for="encadrement_histep_prenom">Prénom</label>
-			<input type="text" name="encadrement_histep_prenom" value="{$encadrement_histep_prenom}" required>
+			<input type="text" name="encadrement_histep_prenom" value="$encadrement_histep_prenom" required>
 		<label for="encadrement_histep_hf">H/F</label>
 			<select name="sexe">
 				<option value=" "></option>
-				<option value="Homme" {$homme}>Homme</option>
-				<option value="Femme" {$femme}>Femme</option>
+				<option value="Homme" $homme>Homme</option>
+				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_histep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_histep_date_inscription_these" value="{$encadrement_histep_date_inscription_these}" required>
+			<input type="date" name="encadrement_histep_date_inscription_these" value="$encadrement_histep_date_inscription_these" required>
 		<label for="encadrement_histep_date_soutenance">Date de soutenance (MM/AAAA)</label>
-			<input type="date" name="encadrement_histep_date_soutenance" value="{$encadrement_histep_date_soutenance}" required>
+			<input type="date" name="encadrement_histep_date_soutenance" value="$encadrement_histep_date_soutenance" required>
 		<label for="encadrement_histep_direction_these">Direction de thèse (Nom, Prénom)</label>
-			<input type="text" name="encadrement_histep_direction_these" value="{$encadrement_histep_direction_these}" required>
+			<input type="text" name="encadrement_histep_direction_these" value="$encadrement_histep_direction_these" required>
 		<label for="encadrement_histep_titre_these">Titre thèse</label>
-			<input type="text" name="encadrement_histep_titre_these" value="{$encadrement_histep_titre_these}" required>
+			<input type="text" name="encadrement_histep_titre_these" value="$encadrement_histep_titre_these" required>
 		<label for="encadrement_histep_etablissement">Établissement ayant délivré le master (ou diplôme équivalent)</label>
-			<input type="text" name="encadrement_histep_etablissement" value="{$encadrement_histep_etablissement}" required>
+			<input type="text" name="encadrement_histep_etablissement" value="$encadrement_histep_etablissement" required>
 		<label for="encadrement_histep_numero_ed">Numéro de l'ED de rattachement</label>
-			<input type="text" name="encadrement_histep_numero_ed" value="{$encadrement_histep_numero_ed}" required>
+			<input type="text" name="encadrement_histep_numero_ed" value="$encadrement_histep_numero_ed" required>
 		<label for="encadrement_histep_etablissement_rattachement_direction_these">Etablissement de rattachement de la direction de thèse</label>
-			<input type="text" name="encadrement_histep_etablissement_rattachement_direction_these" value="{$encadrement_histep_etablissement_rattachement_direction_these}" required>
+			<input type="text" name="encadrement_histep_etablissement_rattachement_direction_these" value="$encadrement_histep_etablissement_rattachement_direction_these" required>
 		<label for="encadrement_histep_financement_doctorat">Financement du doctorat</label>
-			<input type="text" name="encadrement_histep_financement_doctorat" value="{$encadrement_histep_financement_doctorat}" required>
+			<input type="text" name="encadrement_histep_financement_doctorat" value="$encadrement_histep_financement_doctorat" required>
 		<label for="encadrement_histep_fonction">Fonction de direction ou encadrement ?</label>
-			<input type="text" name="encadrement_histep_fonction" value="{$encadrement_histep_fonction}" required>
+			<input type="text" name="encadrement_histep_fonction" value="$encadrement_histep_fonction" required>
 		<button type="submit" name="submit10">Envoyer</button>
 	</form>
 
@@ -1374,23 +1492,23 @@ function block11(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement de post-doctorats à partir de 2022</h5>
 		<label for="encadrement_pd_nom">Nom</label>
-			<input type="text" name="encadrement_pd_nom" value="{$encadrement_pd_nom}" required>
+			<input type="text" name="encadrement_pd_nom" value="$encadrement_pd_nom" required>
 		<label for="encadrement_pd_prenom">Prénom</label>
-			<input type="text" name="encadrement_pd_prenom" value="{$encadrement_pd_prenom}" required>
+			<input type="text" name="encadrement_pd_prenom" value="$encadrement_pd_prenom" required>
 		<label for="encadrement_pd_hf">H/F</label>
 			<select name="sexe">
 				<option value=""></option>
-				<option value="Homme" {$homme}>Homme</option>
-				<option value="Femme" {$femme}>Femme</option>
+				<option value="Homme" $homme>Homme</option>
+				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_pd_date_entree">Date d'entrée (MM/AAAA)</label>
-			<input type="date" name="encadrement_pd_date_entree" value="{$encadrement_pd_date_entree}" required>
+			<input type="date" name="encadrement_pd_date_entree" value="$encadrement_pd_date_entree" required>
 		<label for="encadrement_pd_date_sortie">Date de sortie (MM/AAAA)</label>
-			<input type="date" name="encadrement_pd_date_sortie" value="{$encadrement_pd_date_sortie}" required>
+			<input type="date" name="encadrement_pd_date_sortie" value="$encadrement_pd_date_sortie" required>
 		<label for="encadrement_pd_annee_naissance">Année de naissance</label>
-			<input type="number" min="1900" max="{$year}" name="encadrement_pd_annee_naissance" value="{$encadrement_pd_annee_naissance}" required>
+			<input type="number" min="1900" max="$year" name="encadrement_pd_annee_naissance" value="$encadrement_pd_annee_naissance" required>
 		<label for="encadrement_pd_employeur">Etablissement ou organisme employeur</label>
-			<input type="text" name="encadrement_pd_employeur" value="{$encadrement_pd_employeur}" required>
+			<input type="text" name="encadrement_pd_employeur" value="$encadrement_pd_employeur" required>
 		<button type="submit" name="submit11">Envoyer</button>
 	</form>
 
@@ -1429,9 +1547,9 @@ function block12(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Prix ou distinctions scientifiques</h5>
 		<label for="distinction_intitule">Intitulé de l'élément de distinction (nom du prix par exemple)</label>
-			<input type="text" name="distinction_intitule" value="{$distinction_intitule}" required>
+			<input type="text" name="distinction_intitule" value="$distinction_intitule" required>
 		<label for="distinction_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="distinction_annee" value="{$distinction_annee}" required>
+			<input type="text" name="distinction_annee" value="$distinction_annee" required>
 		<button type="submit" name="submit12">Envoyer</button>
 	</form>
 HTML;
@@ -1469,9 +1587,9 @@ function block13(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Appartenance à l'IUF</h5>
 		<label for="iuf_intitule">Intitulé de l'élément (membre, fonction …)</label>
-			<input type="text" name="iuf_intitule" value="{$iuf_intitule}" required>
+			<input type="text" name="iuf_intitule" value="$iuf_intitule" required>
 		<label for="iuf_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="iuf_annee" value="{$iuf_annee}" required>
+			<input type="text" name="iuf_annee" value="$iuf_annee" required>
 		<button type="submit" name="submit13">Envoyer</button>
 	</form>
 HTML;
@@ -1509,9 +1627,9 @@ function block14(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Séjours dans des laboratoires étrangers</h5>
 		<label for="sejour_lieu">Lieu, fonction</label>
-			<input type="text" name="sejour_lieu" value="{$sejour_lieu}" required>
+			<input type="text" name="sejour_lieu" value="$sejour_lieu" required>
 		<label for="sejour_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="sejour_annee" value="{$sejour_annee}" required>
+			<input type="text" name="sejour_annee" value="$sejour_annee" required>
 		<button type="submit" name="submit14">Envoyer</button>
 	</form>
 
@@ -1550,9 +1668,9 @@ function block15(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Organisations de colloques/congrès internationaux</h5>
 		<label for="organisation_nom">Nom de l'évènement, fonction</label>
-			<input type="text" name="organisation_nom" value="{$organisation_nom}" required>
+			<input type="text" name="organisation_nom" value="$organisation_nom" required>
 		<label for="organisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="organisation_annee" value="{$organisation_annee}" required>
+			<input type="text" name="organisation_annee" value="$organisation_annee" required>
 		<button type="submit" name="submit15">Envoyer</button>
 	</form>
 
@@ -1591,9 +1709,9 @@ function block16(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Responsabilités dans des sociétés savantes</h5>
 		<label for="societe_savantes_nom">Nom de la société, fonction</label>
-			<input type="text" name="societe_savantes_nom" value="{$societe_savantes_nom}" required>
+			<input type="text" name="societe_savantes_nom" value="$societe_savantes_nom" required>
 		<label for="societe_savantes_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="societe_savantes_annee" value="{$societe_savantes_annee}" required>
+			<input type="text" name="societe_savantes_annee" value="$societe_savantes_annee" required>
 		<button type="submit" name="submit16">Envoyer</button>
 	</form>
 HTML;
@@ -1612,10 +1730,13 @@ function block17(): string{
 			$data = [
 				$_POST["responsabilite1_region_montant"],
 				$_POST["responsabilite1_region_nom"],
+				"|",
 				$_POST["responsabilite1_national_montant"],
 				$_POST["responsabilite1_national_nom"],
+				"|",
 				$_POST["responsabilite1_international_montant"],
 				$_POST["responsabilite1_international_nom"],
+				"|",
 				$_POST["responsabilite1_partenariat_montant"],
 				$_POST["responsabilite1_partenariat_nom"]
 			];
@@ -1669,27 +1790,27 @@ function block17(): string{
 		
 		<h5>Régional et local</h5>
 		<label for="responsabilite1_region_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_region_montant" value="{$responsabilite1_region_montant}" required>
+			<input type="number" name="responsabilite1_region_montant" value="$responsabilite1_region_montant" required>
 		<label for="responsabilite1_region_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_region_nom" value="{$responsabilite1_region_nom}" required>
+			<input type="text" name="responsabilite1_region_nom" value="$responsabilite1_region_nom" required>
 		
 		<h5>National</h5>
 		<label for="responsabilite1_national_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_national_montant" value="{$responsabilite1_national_montant}" required>
+			<input type="number" name="responsabilite1_national_montant" value="$responsabilite1_national_montant" required>
 		<label for="responsabilite1_national_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_national_nom" value="{$responsabilite1_national_nom}" required>
+			<input type="text" name="responsabilite1_national_nom" value="$responsabilite1_national_nom" required>
 		
 		<h5>International</h5>
 		<label for="responsabilite1_international_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_international_montant" value="{$responsabilite1_international_montant}" required>
+			<input type="number" name="responsabilite1_international_montant" value="$responsabilite1_international_montant" required>
 		<label for="responsabilite1_international_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_international_nom" value="{$responsabilite1_international_nom}" required>
+			<input type="text" name="responsabilite1_international_nom" value="$responsabilite1_international_nom" required>
 		
 		<h5>Partenariat (industrie, EPIC)</h5>
 		<label for="responsabilite1_partenariat_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_partenariat_montant" value="{$responsabilite1_partenariat_montant}" required>
+			<input type="number" name="responsabilite1_partenariat_montant" value="$responsabilite1_partenariat_montant" required>
 		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_partenariat_nom" value="{$responsabilite1_partenariat_nom}" required>
+			<input type="text" name="responsabilite1_partenariat_nom" value="$responsabilite1_partenariat_nom" required>
 		<button type="submit" name="submit17">Envoyer</button>
 	</form>
 HTML;
@@ -1708,10 +1829,12 @@ function block18(): string{
 			$data = [
 				$_POST["responsabilite2_locale_intitule"],
 				$_POST["responsabilite2_locale_annee"],
+				"|",
 				$_POST["responsabilite2_regional_intitule"],
 				$_POST["responsabilite2_regional_annee"],
+				"|",
 				$_POST["responsabilite2_international_intitule"],
-				$_POST["responsabilite2_international_annee"],
+				$_POST["responsabilite2_international_annee"]
 			];
 			replace_or_pushes_values(110, $data);
 		}
@@ -1753,21 +1876,21 @@ function block18(): string{
 		
 		<h5>Locale</h5>
 		<label for="responsabilite2_locale_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_locale_intitule" value="{$responsabilite2_locale_intitule}" required>
+			<input type="text" name="responsabilite2_locale_intitule" value="$responsabilite2_locale_intitule" required>
 		<label for="responsabilite2_locale_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_locale_annee" value="{$responsabilite2_locale_annee}" required>
+			<input type="text" name="responsabilite2_locale_annee" value="$responsabilite2_locale_annee" required>
 		
 		<h5>Régional</h5>
 		<label for="responsabilite2_regional_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_regional_intitule" value="{$responsabilite2_regional_intitule}" required>
+			<input type="text" name="responsabilite2_regional_intitule" value="$responsabilite2_regional_intitule" required>
 		<label for="responsabilite2_regional_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_regional_annee" value="{$responsabilite2_regional_annee}" required>
+			<input type="text" name="responsabilite2_regional_annee" value="$responsabilite2_regional_annee" required>
 		
 		<h5>Internationale</h5>
 		<label for="responsabilite2_international_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_international_intitule" value="{$responsabilite2_international_intitule}" required>
+			<input type="text" name="responsabilite2_international_intitule" value="$responsabilite2_international_intitule" required>
 		<label for="responsabilite2_international_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_international_annee" value="{$responsabilite2_international_annee}" required>
+			<input type="text" name="responsabilite2_international_annee" value="$responsabilite2_international_annee" required>
 		<button type="submit" name="submit18">Envoyer</button>
 	</form>
 HTML;
@@ -1805,9 +1928,9 @@ function block19(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Responsabilités & administration de la formation/enseignement</h5>
 		<label for="responsabilite3_intitule">Intitulé de l'élément et votre fonction</label>
-			<input type="text" name="responsabilite3_intitule" value="{$responsabilite3_intitule}" required>
+			<input type="text" name="responsabilite3_intitule" value="$responsabilite3_intitule" required>
 		<label for="responsabilite3_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite3_annee" value="{$responsabilite3_annee}" required>
+			<input type="text" name="responsabilite3_annee" value="$responsabilite3_annee" required>
 		<button type="submit" name="submit19">Envoyer</button>
 	</form>
 HTML;
@@ -1845,9 +1968,9 @@ function block20(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Vulgarisation, dissémination scientifique</h5>
 		<label for="vulgarisation_intitule">Intitulé de l'élément (évènement, vidéo, livre, …) et fonction</label>
-			<input type="text" name="vulgarisation_intitule" value="{$vulgarisation_intitule}" required>
+			<input type="text" name="vulgarisation_intitule" value="$vulgarisation_intitule" required>
 		<label for="vulgarisation_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="vulgarisation_annee" value="{$vulgarisation_annee}" required>
+			<input type="text" name="vulgarisation_annee" value="$vulgarisation_annee" required>
 		<button type="submit" name="submit20">Envoyer</button>
 	</form>
 HTML;
@@ -1878,7 +2001,7 @@ function block21(): string{
 		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Rayonnement / résultats majeurs sur la période à mettre en avant</h5>
-			<input type="text" name="rayonnement" value="{$rayonnement}" required>
+			<input type="text" name="rayonnement" value="$rayonnement" required>
 		<button type="submit" name="submit21">Envoyer</button>
 	</form>
 HTML;
@@ -1916,9 +2039,9 @@ function block22(): string{
 	<form method="POST" class="data-table-form">
 		<h5>Brevet</h5>
 		<label for="brevet_intitule">Intitulé de l'élément et votre fonction</label>
-			<input type="text" name="brevet_intitule" value="{$brevet_intitule}" required>
+			<input type="text" name="brevet_intitule" value="$brevet_intitule" required>
 		<label for="brevet_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="brevet_annee" value="{$brevet_annee}" required>
+			<input type="text" name="brevet_annee" value="$brevet_annee" required>
 		<button type="submit" name="submit22">Envoyer</button>
 	</form>
 

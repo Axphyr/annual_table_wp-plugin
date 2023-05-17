@@ -29,7 +29,7 @@
     box-sizing: border-box;
 }
 
-.annual_data_table_summary {
+.annual_data_table_summary, .dt__panel {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -39,7 +39,7 @@
     margin: 50px 0 50px 0;
     overflow: hidden;
 }
-.annual_data_table_summary p {
+.annual_data_table_summary p, .dt__panel p {
     font-weight: bold;
     background-color: lightgray;
     width: 100%;
@@ -105,11 +105,10 @@
     display: none;
 }
 
-
-
 .col-div-4-1{
-    width: 33.3%;
-    float: left;
+    width: 100%;
+    margin: 20px;
+    display: flex;
 }
 .head-1{
     font-size: 18px;
@@ -124,41 +123,67 @@
     margin-left: 10px;
     padding:10px;
     box-shadow: 2px 5px 10px #ddd;
-    position: relative;
 }
 
 .content-box-1{
     padding: 0 10px;
+    margin: 20px 0 20px 0;
 }
 
-.circle-wrap {
-    margin: 50px auto;
+.circle-wrap, .circle-wrap2, .circle-wrap3 {
     width: 150px;
+    margin: 20px auto 0 auto;
     height: 150px;
     background: #e6e2e7;
     border-radius: 50%;
 }
+
+.circle-wrap, .circle-wrap2, .circle-wrap3 {
+    margin: 20px auto 20px auto;
+}
+
 .circle-wrap .circle .mask,
-.circle-wrap .circle .fill {
+.circle-wrap .circle .fill,
+.circle-wrap2 .circle .mask,
+.circle-wrap2 .circle .fill,
+.circle-wrap3 .circle .mask,
+.circle-wrap3 .circle .fill{
     width: 150px;
     height: 150px;
     position: absolute;
     border-radius: 50%;
 }
-.circle-wrap .circle .mask {
+.circle-wrap .circle .mask,
+.circle-wrap2 .circle .mask,
+.circle-wrap3 .circle .mask {
     clip: rect(0px, 150px, 150px, 75px);
 }
 
-.circle-wrap .circle .mask .fill {
+.circle-wrap .circle .mask .fill,
+.circle-wrap2 .circle .mask .fill,
+.circle-wrap3 .circle .mask .fill {
     clip: rect(0px, 75px, 150px, 0px);
     background-color: #348f6c;
 }
+
 .circle-wrap .circle .mask.full,
 .circle-wrap .circle .fill {
     animation: fill ease-in-out 1s;
 }
 
-.circle-wrap .inside-circle {
+.circle-wrap2 .circle .mask.full,
+.circle-wrap2 .circle .fill {
+    animation: fill ease-in-out 1s;
+}
+
+.circle-wrap3 .circle .mask.full,
+.circle-wrap3 .circle .fill {
+    animation: fill ease-in-out 1s;
+}
+
+.circle-wrap .inside-circle,
+.circle-wrap2 .inside-circle2,
+.circle-wrap3 .inside-circle3{
     width: 130px;
     height: 130px;
     border-radius: 50%;
