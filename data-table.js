@@ -76,3 +76,14 @@ const rotationValue3 = parseInt((document.querySelector(".inside-circle3")).text
 if (fillAnimationRule3) {
     fillAnimationRule3.style.transform = 'rotate(' + rotationValue3 + 'deg)';
 }
+
+const form = document.querySelector('.data-table-form');
+console.log(form);
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    window.location.href = '/';
+});
+
+function confirmDelete() {
+    return window.confirm("Voulez-vous vraiment supprimer vos données?");
+}

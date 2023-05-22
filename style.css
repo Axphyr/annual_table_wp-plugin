@@ -198,3 +198,30 @@
     font-size: 2em;
     color: #348f6c;
 }
+
+.dt__absent-users {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 20px;
+    height: 250px;
+    overflow-y: auto;
+}
+
+.dt__table td, .dt__table th {
+    padding: 5px;
+    border: none;
+    text-align: center;
+}
+
+.dt__absent-user:nth-child(odd) {
+    background-color: lightgray;
+}
+
+.dt__delete{
+    background-color: indianred;
+}
+
+.dt__delete:hover{
+    background-color: #cc4646;
+}

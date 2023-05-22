@@ -453,7 +453,7 @@ function getAbsentUsers($roles = ''): array {
 	$csvUsers = getUsersFromCSV();
 
 	for ($i = 0; $i < count($wpUsers); $i++){
-		if(!in_array(ucfirst($wpUsers[$i]->first_name) . ucfirst($wpUsers[$i]->last_name), $csvUsers)){
+		if(!in_array(ucfirst($wpUsers[$i]->first_name) . " " . ucfirst($wpUsers[$i]->last_name), $csvUsers)){
 			$absent[] = $wpUsers[$i];
 		}
 	}
@@ -527,18 +527,30 @@ function panel(): string {
 		<div class="dt__absent-users">
 HTML;
 
+	$html .= <<<HTML
+	<table class="dt__table">
+		<thead>
+			<tr>
+				<th>Nom</th>
+				<th>Email</th>
+			</tr>
+		</thead>
+		<tbody>
+HTML;
+
 	for ($i = 0; $i < count($absent); $i++) {
 		$user = $absent[$i];
 		$html .= <<<HTML
-			<div class="dt__absent-user">
-				<div class="dt__absent-user-name">$user->display_name</div>
-				<div class="dt__absent-user-email">$user->user_email</div>
-			</div>
+			<tr class="dt__absent-user">
+				<td class="dt__absent-user-name">$user->display_name</td>
+				<td class="dt__absent-user-email"><a href="mailto:$user->user_email">$user->user_email</a></td>
+			</tr>
 HTML;
-
 	}
 
 	$html .= <<<HTML
+			</tbody>
+		</table>
 		</div>
 	</div>
 HTML;
@@ -553,9 +565,11 @@ function transformString($str): string {
 add_shortcode('add_istep_annual_table_summary','summary');
 function summary(): string{
 	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"];
+	$year = date('Y');
+	$yearM1 = $year-1;
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
-			<p> Liste des formulaires HCERES</p>
+			<p> Liste des formulaires HCERES $yearM1 - $year</p>
 			<div class="bouttons">
 HTML;
 
@@ -593,6 +607,50 @@ HTML;
 	return $html;
 }
 
+function deleteSelf(): void {
+	$filePath = '/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv';
+
+	// Read the CSV file into an array
+	$rows = [];
+	if (($file = fopen($filePath, 'r')) !== false) {
+		while (($row = fgetcsv($file)) !== false) {
+			$rows[] = $row;
+		}
+		fclose($file);
+	}
+
+	unset($rows[user_id_in_csv_file()-1]);
+
+	// Recreate the CSV file with the updated data
+	if (($file = fopen($filePath, 'w')) !== false) {
+		foreach ($rows as $row) {
+			fputcsv($file, $row);
+		}
+		fclose($file);
+	}
+}
+
+add_shortcode('add_istep_annual_table_delete','deleteUser');
+function deleteUser(): string{
+	if (isRegistered()){
+		if(isset($_POST["dt__delete"])){
+			deleteSelf();
+			return <<<HTML
+			<p class="dt__data__erased">Données supprimées.</p>
+			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+HTML;
+		}
+
+		return <<<HTML
+	<form class="data-table-delete" method="post">
+		<button class="dt__delete" name="dt__delete" onclick="return confirmDelete()" type="submit">Supprimer mes données</button>
+	</form>
+HTML;
+	}else{
+		return "";
+	}
+}
+
 add_shortcode('add_istep_annual_table_form_block_1','block1');
 function block1(): string{
 	$name = ucfirst(wp_get_current_user()->first_name);
@@ -604,10 +662,10 @@ function block1(): string{
 			$_POST["equipe1"],
 			$_POST["equipe2"],
 			$_POST["equipe3"],
-			$_POST["pole"],
-			$_POST["fonction"],
-			$_POST["corps"],
-			$_POST["rang"],
+			sanitize_text_field($_POST["pole"]),
+			sanitize_text_field($_POST["fonction"]),
+			sanitize_text_field($_POST["corps"]),
+			sanitize_text_field($_POST["rang"]),
 			date("m/Y", strtotime($_POST["date_entree"])),
 			date("m/Y", strtotime($_POST["date_sortie"])),
 			$_POST["annee_naissance"],
@@ -760,8 +818,8 @@ function block2(): string{
 	if(isRegistered()){
 		if(isset($_POST["submit2"])) {
 			$data = [
-				$_POST["discipline1"],
-				$_POST["discipline2"]
+				sanitize_text_field($_POST["discipline1"]),
+				sanitize_text_field($_POST["discipline2"])
 			];
 			replace_or_pushes_values(16, $data);
 		}
@@ -802,7 +860,7 @@ function block3(): string{
 	if(isRegistered()){
 			if(isset($_POST["submit3"])){
 				$data = [
-					$_POST["theme_recherche"]
+					sanitize_text_field($_POST["theme_recherche"])
 				];
 				replace_or_pushes_values(19, $data);
 			}
@@ -837,9 +895,9 @@ function block4(): string{
 				$_POST["nb_publi_rang_a1"],
 				$_POST["nb_publi_rang_premier"],
 				$_POST["nb_citations_isi"],
-				$_POST["h_factor_isi"],
+				sanitize_text_field($_POST["h_factor_isi"]),
 				$_POST["nb_citations_isi_google"],
-				$_POST["h_factor_google"],
+				sanitize_text_field($_POST["h_factor_google"]),
 				$_POST["nb_resume_conference"]
 			];
 			replace_or_pushes_values(21, $data);
@@ -920,7 +978,7 @@ function block5(): string{
 				$_POST["nb_publi_premier"],
 				$_POST["nb_article_doctorant"],
 				$_POST["nb_article_rang_a_collab"],
-				$_POST["chapitre_ouvrage"],
+				sanitize_text_field($_POST["chapitre_ouvrage"]),
 				$_POST["nb_resume_comite_lecture"],
 			];
 			replace_or_pushes_values(29, $data);
@@ -1048,11 +1106,11 @@ function block7(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit7"])){
 			$data = [
-				$_POST["master1_nom"],
-				$_POST["master1_prenom"],
+				sanitize_text_field($_POST["master1_nom"]),
+				sanitize_text_field($_POST["master1_prenom"]),
 				$_POST["master1_annee"],
-				$_POST["master1_nom_prenom_co-encadrants"],
-				$_POST["master1_sujet"]
+				sanitize_text_field($_POST["master1_nom_prenom_co-encadrants"]),
+				sanitize_text_field($_POST["master1_sujet"])
 			];
 			replace_or_pushes_values(41, $data);
 		}
@@ -1116,11 +1174,11 @@ function block8(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit8"])){
 			$data = [
-				$_POST["master2_nom"],
-				$_POST["master2_prenom"],
+				sanitize_text_field($_POST["master2_nom"]),
+				sanitize_text_field($_POST["master2_prenom"]),
 				$_POST["master2_annee"],
-				$_POST["master2_nom_prenom_co-encadrants"],
-				$_POST["master2_sujet"]
+				sanitize_text_field($_POST["master2_nom_prenom_co-encadrants"]),
+				sanitize_text_field($_POST["master2_sujet"])
 			];
 			replace_or_pushes_values(47, $data);
 		}
@@ -1183,17 +1241,17 @@ function block9(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit9"])){
 			$data = [
-				$_POST["encadrement_istep_nom"],
-				$_POST["encadrement_istep_prenom"],
+				sanitize_text_field($_POST["encadrement_istep_nom"]),
+				sanitize_text_field($_POST["encadrement_istep_prenom"]),
 				$_POST["sexe"],
 				date("m/Y", strtotime($_POST["encadrement_istep_date_inscription_these"])),
 				date("m/Y", strtotime($_POST["encadrement_istep_date_soutenance"])),
-				$_POST["encadrement_istep_nom_prenom_co-directerurs"],
-				$_POST["encadrement_istep_titre_these"],
-				$_POST["encadrement_istep_etablissement"],
-				$_POST["encadrement_istep_numero_ed"],
-				$_POST["encadrement_istep_financement_doctorat"],
-				$_POST["encadrement_istep_fonction"]
+				sanitize_text_field($_POST["encadrement_istep_nom_prenom_co-directerurs"]),
+				sanitize_text_field($_POST["encadrement_istep_titre_these"]),
+				sanitize_text_field($_POST["encadrement_istep_etablissement"]),
+				sanitize_text_field($_POST["encadrement_istep_numero_ed"]),
+				sanitize_text_field($_POST["encadrement_istep_financement_doctorat"]),
+				sanitize_text_field($_POST["encadrement_istep_fonction"])
 			];
 			replace_or_pushes_values(53, $data);
 		}
@@ -1305,18 +1363,18 @@ function block10(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit10"])){
 			$data = [
-				$_POST["encadrement_histep_nom"],
-				$_POST["encadrement_histep_prenom"],
+				sanitize_text_field($_POST["encadrement_histep_nom"]),
+				sanitize_text_field($_POST["encadrement_histep_prenom"]),
 				$_POST["sexe"],
 				date("m/Y", strtotime($_POST["encadrement_histep_date_inscription_these"])),
 				date("m/Y", strtotime($_POST["encadrement_histep_date_soutenance"])),
-				$_POST["encadrement_histep_direction_these"],
-				$_POST["encadrement_histep_titre_these"],
-				$_POST["encadrement_histep_etablissement"],
-				$_POST["encadrement_histep_numero_ed"],
-				$_POST["encadrement_histep_etablissement_rattachement_direction_these"],
-				$_POST["encadrement_histep_financement_doctorat"],
-				$_POST["encadrement_histep_fonction"]
+				sanitize_text_field($_POST["encadrement_histep_direction_these"]),
+				sanitize_text_field($_POST["encadrement_histep_titre_these"]),
+				sanitize_text_field($_POST["encadrement_histep_etablissement"]),
+				sanitize_text_field($_POST["encadrement_histep_numero_ed"]),
+				sanitize_text_field($_POST["encadrement_histep_etablissement_rattachement_direction_these"]),
+				sanitize_text_field($_POST["encadrement_histep_financement_doctorat"]),
+				sanitize_text_field($_POST["encadrement_histep_fonction"])
 			];
 			replace_or_pushes_values(65, $data);
 		}
@@ -1434,13 +1492,13 @@ function block11(): string{
 	if(isRegistered()){
 		if(isset($_POST["submit11"])){
 			$data = [
-				$_POST["encadrement_pd_nom"],
-				$_POST["encadrement_pd_prenom"],
+				sanitize_text_field($_POST["encadrement_pd_nom"]),
+				sanitize_text_field($_POST["encadrement_pd_prenom"]),
 				$_POST["sexe"],
 				date("m/Y", strtotime($_POST["encadrement_pd_date_entree"])),
 				date("m/Y", strtotime($_POST["encadrement_pd_date_sortie"])),
 				$_POST["encadrement_pd_annee_naissance"],
-				$_POST["encadrement_pd_employeur"]
+				sanitize_text_field($_POST["encadrement_pd_employeur"])
 			];
 			replace_or_pushes_values(78, $data);
 		}
@@ -1526,7 +1584,7 @@ function block12(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit12"])){
 			$data = [
-				$_POST["distinction_intitule"],
+				sanitize_text_field($_POST["distinction_intitule"]),
 				$_POST["distinction_annee"]
 			];
 			replace_or_pushes_values(86, $data);
@@ -1566,7 +1624,7 @@ function block13(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit13"])){
 			$data = [
-				$_POST["iuf_intitule"],
+				sanitize_text_field($_POST["iuf_intitule"]),
 				$_POST["iuf_annee"]
 			];
 			replace_or_pushes_values(89, $data);
@@ -1606,7 +1664,7 @@ function block14(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit14"])){
 			$data = [
-				$_POST["sejour_lieu"],
+				sanitize_text_field($_POST["sejour_lieu"]),
 				$_POST["sejour_annee"]
 			];
 			replace_or_pushes_values(92, $data);
@@ -1647,7 +1705,7 @@ function block15(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit15"])){
 			$data = [
-				$_POST["organisation_nom"],
+				sanitize_text_field($_POST["organisation_nom"]),
 				$_POST["organisation_annee"]
 			];
 			replace_or_pushes_values(95, $data);
@@ -1688,7 +1746,7 @@ function block16(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit16"])){
 			$data = [
-				$_POST["societe_savantes_nom"],
+				sanitize_text_field($_POST["societe_savantes_nom"]),
 				$_POST["societe_savantes_annee"]
 			];
 			replace_or_pushes_values(98, $data);
@@ -1729,16 +1787,16 @@ function block17(): string{
 		if(isset($_POST["submit17"])){
 			$data = [
 				$_POST["responsabilite1_region_montant"],
-				$_POST["responsabilite1_region_nom"],
+				sanitize_text_field($_POST["responsabilite1_region_nom"]),
 				"|",
 				$_POST["responsabilite1_national_montant"],
-				$_POST["responsabilite1_national_nom"],
+				sanitize_text_field($_POST["responsabilite1_national_nom"]),
 				"|",
 				$_POST["responsabilite1_international_montant"],
-				$_POST["responsabilite1_international_nom"],
+				sanitize_text_field($_POST["responsabilite1_international_nom"]),
 				"|",
 				$_POST["responsabilite1_partenariat_montant"],
-				$_POST["responsabilite1_partenariat_nom"]
+				sanitize_text_field($_POST["responsabilite1_partenariat_nom"])
 			];
 			replace_or_pushes_values(101, $data);
 		}
@@ -1827,13 +1885,13 @@ function block18(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit18"])){
 			$data = [
-				$_POST["responsabilite2_locale_intitule"],
+				sanitize_text_field($_POST["responsabilite2_locale_intitule"]),
 				$_POST["responsabilite2_locale_annee"],
 				"|",
-				$_POST["responsabilite2_regional_intitule"],
+				sanitize_text_field($_POST["responsabilite2_regional_intitule"]),
 				$_POST["responsabilite2_regional_annee"],
 				"|",
-				$_POST["responsabilite2_international_intitule"],
+				sanitize_text_field($_POST["responsabilite2_international_intitule"]),
 				$_POST["responsabilite2_international_annee"]
 			];
 			replace_or_pushes_values(110, $data);
@@ -1907,7 +1965,7 @@ function block19(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit19"])){
 			$data = [
-				$_POST["responsabilite3_intitule"],
+				sanitize_text_field($_POST["responsabilite3_intitule"]),
 				$_POST["responsabilite3_annee"]
 			];
 			replace_or_pushes_values(117, $data);
@@ -1947,7 +2005,7 @@ function block20(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit20"])){
 			$data = [
-				$_POST["vulgarisation_intitule"],
+				sanitize_text_field($_POST["vulgarisation_intitule"]),
 				$_POST["vulgarisation_annee"]
 			];
 			replace_or_pushes_values(120, $data);
@@ -1987,7 +2045,7 @@ function block21(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit21"])){
 			$data = [
-				$_POST["rayonnement"]
+				sanitize_text_field($_POST["rayonnement"])
 			];
 			replace_or_pushes_values(123, $data);
 		}
@@ -2018,7 +2076,7 @@ function block22(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit22"])){
 			$data = [
-				$_POST["brevet_intitule"],
+				sanitize_text_field($_POST["brevet_intitule"]),
 				$_POST["brevet_annee"]
 			];
 			replace_or_pushes_values(125, $data);
