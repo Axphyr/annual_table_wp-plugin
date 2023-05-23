@@ -1,5 +1,5 @@
 
-# Annual Data Table
+# HCERES
 
 Wordpress plugin that creates a data table in CSV in which users can add their datas.
 
