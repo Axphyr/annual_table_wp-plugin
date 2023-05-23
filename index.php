@@ -22,9 +22,6 @@ function annual_data_table_install(): void
 
 	if (!is_dir($dirName)) {
 		mkdir($dirName);
-		echo "Directory created successfully";
-	} else {
-		echo "Directory already exists";
 	}
 
 	// Définit le nom du fichier ainsi que son chemin
@@ -35,10 +32,6 @@ function annual_data_table_install(): void
 	if (file_exists($filepath)) {
 		// Supprime le fichier
 		unlink($filepath);
-		$res = "File edited successfully: " . $filepath;
-	}
-	else{
-		$res = 'File created successfully: ' . $filepath;
 	}
 
 	// Définit les données à inscrire dans le fichier CSV
@@ -113,9 +106,6 @@ function annual_data_table_install(): void
 
 	// Ferme le fichier
 	fclose($file);
-
-	// Retourne un messag à l'utilisateur
-	echo $res;
 
 	// ajout des pages pour les différents blocks
 	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet" ];
