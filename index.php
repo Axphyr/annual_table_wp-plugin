@@ -18,7 +18,7 @@ wp_enqueue_style('style',plugins_url('style.css',__FILE__));
 function annual_data_table_install(): void
 {
 	// définit le nom du répertoire et le crée s'il n'existe pas
-	$dirName = 'tableau-annuel';
+	$dirName = 'hceres';
 
 	if (!is_dir($dirName)) {
 		mkdir($dirName);
@@ -171,12 +171,12 @@ function create_custom_pages($title, $content): void {
 
 function download_annual_table(): string {
 	return <<<HTML
-	<button><a class="dt-download" href="/wp-admin/tableau-annuel/data-table.csv" download> Accéder au fichier </a></button>
+	<button><a class="dt-download" href="/wp-admin/hceres/data-table.csv" download> Accéder au fichier </a></button>
 HTML;
 }
 
 function isRegistered(): bool {
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$is_registered = false;
 	$last_name = ucfirst(wp_get_current_user()->last_name);
 
@@ -193,7 +193,7 @@ function isRegistered(): bool {
 
 function user_id_in_csv_file(): int
 {
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$id = 1;
 
 	while (($row = fgetcsv($file)) !== false) {
@@ -238,7 +238,7 @@ function replace_or_pushes_values(int $column, array $values): void
 {
 	$values[] = "|";
 	if (isRegistered()) {
-		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r+');
+		$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r+');
 
 		// Skip the first rows
 		for ($i = 1; $i < user_id_in_csv_file(); $i++) {
@@ -260,17 +260,17 @@ function replace_or_pushes_values(int $column, array $values): void
 			$row[$i] = $values[$i-$column];
 		}
 
-		deleteAndInsertRowInCSV('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', user_id_in_csv_file(), $row);
+		deleteAndInsertRowInCSV(ABSPATH . 'wp-admin/hceres/data-table.csv', user_id_in_csv_file(), $row);
 
 	} else{
-		$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'a');
+		$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'a');
 		fputcsv($file, $values);
 	}
 	fclose($file);
 }
 
 function getCell(int $column): string {
-	$file = fopen( '/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r' );
+	$file = fopen( ABSPATH . 'wp-admin/hceres/data-table.csv', 'r' );
 
 	$id = 1;
 	while (($row = fgetcsv($file)) !== false) {
@@ -288,7 +288,7 @@ function getCell(int $column): string {
 }
 
 function hasAnswered(): array {
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$answered = [];
 
 	// Skip the specified number of rows
@@ -325,7 +325,7 @@ function checkArray($arr): bool {
 }
 
 function haveAnswered(): float {
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$res = 0;
 	$nbUsers = count(getUsersFromCSV());
 
@@ -376,7 +376,7 @@ function calculatePercentage($arr): float|int {
 
 
 function averageAnswer(): float{
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$res = 0;
 	$avg = 0;
 
@@ -408,7 +408,7 @@ function averageAnswer(): float{
 }
 
 function getUsersFromCSV(): array {
-	$file = fopen('/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r');
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 
 	$users = [];
 
@@ -608,7 +608,7 @@ HTML;
 }
 
 function deleteSelf(): void {
-	$filePath = '/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv';
+	$filePath = ABSPATH . 'wp-admin/hceres/data-table.csv';
 
 	// Read the CSV file into an array
 	$rows = [];
@@ -676,7 +676,7 @@ function block1(): string{
 
 		if(!isRegistered()){
 			// searches the number of fields in the csv file and stocks it
-			$file = fopen( '/home/jonu0002/Local Sites/tableau-plugin/app/public/wp-admin/tableau-annuel/data-table.csv', 'r' );
+			$file = fopen( ABSPATH . 'wp-admin/hceres/data-table.csv', 'r' );
 			fgetcsv($file);
 			$maxFields = count(fgetcsv($file));
 			fclose($file);
