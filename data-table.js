@@ -13,10 +13,12 @@ function updateProgressBar() {
     const annualDataTableSummary = document.querySelector('.annual_data_table_summary');
     const customTotalElements = annualDataTableSummary.querySelectorAll('button').length;
     const totalElements = parseInt(document.querySelector('.nb__buttons').textContent.trim());
-    const dtGreenElements = document.querySelectorAll('.dt__green');
-    const progress = (customTotalElements.length === 1) ? 0 : ((dtGreenElements.length) / (totalElements)) * 100;
-    progressBar.style.width = progress + '%';
-    percentElement.textContent = Math.floor(progress) + '%';
+    try {
+        const dtGreenElements = document.querySelectorAll('.dt__green');
+        const progress = (customTotalElements.length === 1) ? 0 : ((dtGreenElements.length) / (totalElements)) * 100;
+        progressBar.style.width = progress + '%';
+        percentElement.textContent = Math.floor(progress) + '%';
+    } catch (e){}
 }
 
 // Initial update
