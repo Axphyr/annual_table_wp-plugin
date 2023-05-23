@@ -7,9 +7,14 @@ Author: Arbër Jonuzi
 Version: 1.0
 Author URI: https://axphyr.github.io/
 */
-error_reporting(E_ALL); ini_set('display_errors', '1');
-wp_enqueue_script('data-table-js',plugins_url('data-table.js',__FILE__),array(), false, true);
-wp_enqueue_style('style',plugins_url('style.css',__FILE__));
+function enqueue_my_scripts_and_styles(): void {
+	// Enqueue the data-table.js script
+	wp_enqueue_script('data-table-js', plugins_url('data-table.js', __FILE__), array(), false, true);
+
+	// Enqueue the style.css file
+	wp_enqueue_style('style', plugins_url('style.css', __FILE__));
+}
+add_action('wp_enqueue_scripts', 'enqueue_my_scripts_and_styles');
 
 /**
  * Créer le fichier xls lors de l'activation du plugin
