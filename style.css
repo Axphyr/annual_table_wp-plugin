@@ -225,3 +225,12 @@
 .dt__delete:hover{
     background-color: #cc4646;
 }
+
+.dt__year {
+    display: flex;
+    flex-direction: column;
+}
+
+.dt__year h2 {
+    margin-top: 20px;
+}

@@ -1010,25 +1010,41 @@ function block5(): string{
 			$nb_resume_comite_lecture = (int)getCell(34);
 		}
 
-		return <<<HTML
+		$html = <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Détail des publications par année depuis 2022</h5>
-		<label for="nb_publi_rang_a2">Nombre total de publi de rang A</label>
-			<input type="number" name="nb_publi_rang_a2" min="0" value="$nb_publi_rang_a2" required>
-		<label for="nb_publi_premier">Nbre article en 1er auteur</label>
-			<input type="number" name="nb_publi_premier" min="0" value="$nb_publi_premier" required>
-		<label for="nb_article_doctorant">Nbre article  derrière un doctorant</label>
-			<input type="number" name="nb_article_doctorant" min="0" value="$nb_article_doctorant" required>
-		<label for="nb_article_rang_a_collab">Nbre d'articles rang A avec des collab. (autres laboratoires)</label>
-			<input type="number" name="nb_article_rang_a_collab" min="0" value="$nb_article_rang_a_collab" required>
-		<label for="chapitre_ouvrage">Chapitre d'ouvrage / livre</label>
-			<input type="text" name="chapitre_ouvrage" value="$chapitre_ouvrage" required>
-		<label for="nb_resume_comite_lecture">Nbre de résumé à des congrès avec comité de lecture</label>
-			<input type="number" name="nb_resume_comite_lecture" min="0" value="$nb_resume_comite_lecture" required>
+HTML;
+
+		for ($i = 0; $i <= date('Y') - 2022; $i++){
+			$year = 2022 + $i;
+			$required = "";
+			if($year == 2022){
+				$required = "required";
+			}
+			$html .= <<<HTML
+		<div class="dt__year__$i dt__year">
+			<h2>$year</h2>
+			<label for="nb_publi_rang_a2">Nombre total de publications de rang A</label>
+				<input type="number" name="nb_publi_rang_a2" min="0" value="$nb_publi_rang_a2" $required>
+			<label for="nb_publi_premier">Nombre d'articles en 1er auteur</label>
+				<input type="number" name="nb_publi_premier" min="0" value="$nb_publi_premier" $required>
+			<label for="nb_article_doctorant">Nombre article derrière un doctorant</label>
+				<input type="number" name="nb_article_doctorant" min="0" value="$nb_article_doctorant" $required>
+			<label for="nb_article_rang_a_collab">Nombre d'articles rang A avec des collab. (autres laboratoires)</label>
+				<input type="number" name="nb_article_rang_a_collab" min="0" value="$nb_article_rang_a_collab" $required>
+			<label for="chapitre_ouvrage">Chapitre d'ouvrage / livre</label>
+				<input type="text" name="chapitre_ouvrage" value="$chapitre_ouvrage" $required>
+			<label for="nb_resume_comite_lecture">Nombre de résumé à des congrès avec comité de lecture</label>
+				<input type="number" name="nb_resume_comite_lecture" min="0" value="$nb_resume_comite_lecture" $required>
+		</div>
+HTML;
+		}
+
+		$html .= <<<HTML
 		<button type="submit" name="submit5">Envoyer</button>
 	</form>
-
 HTML;
+		return $html;
 	} else{
 		return <<<HTML
 			<p class="acces_denied">Accès non autorisé</p>
