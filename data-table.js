@@ -11,9 +11,9 @@ function updateProgressBar() {
     const progressBar = document.getElementById('progress-bar');
     const percentElement = document.getElementById('pourcent');
     const annualDataTableSummary = document.querySelector('.annual_data_table_summary');
-    const customTotalElements = annualDataTableSummary.querySelectorAll('button').length;
-    const totalElements = parseInt(document.querySelector('.nb__buttons').textContent.trim());
     try {
+        const customTotalElements = annualDataTableSummary.querySelectorAll('button').length;
+        const totalElements = parseInt(document.querySelector('.nb__buttons').textContent.trim());
         const dtGreenElements = document.querySelectorAll('.dt__green');
         const progress = (customTotalElements.length === 1) ? 0 : ((dtGreenElements.length) / (totalElements)) * 100;
         progressBar.style.width = progress + '%';
@@ -61,25 +61,92 @@ function getFillAnimationRule(counter) {
     return fillAnimationRule;
 }
 
-const fillAnimationRule = getFillAnimationRule(1);
-const rotationValue = parseInt((document.querySelector(".inside-circle")).textContent.trim(), 10) / 100 * 180;
-if (fillAnimationRule) {
-    fillAnimationRule.style.transform = 'rotate(' + rotationValue + 'deg)';
-}
+try{
+    const fillAnimationRule = getFillAnimationRule(1);
+    const rotationValue = parseInt((document.querySelector(".inside-circle")).textContent.trim(), 10) / 100 * 180;
+    if (fillAnimationRule) {
+        fillAnimationRule.style.transform = 'rotate(' + rotationValue + 'deg)';
+    }
 
-const fillAnimationRule2 = getFillAnimationRule(2);
-const rotationValue2 = parseInt((document.querySelector(".inside-circle2")).textContent.trim(), 10) / 100 * 180;
-if (fillAnimationRule2) {
-    fillAnimationRule2.style.transform = 'rotate(' + rotationValue2 + 'deg)';
-}
+    const fillAnimationRule2 = getFillAnimationRule(2);
+    const rotationValue2 = parseInt((document.querySelector(".inside-circle2")).textContent.trim(), 10) / 100 * 180;
+    if (fillAnimationRule2) {
+        fillAnimationRule2.style.transform = 'rotate(' + rotationValue2 + 'deg)';
+    }
 
-const fillAnimationRule3 = getFillAnimationRule(3);
-const rotationValue3 = parseInt((document.querySelector(".inside-circle3")).textContent.trim(), 10) / 100 * 180;
-if (fillAnimationRule3) {
-    fillAnimationRule3.style.transform = 'rotate(' + rotationValue3 + 'deg)';
-}
+    const fillAnimationRule3 = getFillAnimationRule(3);
+    const rotationValue3 = parseInt((document.querySelector(".inside-circle3")).textContent.trim(), 10) / 100 * 180;
+    if (fillAnimationRule3) {
+        fillAnimationRule3.style.transform = 'rotate(' + rotationValue3 + 'deg)';
+    }
+} catch (e){}
+
 
 
 function confirmDelete() {
     return window.confirm("Voulez-vous vraiment supprimer vos données?");
 }
+
+
+if (window.location.pathname === "/dt-formulaire-publications-2/") {
+    const formSections = Array.from(document.querySelectorAll("#hceres__var__form .dt__year"));
+    const momther = document.querySelector(".dt__wt__buttons");
+    const showButton = document.getElementById("showBtn");
+    const hideButton = document.getElementById("hideBtn");
+    hideButton.disabled = true;
+    hideButton.style.backgroundColor = "gray";
+
+    formSections.slice(1).forEach(element => {
+        element.parentNode.removeChild(element);
+    });
+
+    formSections.shift();
+    formSections.reverse();
+
+    showButton.addEventListener("click", showNextSection);
+    hideButton.addEventListener("click", hideLastSection);
+    showButton.addEventListener("click", buttonsColor);
+    hideButton.addEventListener("click", buttonsColor);
+
+    function showNextSection() {
+        if (formSections.length !== 0) {
+            momther.appendChild(formSections[formSections.length - 1]);
+            formSections.pop()
+        }
+    }
+
+    function buttonsColor() {
+        const sections = Array.from(document.querySelectorAll("#hceres__var__form .dt__year"));
+
+        if (formSections.length === 0) {
+        showButton.disabled = true;
+        showButton.style.backgroundColor = "gray";
+        hideButton.disabled = false;
+        hideButton.style.backgroundColor = "#2f5aae";
+        }
+        else if (sections.length <= 1) {
+            showButton.disabled = false;
+            showButton.style.backgroundColor = "#2f5aae";
+            hideButton.disabled = true;
+            hideButton.style.backgroundColor = "gray";
+        }
+        else {
+            showButton.disabled = false;
+            showButton.style.backgroundColor = "#2f5aae";
+            hideButton.disabled = false;
+            hideButton.style.backgroundColor = "#2f5aae";
+        }
+    }
+
+    function hideLastSection() {
+        const buttonsDiv = Array.from(document.querySelectorAll("#hceres__var__form .dt__year"));
+        buttonsDiv.shift()
+        const sections = Array.from(document.querySelectorAll("#hceres__var__form .dt__year"));
+        if (sections.length > 1){
+            formSections.push(buttonsDiv[buttonsDiv.length - 1]);
+            buttonsDiv[buttonsDiv.length - 1].remove();
+        }
+    }
+}
+
+

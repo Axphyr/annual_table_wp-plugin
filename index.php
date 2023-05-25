@@ -1011,36 +1011,35 @@ function block5(): string{
 		}
 
 		$html = <<<HTML
-	<form method="POST" class="data-table-form">
+	<form method="POST" class="data-table-form" id="hceres__var__form">
 		<h5>Détail des publications par année depuis 2022</h5>
+		<div class="dt__wt__buttons">
 HTML;
-
 		for ($i = 0; $i <= date('Y') - 2022; $i++){
 			$year = 2022 + $i;
-			$required = "";
-			if($year == 2022){
-				$required = "required";
-			}
 			$html .= <<<HTML
 		<div class="dt__year__$i dt__year">
 			<h2>$year</h2>
 			<label for="nb_publi_rang_a2">Nombre total de publications de rang A</label>
-				<input type="number" name="nb_publi_rang_a2" min="0" value="$nb_publi_rang_a2" $required>
+				<input type="number" name="nb_publi_rang_a2" min="0" value="$nb_publi_rang_a2" required>
 			<label for="nb_publi_premier">Nombre d'articles en 1er auteur</label>
-				<input type="number" name="nb_publi_premier" min="0" value="$nb_publi_premier" $required>
+				<input type="number" name="nb_publi_premier" min="0" value="$nb_publi_premier" required>
 			<label for="nb_article_doctorant">Nombre article derrière un doctorant</label>
-				<input type="number" name="nb_article_doctorant" min="0" value="$nb_article_doctorant" $required>
+				<input type="number" name="nb_article_doctorant" min="0" value="$nb_article_doctorant" required>
 			<label for="nb_article_rang_a_collab">Nombre d'articles rang A avec des collab. (autres laboratoires)</label>
-				<input type="number" name="nb_article_rang_a_collab" min="0" value="$nb_article_rang_a_collab" $required>
+				<input type="number" name="nb_article_rang_a_collab" min="0" value="$nb_article_rang_a_collab" required>
 			<label for="chapitre_ouvrage">Chapitre d'ouvrage / livre</label>
-				<input type="text" name="chapitre_ouvrage" value="$chapitre_ouvrage" $required>
+				<input type="text" name="chapitre_ouvrage" value="$chapitre_ouvrage" required>
 			<label for="nb_resume_comite_lecture">Nombre de résumé à des congrès avec comité de lecture</label>
-				<input type="number" name="nb_resume_comite_lecture" min="0" value="$nb_resume_comite_lecture" $required>
+				<input type="number" name="nb_resume_comite_lecture" min="0" value="$nb_resume_comite_lecture" required>
 		</div>
 HTML;
 		}
 
 		$html .= <<<HTML
+		</div>
+		<button id="showBtn" type="button">+</button>
+		<button id="hideBtn" type="button">-</button>		
 		<button type="submit" name="submit5">Envoyer</button>
 	</form>
 HTML;

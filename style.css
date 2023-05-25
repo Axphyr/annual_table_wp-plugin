@@ -234,3 +234,7 @@
 .dt__year h2 {
     margin-top: 20px;
 }
+
+.data-table-form > button {
+    margin-top: 20px;
+}
