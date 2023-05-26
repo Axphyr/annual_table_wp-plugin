@@ -114,7 +114,7 @@ function annual_data_table_install(): void
 	fclose($file);
 
 	// ajout des pages pour les différents blocks
-	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet" ];
+	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	for($i = 0; $i < 22; $i++){
 		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
 	}
@@ -194,13 +194,11 @@ function user_id_in_csv_file(): int
 
 	while (($row = fgetcsv($file)) !== false) {
 		if (in_array(ucfirst(wp_get_current_user()->first_name), $row)) {
-			rewind($file);
 			fclose($file);
 			return $id;
 		}
 		$id++;
 	}
-	rewind($file);
 	fclose($file);
 	return 0;
 }
@@ -265,12 +263,12 @@ function replace_or_pushes_values(int $column, array $values): void
 	fclose($file);
 }
 
-function getCell(int $column): string {
+function getCell(int $column, int $add = 0): string {
 	$file = fopen( ABSPATH . 'wp-admin/hceres/data-table.csv', 'r' );
 
 	$id = 1;
 	while (($row = fgetcsv($file)) !== false) {
-		if ($id == user_id_in_csv_file()) {
+		if ($id == user_id_in_csv_file() + $add) {
 			if (isset($row[$column])) {
 				fclose($file);
 				return $row[$column];
@@ -402,6 +400,24 @@ function averageAnswer(): float{
 
 	return $avg / $res;
 }
+
+function userTimes(): int {
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
+	$count = 0;
+
+	if ($file) {
+		while (($row = fgetcsv($file)) !== false) {
+			// Check if the second column contains the string "user"
+			if (str_contains($row[1], "user")) {
+				$count++;
+			}
+		}
+		fclose($file);
+	}
+
+	return $count;
+}
+
 
 function getUsersFromCSV(): array {
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
@@ -560,7 +576,7 @@ function transformString($str): string {
 
 add_shortcode('add_istep_annual_table_summary','summary');
 function summary(): string{
-	$lst = ["Informations Générales", "Discipline", "Thème de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement thèse ISTeP", "Encadrement thèse hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Séjours", "Colloques/Congrès", "Sociétés Savantes", "Responsabilités de projets de recherche", "Responsabilités, Expertises & administration de la recherche", "Responsabilités administratives", "Vulgarisation & dissémination scientifique", "Rayonnement", "Brevet"];
+	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	$year = date('Y');
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
@@ -967,71 +983,73 @@ add_shortcode('add_istep_annual_table_form_block_5','block5');
 function block5(): string{
 
 	if(isRegistered()){
-		if(isset($_POST["submit5"])){
-			$data = [
-				$_POST["nb_publi_rang_a2"],
-				$_POST["nb_publi_premier"],
-				$_POST["nb_article_doctorant"],
-				$_POST["nb_article_rang_a_collab"],
-				sanitize_text_field($_POST["chapitre_ouvrage"]),
-				$_POST["nb_resume_comite_lecture"],
-			];
-			replace_or_pushes_values(29, $data);
-		}
-
-		$nb_publi_rang_a2 = null;
-		$nb_publi_premier = null;
-		$nb_article_doctorant = null;
-		$nb_article_rang_a_collab = null;
-		$chapitre_ouvrage = null;
-		$nb_resume_comite_lecture = null;
-
-		if(getCell(29) !== " "){
-			$nb_publi_rang_a2 = (int)getCell(29);
-		}
-
-		if(getCell(30) !== " "){
-			$nb_publi_premier = (int)getCell(30);
-		}
-
-		if(getCell(31) !== " "){
-			$nb_article_doctorant = (int)getCell(31);
-		}
-
-		if(getCell(32) !== " "){
-			$nb_article_rang_a_collab = (int)getCell(32);
-		}
-
-		if(getCell(33) !== " "){
-			$chapitre_ouvrage = getCell(33);
-		}
-
-		if(getCell(34) !== " "){
-			$nb_resume_comite_lecture = (int)getCell(34);
-		}
-
 		$html = <<<HTML
 	<form method="POST" class="data-table-form" id="hceres__var__form">
 		<h5>Détail des publications par année depuis 2022</h5>
 		<div class="dt__wt__buttons">
 HTML;
 		for ($i = 0; $i <= date('Y') - 2022; $i++){
+			if(isset($_POST["submit5"])){
+				$data = [];
+				foreach ($_POST as $value) {
+					if (isset($value)) {
+						$data[] = $value;
+					}
+				}
+				array_pop($data);
+				var_dump($data);
+//				replace_or_pushes_values(29, $data);
+			}
+
+			$nb_publi_rang_a2 = null;
+			$nb_publi_premier = null;
+			$nb_article_doctorant = null;
+			$nb_article_rang_a_collab = null;
+			$chapitre_ouvrage = null;
+			$nb_resume_comite_lecture = null;
+
+			$arr = ["", " "];
+
+			if(!in_array(getCell(29, $i), $arr)){
+				$nb_publi_rang_a2 = (int)getCell(29, $i);
+			}
+
+			if(!in_array(getCell(30, $i), $arr)){
+				$nb_publi_premier = (int)getCell(30, $i);
+			}
+
+			if(!in_array(getCell(31, $i), $arr)){
+				$nb_article_doctorant = (int)getCell(31, $i);
+			}
+
+			if(!in_array(getCell(32, $i), $arr)){
+				$nb_article_rang_a_collab = (int)getCell(32, $i);
+			}
+
+			if(!in_array(getCell(33, $i), $arr)){
+				$chapitre_ouvrage = getCell(33, $i);
+			}
+
+			if(!in_array(getCell(34, $i), $arr)){
+				$nb_resume_comite_lecture = (int)getCell(34, $i);
+			}
+
 			$year = 2022 + $i;
 			$html .= <<<HTML
 		<div class="dt__year__$i dt__year">
 			<h2>$year</h2>
-			<label for="nb_publi_rang_a2">Nombre total de publications de rang A</label>
-				<input type="number" name="nb_publi_rang_a2" min="0" value="$nb_publi_rang_a2" required>
-			<label for="nb_publi_premier">Nombre d'articles en 1er auteur</label>
-				<input type="number" name="nb_publi_premier" min="0" value="$nb_publi_premier" required>
-			<label for="nb_article_doctorant">Nombre article derrière un doctorant</label>
-				<input type="number" name="nb_article_doctorant" min="0" value="$nb_article_doctorant" required>
-			<label for="nb_article_rang_a_collab">Nombre d'articles rang A avec des collab. (autres laboratoires)</label>
-				<input type="number" name="nb_article_rang_a_collab" min="0" value="$nb_article_rang_a_collab" required>
-			<label for="chapitre_ouvrage">Chapitre d'ouvrage / livre</label>
-				<input type="text" name="chapitre_ouvrage" value="$chapitre_ouvrage" required>
-			<label for="nb_resume_comite_lecture">Nombre de résumé à des congrès avec comité de lecture</label>
-				<input type="number" name="nb_resume_comite_lecture" min="0" value="$nb_resume_comite_lecture" required>
+			<label for="nb_publi_rang_a2__$i">Nombre total de publications de rang A</label>
+				<input type="number" name="nb_publi_rang_a2__$i" min="0" value="$nb_publi_rang_a2" required>
+			<label for="nb_publi_premier__$i">Nombre d'articles en 1er auteur</label>
+				<input type="number" name="nb_publi_premier__$i" min="0" value="$nb_publi_premier" required>
+			<label for="nb_article_doctorant__$i">Nombre article derrière un doctorant</label>
+				<input type="number" name="nb_article_doctorant__$i" min="0" value="$nb_article_doctorant" required>
+			<label for="nb_article_rang_a_collab__$i">Nombre d'articles rang A avec des collab. (autres laboratoires)</label>
+				<input type="number" name="nb_article_rang_a_collab__$i" min="0" value="$nb_article_rang_a_collab" required>
+			<label for="chapitre_ouvrage__$i">Chapitre d'ouvrage / livre</label>
+				<input type="text" name="chapitre_ouvrage__$i" value="$chapitre_ouvrage" required>
+			<label for="nb_resume_comite_lecture__$i">Nombre de résumé à des congrès avec comité de lecture</label>
+				<input type="number" name="nb_resume_comite_lecture__$i" min="0" value="$nb_resume_comite_lecture" required>
 		</div>
 HTML;
 		}
@@ -1828,28 +1846,28 @@ function block17(): string{
 			$responsabilite1_region_nom = getCell(102);
 		}
 
-		if(getCell(103) !== " "){
-			$responsabilite1_national_montant = getCell(103);
-		}
-
 		if(getCell(104) !== " "){
-			$responsabilite1_national_nom = getCell(104);
+			$responsabilite1_national_montant = getCell(104);
 		}
 
 		if(getCell(105) !== " "){
-			$responsabilite1_international_montant = getCell(105);
-		}
-
-		if(getCell(106) !== " "){
-			$responsabilite1_international_nom = getCell(106);
+			$responsabilite1_national_nom = getCell(105);
 		}
 
 		if(getCell(107) !== " "){
-			$responsabilite1_partenariat_montant = getCell(107);
+			$responsabilite1_international_montant = getCell(107);
 		}
 
 		if(getCell(108) !== " "){
-			$responsabilite1_partenariat_nom = getCell(108);
+			$responsabilite1_international_nom = getCell(108);
+		}
+
+		if(getCell(110) !== " "){
+			$responsabilite1_partenariat_montant = getCell(110);
+		}
+
+		if(getCell(111) !== " "){
+			$responsabilite1_partenariat_nom = getCell(111);
 		}
 
 		return <<<HTML
@@ -1904,7 +1922,7 @@ function block18(): string{
 				sanitize_text_field($_POST["responsabilite2_international_intitule"]),
 				$_POST["responsabilite2_international_annee"]
 			];
-			replace_or_pushes_values(110, $data);
+			replace_or_pushes_values(113, $data);
 		}
 
 		$responsabilite2_locale_intitule = null;
@@ -1914,28 +1932,28 @@ function block18(): string{
 		$responsabilite2_international_intitule = null;
 		$responsabilite2_international_annee = null;
 
-		if(getCell(110) !== " "){
-			$responsabilite2_locale_intitule = getCell(110);
-		}
-
-		if(getCell(111) !== " "){
-			$responsabilite2_locale_annee = getCell(111);
-		}
-
-		if(getCell(112) !== " "){
-			$responsabilite2_regional_intitule = getCell(112);
-		}
-
 		if(getCell(113) !== " "){
-			$responsabilite2_regional_annee = getCell(113);
+			$responsabilite2_locale_intitule = getCell(113);
 		}
 
 		if(getCell(114) !== " "){
-			$responsabilite2_international_intitule = getCell(114);
+			$responsabilite2_locale_annee = getCell(114);
 		}
 
-		if(getCell(115) !== " "){
-			$responsabilite2_international_annee = getCell(115);
+		if(getCell(116) !== " "){
+			$responsabilite2_regional_intitule = getCell(116);
+		}
+
+		if(getCell(117) !== " "){
+			$responsabilite2_regional_annee = getCell(117);
+		}
+
+		if(getCell(119) !== " "){
+			$responsabilite2_international_intitule = getCell(119);
+		}
+
+		if(getCell(120) !== " "){
+			$responsabilite2_international_annee = getCell(120);
 		}
 
 		return <<<HTML
@@ -1978,18 +1996,18 @@ function block19(): string{
 				sanitize_text_field($_POST["responsabilite3_intitule"]),
 				$_POST["responsabilite3_annee"]
 			];
-			replace_or_pushes_values(117, $data);
+			replace_or_pushes_values(122, $data);
 		}
 
 		$responsabilite3_intitule = null;
 		$responsabilite3_annee = null;
 
-		if(getCell(117) !== " "){
-			$responsabilite3_intitule = getCell(117);
+		if(getCell(122) !== " "){
+			$responsabilite3_intitule = getCell(122);
 		}
 
-		if(getCell(118) !== " "){
-			$responsabilite3_annee = getCell(118);
+		if(getCell(123) !== " "){
+			$responsabilite3_annee = getCell(123);
 		}
 
 		return <<<HTML
@@ -2018,18 +2036,18 @@ function block20(): string{
 				sanitize_text_field($_POST["vulgarisation_intitule"]),
 				$_POST["vulgarisation_annee"]
 			];
-			replace_or_pushes_values(120, $data);
+			replace_or_pushes_values(125, $data);
 		}
 
 		$vulgarisation_intitule = null;
 		$vulgarisation_annee = null;
 
-		if(getCell(120) !== " "){
-			$vulgarisation_intitule = getCell(120);
+		if(getCell(125) !== " "){
+			$vulgarisation_intitule = getCell(125);
 		}
 
-		if(getCell(121) !== " "){
-			$vulgarisation_annee = getCell(121);
+		if(getCell(126) !== " "){
+			$vulgarisation_annee = getCell(126);
 		}
 
 		return <<<HTML
@@ -2057,13 +2075,13 @@ function block21(): string{
 			$data = [
 				sanitize_text_field($_POST["rayonnement"])
 			];
-			replace_or_pushes_values(123, $data);
+			replace_or_pushes_values(128, $data);
 		}
 
 		$rayonnement = null;
 
-		if(getCell(123) !== " "){
-			$rayonnement = getCell(123);
+		if(getCell(128) !== " "){
+			$rayonnement = getCell(128);
 		}
 
 		return <<<HTML
@@ -2089,18 +2107,18 @@ function block22(): string{
 				sanitize_text_field($_POST["brevet_intitule"]),
 				$_POST["brevet_annee"]
 			];
-			replace_or_pushes_values(125, $data);
+			replace_or_pushes_values(130, $data);
 		}
 
 		$brevet_intitule = null;
 		$brevet_annee = null;
 
-		if(getCell(125) !== " "){
-			$brevet_intitule = getCell(125);
+		if(getCell(130) !== " "){
+			$brevet_intitule = getCell(130);
 		}
 
-		if(getCell(126) !== " "){
-			$brevet_annee = getCell(126);
+		if(getCell(131) !== " "){
+			$brevet_annee = getCell(131);
 		}
 
 		return <<<HTML
