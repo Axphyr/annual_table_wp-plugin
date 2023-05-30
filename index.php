@@ -228,8 +228,7 @@ function deleteAndInsertRowInCSV($file, $rowNumber, $newRow): void {
 	}
 }
 
-function replace_or_pushes_values(int $column, array $values): void
-{
+function push(int $column, array $values): void{
 	$values[] = "|";
 	if (isRegistered()) {
 		$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r+');
@@ -261,6 +260,61 @@ function replace_or_pushes_values(int $column, array $values): void
 		fputcsv($file, $values);
 	}
 	fclose($file);
+}
+
+function replace_or_pushes_values(int $column, array $values): void
+{
+	if($values[count($values) - 1] === "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw=="){
+		$beg = [];
+		array_pop($values);
+		for ($i = 0; $i < 6; $i++){
+			$beg[] = $values[$i];
+		}
+
+		push($column, $beg);
+		if(count($values) > 6){
+
+			$ini = [ucfirst(wp_get_current_user()->last_name), ucfirst(wp_get_current_user()->first_name)];
+			for($i = 0; $i < 27; $i++){
+				$ini[] = " ";
+			}
+
+			$file = ABSPATH . 'wp-admin/hceres/data-table.csv';
+
+			// Read the original file
+			$rows = [];
+			if (($handle = fopen($file, 'r')) !== false) {
+				while (($data = fgetcsv($handle)) !== false) {
+					$rows[] = $data;
+				}
+				fclose($handle);
+			}
+
+			$count = 0;
+
+			for ($i = 6; $i < count($values); $i += 6) {
+				$subArray = array_slice($values, $i, 6);
+				if($rows[user_id_in_csv_file() + $count][0] == ucfirst(wp_get_current_user()->last_name)){
+					$rows[user_id_in_csv_file() + $count] = array_merge($ini, $subArray);
+
+				} else{
+					// Insert the new row at the specified position
+					array_splice($rows, user_id_in_csv_file() + $count, 0, [array_merge($ini, $subArray)]);
+				}
+				$count++;
+			}
+
+			// Write the updated contents back to the file
+			if (($handle = fopen($file, 'w')) !== false) {
+				foreach ($rows as $row) {
+					fputcsv($handle, $row);
+				}
+				fclose($handle);
+			}
+		}
+	} else {
+		push($column, $values);
+	}
 }
 
 function getCell(int $column, int $add = 0): string {
@@ -692,7 +746,7 @@ function block1(): string{
 			$maxFields = count(fgetcsv($file));
 			fclose($file);
 
-			for($i = count($_POST) + 1; $i <= $maxFields - 1; $i++){
+			for($i = count($_POST) + 1; $i < $maxFields - 1; $i++){
 				$data[] = ' ';
 			}
 		}
@@ -988,27 +1042,29 @@ function block5(): string{
 		<h5>Détail des publications par année depuis 2022</h5>
 		<div class="dt__wt__buttons">
 HTML;
-		for ($i = 0; $i <= date('Y') - 2022; $i++){
-			if(isset($_POST["submit5"])){
-				$data = [];
-				foreach ($_POST as $value) {
-					if (isset($value)) {
-						$data[] = $value;
-					}
+
+		if(isset($_POST["submit5"])){
+			$data = [];
+			foreach ($_POST as $value) {
+				if (isset($value)) {
+					$data[] = $value;
 				}
-				array_pop($data);
-				var_dump($data);
-//				replace_or_pushes_values(29, $data);
 			}
+			array_pop($data);
+			$data[] = "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw==";
+			replace_or_pushes_values(29, $data);
+		}
 
-			$nb_publi_rang_a2 = null;
-			$nb_publi_premier = null;
-			$nb_article_doctorant = null;
-			$nb_article_rang_a_collab = null;
-			$chapitre_ouvrage = null;
-			$nb_resume_comite_lecture = null;
+		$nb_publi_rang_a2 = null;
+		$nb_publi_premier = null;
+		$nb_article_doctorant = null;
+		$nb_article_rang_a_collab = null;
+		$chapitre_ouvrage = null;
+		$nb_resume_comite_lecture = null;
 
-			$arr = ["", " "];
+		$arr = ["", " "];
+
+		for ($i = 0; $i <= date('Y') - 2022; $i++){
 
 			if(!in_array(getCell(29, $i), $arr)){
 				$nb_publi_rang_a2 = (int)getCell(29, $i);
@@ -1033,7 +1089,6 @@ HTML;
 			if(!in_array(getCell(34, $i), $arr)){
 				$nb_resume_comite_lecture = (int)getCell(34, $i);
 			}
-
 			$year = 2022 + $i;
 			$html .= <<<HTML
 		<div class="dt__year__$i dt__year">
