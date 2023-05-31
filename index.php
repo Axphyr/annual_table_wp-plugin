@@ -272,6 +272,24 @@ function replace_or_pushes_values(int $column, array $values): void
 		}
 
 		push($column, $beg);
+
+		$file = ABSPATH . 'wp-admin/hceres/data-table.csv';
+
+		// Read the original file
+		$rows = [];
+		if (($handle = fopen($file, 'r')) !== false) {
+			while (($data = fgetcsv($handle)) !== false) {
+				$rows[] = $data;
+			}
+			fclose($handle);
+		}
+
+		if(count($values) === 6){
+			for ($i = user_id_in_csv_file(); $i <= date('Y') - 2022 + user_id_in_csv_file(); $i++){
+				unset($rows[$i]);
+			}
+		}
+
 		if(count($values) > 6){
 
 			$ini = [ucfirst(wp_get_current_user()->last_name), ucfirst(wp_get_current_user()->first_name)];
@@ -279,22 +297,11 @@ function replace_or_pushes_values(int $column, array $values): void
 				$ini[] = " ";
 			}
 
-			$file = ABSPATH . 'wp-admin/hceres/data-table.csv';
-
-			// Read the original file
-			$rows = [];
-			if (($handle = fopen($file, 'r')) !== false) {
-				while (($data = fgetcsv($handle)) !== false) {
-					$rows[] = $data;
-				}
-				fclose($handle);
-			}
-
 			$count = 0;
 
 			for ($i = 6; $i < count($values); $i += 6) {
 				$subArray = array_slice($values, $i, 6);
-				if($rows[user_id_in_csv_file() + $count][0] == ucfirst(wp_get_current_user()->last_name)){
+				if(isset($rows[user_id_in_csv_file() + $count][0]) && $rows[user_id_in_csv_file() + $count][0] === ucfirst(wp_get_current_user()->last_name)){
 					$rows[user_id_in_csv_file() + $count] = array_merge($ini, $subArray);
 
 				} else{
@@ -303,14 +310,14 @@ function replace_or_pushes_values(int $column, array $values): void
 				}
 				$count++;
 			}
+		}
 
-			// Write the updated contents back to the file
-			if (($handle = fopen($file, 'w')) !== false) {
-				foreach ($rows as $row) {
-					fputcsv($handle, $row);
-				}
-				fclose($handle);
+		// Write the updated contents back to the file
+		if (($handle = fopen($file, 'w')) !== false) {
+			foreach ($rows as $row) {
+				fputcsv($handle, $row);
 			}
+			fclose($handle);
 		}
 	} else {
 		push($column, $values);
@@ -478,6 +485,8 @@ function getUsersFromCSV(): array {
 
 	$users = [];
 
+	$present = [];
+
 	// Skip the header rows
 	fgetcsv($file);
 	fgetcsv($file);
@@ -487,8 +496,12 @@ function getUsersFromCSV(): array {
 		$firstName = $row[1];
 		$lastName = $row[0];
 
-		// Add the user to the array
-		$users[] = $firstName . ' ' . $lastName;
+		if(!in_array($firstName, $present)){
+			// Add the user to the array
+			$users[] = $firstName . ' ' . $lastName;
+		}
+
+		$present[] = $firstName;
 	}
 
 	fclose($file);
@@ -672,6 +685,19 @@ HTML;
 	return $html;
 }
 
+function countStringOccurrencesInFirstPosition($arr, $str): int {
+	$count = 0;
+
+	foreach ($arr as $innerArray) {
+		if (!empty($innerArray) && $innerArray[0] === $str) {
+			$count++;
+		}
+	}
+
+	return $count;
+}
+
+
 function deleteSelf(): void {
 	$filePath = ABSPATH . 'wp-admin/hceres/data-table.csv';
 
@@ -684,6 +710,10 @@ function deleteSelf(): void {
 		fclose($file);
 	}
 
+	for ($i = user_id_in_csv_file() - 1; $i <= countStringOccurrencesInFirstPosition($rows, ucfirst(wp_get_current_user()->last_name)) + user_id_in_csv_file() - 1; $i++){
+		unset($rows[$i]);
+		var_dump(countStringOccurrencesInFirstPosition($rows, ucfirst(wp_get_current_user()->last_name)));
+	}
 	unset($rows[user_id_in_csv_file()-1]);
 
 	// Recreate the CSV file with the updated data
@@ -708,7 +738,7 @@ HTML;
 
 		return <<<HTML
 	<form class="data-table-delete" method="post">
-		<button class="dt__delete" name="dt__delete" onclick="return confirmDelete()" type="submit">Supprimer mes données</button>
+		<button class="dt__delete" name="dt__delete" onclick="return confirmDelete()" type="submit">Supprimer mes données HCERES</button>
 	</form>
 HTML;
 	}else{
@@ -1068,27 +1098,40 @@ HTML;
 
 			if(!in_array(getCell(29, $i), $arr)){
 				$nb_publi_rang_a2 = (int)getCell(29, $i);
+			} else {
+				$nb_publi_rang_a2 = null;
 			}
 
 			if(!in_array(getCell(30, $i), $arr)){
 				$nb_publi_premier = (int)getCell(30, $i);
+			} else {
+				$nb_publi_premier = null;
 			}
 
 			if(!in_array(getCell(31, $i), $arr)){
 				$nb_article_doctorant = (int)getCell(31, $i);
+			} else {
+				$nb_article_doctorant = null;
 			}
 
 			if(!in_array(getCell(32, $i), $arr)){
 				$nb_article_rang_a_collab = (int)getCell(32, $i);
+			} else {
+				$nb_article_rang_a_collab = null;
 			}
 
 			if(!in_array(getCell(33, $i), $arr)){
 				$chapitre_ouvrage = getCell(33, $i);
+			} else {
+				$chapitre_ouvrage = null;
 			}
 
 			if(!in_array(getCell(34, $i), $arr)){
 				$nb_resume_comite_lecture = (int)getCell(34, $i);
+			} else {
+				$nb_resume_comite_lecture = null;
 			}
+
 			$year = 2022 + $i;
 			$html .= <<<HTML
 		<div class="dt__year__$i dt__year">

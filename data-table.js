@@ -93,6 +93,7 @@ if (window.location.pathname === "/dt-formulaire-publications-2/") {
     const momther = document.querySelector(".dt__wt__buttons");
     const showButton = document.getElementById("showBtn");
     const hideButton = document.getElementById("hideBtn");
+    const dtYearElements = document.querySelectorAll('.dt__year');
     hideButton.disabled = true;
     hideButton.style.backgroundColor = "gray";
 
@@ -107,6 +108,15 @@ if (window.location.pathname === "/dt-formulaire-publications-2/") {
     hideButton.addEventListener("click", hideLastSection);
     showButton.addEventListener("click", buttonsColor);
     hideButton.addEventListener("click", buttonsColor);
+    document.addEventListener("DOMContentLoaded", buttonsColor);
+
+    for (let i = 1; i < dtYearElements.length; i++) {
+        const firstInputElement = dtYearElements[i].querySelector('input');
+        if (firstInputElement && firstInputElement.value.trim() !== '') {
+            momther.appendChild(formSections[formSections.length - 1]);
+            formSections.pop();
+        }
+    }
 
     function showNextSection() {
         if (formSections.length !== 0) {
@@ -114,10 +124,10 @@ if (window.location.pathname === "/dt-formulaire-publications-2/") {
             formSections.pop()
         }
     }
-
+    console.log(formSections);
     function buttonsColor() {
         const sections = Array.from(document.querySelectorAll("#hceres__var__form .dt__year"));
-
+        console.log(sections);
         if (formSections.length === 0) {
         showButton.disabled = true;
         showButton.style.backgroundColor = "gray";
