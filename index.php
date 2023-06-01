@@ -746,28 +746,45 @@ HTML;
 	}
 }
 
+function sanitize_form_values($form_data): array {
+	$sanitized_data = [];
+	foreach ($form_data as $value) {
+		if (isset($value)) {
+			if (is_string($value)) {
+				if (is_date_field($value)) {
+					$sanitized_data[] = format_date_field($value);
+				} else {
+					$sanitized_data[] = sanitize_text_field($value);
+				}
+			} else {
+				$sanitized_data[] = $value;
+			}
+		} else {
+			$sanitized_data[] = "";
+		}
+	}
+
+	array_pop($sanitized_data);
+	return $sanitized_data;
+}
+
+function is_date_field($value): bool {
+	$date_format = "Y-m-d";
+	$parsed_date = date_parse_from_format($date_format, $value);
+	return $parsed_date['error_count'] === 0 && $parsed_date['warning_count'] === 0;
+}
+
+function format_date_field($value): string {
+	return date("m/Y", strtotime($value));
+}
+
 add_shortcode('add_istep_annual_table_form_block_1','block1');
 function block1(): string{
 	$name = ucfirst(wp_get_current_user()->first_name);
 	$last_name = ucfirst(wp_get_current_user()->last_name);
 
 	if(isset($_POST["submit1"])){
-		$data = [$last_name,
-			$name,
-			$_POST["equipe1"],
-			$_POST["equipe2"],
-			$_POST["equipe3"],
-			sanitize_text_field($_POST["pole"]),
-			sanitize_text_field($_POST["fonction"]),
-			sanitize_text_field($_POST["corps"]),
-			sanitize_text_field($_POST["rang"]),
-			date("m/Y", strtotime($_POST["date_entree"])),
-			date("m/Y", strtotime($_POST["date_sortie"])),
-			$_POST["annee_naissance"],
-			$_POST["annee_obtention_these"],
-			$_POST["annee_obtention_hdr"],
-			$_POST["annee_obtention_these_etat"]
-		];
+		$data = array_merge([$last_name, $name],sanitize_form_values($_POST));
 
 		if(!isRegistered()){
 			// searches the number of fields in the csv file and stocks it
@@ -830,9 +847,6 @@ function block1(): string{
 		$prisme = "selected";
 	}
 
-	$pole = getCell(5);
-	$fonction = getCell(6);
-	$corps = getCell(7);
 	$rang = getCell(8);
 	$year = date('Y');
 
@@ -841,7 +855,74 @@ function block1(): string{
 	$annee_hdr = null;
 	$annee_etat = null;
 	$date_entree = null;
-	$date_sortie = null;
+	$date_sortie = "";
+
+	$poles = [
+		"Secrétariat",
+		"Direction",
+		"Gestion administrative",
+		"Gestion financière",
+		"Informatique",
+		"Cartographie, SIG",
+		"Communication",
+		"Plateformes d’analyses",
+		"Assistant de prévention"
+	];
+
+	$selectedPole = getCell(5);
+
+	$fonctions = [
+		"Enseignant-Chercheur",
+		"Direction",
+		"Gestion administrative",
+		"Gestion financière",
+		"Gestion administrative",
+		"Direction UMR",
+		"Direction adjointe UMR",
+		"Secrétaire général",
+		"Responsable gestion administrative",
+		"Responsable gestion financière",
+		"ATER",
+		"Doctorant",
+		"Cartographe",
+		"Sciences de l’information géographique",
+		"Traitement des données",
+		"Gestion base de données",
+		"Science et caractérisation de matériaux",
+		"Litholamellage",
+		"Gestion d’application / assistant support",
+		"Analyse chimique",
+		"Développement d’expérimentation",
+		"Calcul Scientifique",
+		"Communication",
+		"Bénévole",
+		"CRCT",
+		"Emérite",
+		"Détachement"
+	];
+
+	$selectedFonction = getCell(6);
+
+	$corps = [
+		"AI",
+		"AJT",
+		"ATER",
+		"Bénévole",
+		"CR",
+		"DR",
+		"DREM",
+		"IE",
+		"IR",
+		"MCF",
+		"MCFEM",
+		"PAST",
+		"Post-doc",
+		"PR",
+		"PREM",
+		"TCH"
+	];
+
+	$selectedCoprs = getCell(7);
 
 	if(isRegistered()){
 		$annee_naissance = (int)getCell(11);
@@ -849,10 +930,12 @@ function block1(): string{
 		$annee_hdr = (int)getCell(13);
 		$annee_etat = (int)getCell(14);
 		$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(9))));
-		$date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(10))));
+		if(getCell(10) !== ""){
+			$date_sortie = 'value="' . date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(10)))) . '"';
+		}
 	}
 
-	return <<<HTML
+	$html =  <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Informations générales</h5>
 		<label for="last_name">Nom</label>
@@ -883,17 +966,65 @@ function block1(): string{
 			<option value="PRISME" $prisme>PRISME</option>
 		</select>
 		<label for="pole">Pôles des services généraux (le cas échéant)</label>
-			<input type="text" name="pole" value="$pole" required>
+		<select name="poles">
+			<option value=" "></option>
+HTML;
+
+	$selectedP = "";
+	for ($i = 0; $i < count($poles); $i++){
+		if($poles[$i] === $selectedPole){
+			$selectedP = "selected";
+		}
+		$html .= <<<HTML
+			<option value="$poles[$i]" $selectedP>$poles[$i]</option>
+HTML;
+		$selectedP = "";
+	}
+
+	$html .= <<<HTML
+		</select>
 		<label for="fonction">Fonction exercée</label>
-			<input type="text" name="fonction" value="$fonction" required>
+		<select name="fonction">
+			<option value=" "></option>
+HTML;
+
+	$selectedF = "";
+	for ($i = 0; $i < count($fonctions); $i++){
+		if($fonctions[$i] === $selectedFonction){
+			$selectedF = "selected";
+		}
+		$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedF>$fonctions[$i]</option>
+HTML;
+		$selectedF = "";
+	}
+
+	$html .= <<<HTML
+		</select>
 		<label for="corps">Corps</label>
-			<input type="text" name="corps" value="$corps" required>
+		<select name="corps">
+			<option value=" "></option>
+HTML;
+
+	$selectedC = "";
+	for ($i = 0; $i < count($corps); $i++){
+		if($corps[$i] === $selectedCoprs){
+			$selectedC = "selected";
+		}
+		$html .= <<<HTML
+			<option value="$corps[$i]" $selectedC>$corps[$i]</option>
+HTML;
+		$selectedC = "";
+	}
+
+	$html .= <<<HTML
+		</select>
 		<label for="rang">Rang</label>
 			<input type="text" name="rang" value="$rang" required>
 		<label for="date_entree">Date entrée (MM/AAAA)</label>
 			<input type="date" name="date_entree" value="$date_entree" required>
 		<label for="date_sortie">Date sortie (MM/AAAA)</label>
-			<input type="date" name="date_sortie" value="$date_sortie" required>
+			<input type="date" name="date_sortie" $date_sortie>
 		<label for="annee_naissance">année naissance</label>
 			<input type="number" min="1900" max="$year" name="annee_naissance" value="$annee_naissance" required>
 		<label for="annee_obtention_these">année obtention thèse</label>
@@ -905,6 +1036,8 @@ function block1(): string{
 		<button type="submit" name="submit1">Envoyer</button>
 	</form>
 HTML;
+
+		return $html;
 }
 
 add_shortcode('add_istep_annual_table_form_block_2','block2');
@@ -919,28 +1052,74 @@ function block2(): string{
 			replace_or_pushes_values(16, $data);
 		}
 
-		$disc1 = null;
-		$disc2 = null;
+		$disciplines = [
+			"Géochimie",
+			"Volcanologie",
+			"Pétrologie",
+			"Minéralogie",
+			"Sismologie",
+			"Gravimétrie-Géodésie",
+			"Magnétisme",
+			"Géologie",
+			"Tectonique",
+			"Géophysique",
+			"Sédimentologie",
+			"Paléontologie",
+			"Paléoenvironnement",
+			"Pédologie",
+			"Géomorphologie",
+			"Stratigraphie",
+			"Géodynamique",
+			"Hydrologie-hydrogéologie",
+			"Pétrophysique"
+		];
 
-		if(getCell(16) !== " "){
-			$disc1 = getCell(16);
-		}
-
-		if(getCell(17) !== " "){
-			$disc2 = getCell(17);
-		}
-
-		return <<<HTML
-	<form method="POST" class="data-table-form">
+		$html = <<<HTML
+		<form method="POST" class="data-table-form">
 		<h5>Discipline</h5>
 		<label for="discipline1">Discipline 1</label>
-			<input type="text" name="discipline1" value="$disc1" required>
-		<label for="discipline2">Discipline 2</label>
-			<input type="text" name="discipline2" value="$disc2" required>
-	<button type="submit" name="submit2">Envoyer</button>
-	</form>
-
+		<select name="discipline1" id="select1">
+			<option value=" "></option>
 HTML;
+
+
+		$selectedDisc1 = getCell(16);
+		$selectedDisc2 = getCell(17);
+
+		$selectedD = "";
+		for ($i = 0; $i < count($disciplines); $i++){
+			if($disciplines[$i] === $selectedDisc1){
+				$selectedD = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$disciplines[$i]" $selectedD>$disciplines[$i]</option>
+HTML;
+			$selectedD = "";
+		}
+
+		$html .= <<<HTML
+		</select>
+		<label for="discipline2">Discipline 2</label>
+		<select name="discipline2" id="select2">
+			<option value=" "></option>
+HTML;
+
+		for ($i = 0; $i < count($disciplines); $i++){
+			if($disciplines[$i] === $selectedDisc2){
+				$selectedD = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$disciplines[$i]" $selectedD>$disciplines[$i]</option>
+HTML;
+			$selectedD = "";
+		}
+
+		$html .= <<<HTML
+		</select>
+		<button type="submit" name="submit2">Envoyer</button>
+		</form>
+HTML;
+		return $html;
 	} else{
 		return <<<HTML
 			<p class="acces_denied">Accès non autorisé</p>
@@ -1084,13 +1263,6 @@ HTML;
 			$data[] = "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw==";
 			replace_or_pushes_values(29, $data);
 		}
-
-		$nb_publi_rang_a2 = null;
-		$nb_publi_premier = null;
-		$nb_article_doctorant = null;
-		$nb_article_rang_a_collab = null;
-		$chapitre_ouvrage = null;
-		$nb_resume_comite_lecture = null;
 
 		$arr = ["", " "];
 
@@ -1392,8 +1564,6 @@ function block9(): string{
 		$encadrement_istep_titre_these = null;
 		$encadrement_istep_etablissement = null;
 		$encadrement_istep_numero_ed = null;
-		$encadrement_istep_financement_doctorat = null;
-		$encadrement_istep_fonction = null;
 
 
 		if(getCell(53) !== " "){
@@ -1434,15 +1604,7 @@ function block9(): string{
 			$encadrement_istep_numero_ed = getCell(61);
 		}
 
-		if(getCell(62) !== " "){
-			$encadrement_istep_financement_doctorat = getCell(62);
-		}
-
-		if(getCell(63) !== " "){
-			$encadrement_istep_fonction = getCell(63);
-		}
-
-		return <<<HTML
+		$html = <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse ISTeP à partir de 2022</h5>
 		<label for="encadrement_istep_nom">Nom</label>
@@ -1468,13 +1630,68 @@ function block9(): string{
 		<label for="encadrement_istep_numero_ed">Numéro de l'ED de rattachement</label>
 			<input type="text" name="encadrement_istep_numero_ed" value="$encadrement_istep_numero_ed" required>
 		<label for="encadrement_istep_financement_doctorat">Financement du doctorat</label>
-			<input type="text" name="encadrement_istep_financement_doctorat" value="$encadrement_istep_financement_doctorat" required>
+		<select name="encadrement_istep_financement_doctorat">
+			<option value=" "></option>
+HTML;
+
+		$financement = [
+			"Contrat Doctoral",
+			"Collectivités Territoriales",
+			"Agence Française de Financement Recherche",
+			"CIFRE",
+			"Financements Privés France",
+			"Comission Européenne",
+			"Financements Etrangers",
+			"Formation Continue",
+			"Organismes Internationaux",
+			"Autres"
+		];
+
+		$selectedFinancement = getCell(62);
+		$selectedDirection = getCell(63);
+
+		$selectedF = "";
+		for ($i = 0; $i < count($financement); $i++){
+			if($financement[$i] === $selectedFinancement){
+				$selectedF = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$financement[$i]" $selectedF>$financement[$i]</option>
+HTML;
+			$selectedF = "";
+		}
+
+		$html .= <<<HTML
+		</select>
 		<label for="encadrement_istep_fonction">Fonction de direction ou encadrement ?</label>
-			<input type="text" name="encadrement_istep_fonction" value="$encadrement_istep_fonction" required>
+		<select name="encadrement_istep_fonction">
+			<option value=" "></option>
+HTML;
+
+		$direction = [
+			"Direction",
+			"Co-direction",
+			"Encadrant",
+			"Co-encadrant"
+		];
+
+		$selectedD = "";
+		for ($i = 0; $i < count($direction); $i++){
+			if($direction[$i] === $selectedDirection){
+				$selectedD = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$direction[$i]" $selectedD>$direction[$i]</option>
+HTML;
+			$selectedD = "";
+		}
+
+		$html .= <<<HTML
+		</select>
 		<button type="submit" name="submit9">Envoyer</button>
 	</form>
-
 HTML;
+		return $html;
 	} else{
 		return <<<HTML
 			<p class="acces_denied">Accès non autorisé</p>
@@ -1516,8 +1733,6 @@ function block10(): string{
 		$encadrement_histep_etablissement = null;
 		$encadrement_histep_numero_ed = null;
 		$encadrement_histep_etablissement_rattachement_direction_these = null;
-		$encadrement_histep_financement_doctorat = null;
-		$encadrement_histep_fonction = null;
 
 
 		if(getCell(65) !== " "){
@@ -1562,15 +1777,7 @@ function block10(): string{
 			$encadrement_histep_etablissement_rattachement_direction_these = getCell(74);
 		}
 
-		if(getCell(75) !== " "){
-			$encadrement_histep_financement_doctorat = getCell(75);
-		}
-
-		if(getCell(76) !== " "){
-			$encadrement_histep_fonction = getCell(76);
-		}
-
-		return <<<HTML
+		$html = <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Encadrement thèse hors ISTeP à partir de 2022</h5>
 		<label for="encadrement_histep_nom">Nom</label>
@@ -1598,13 +1805,68 @@ function block10(): string{
 		<label for="encadrement_histep_etablissement_rattachement_direction_these">Etablissement de rattachement de la direction de thèse</label>
 			<input type="text" name="encadrement_histep_etablissement_rattachement_direction_these" value="$encadrement_histep_etablissement_rattachement_direction_these" required>
 		<label for="encadrement_histep_financement_doctorat">Financement du doctorat</label>
-			<input type="text" name="encadrement_histep_financement_doctorat" value="$encadrement_histep_financement_doctorat" required>
+		<select name="encadrement_histep_financement_doctorat">
+			<option value=" "></option>
+HTML;
+
+		$financement = [
+			"Contrat Doctoral",
+			"Collectivités Territoriales",
+			"Agence Française de Financement Recherche",
+			"CIFRE",
+			"Financements Privés France",
+			"Comission Européenne",
+			"Financements Etrangers",
+			"Formation Continue",
+			"Organismes Internationaux",
+			"Autres"
+		];
+
+		$selectedFinancement = getCell(75);
+		$selectedDirection = getCell(76);
+
+		$selectedF = "";
+		for ($i = 0; $i < count($financement); $i++){
+			if($financement[$i] === $selectedFinancement){
+				$selectedF = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$financement[$i]" $selectedF>$financement[$i]</option>
+HTML;
+			$selectedF = "";
+		}
+
+		$html .= <<<HTML
+		</select>
 		<label for="encadrement_histep_fonction">Fonction de direction ou encadrement ?</label>
-			<input type="text" name="encadrement_histep_fonction" value="$encadrement_histep_fonction" required>
+		<select name="encadrement_histep_fonction">
+			<option value=" "></option>
+HTML;
+
+		$direction = [
+			"Direction",
+			"Co-direction",
+			"Encadrant",
+			"Co-encadrant"
+		];
+
+		$selectedD = "";
+		for ($i = 0; $i < count($direction); $i++){
+			if($direction[$i] === $selectedDirection){
+				$selectedD = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$direction[$i]" $selectedD>$direction[$i]</option>
+HTML;
+			$selectedD = "";
+		}
+
+		$html .= <<<HTML
+		</select>
 		<button type="submit" name="submit10">Envoyer</button>
 	</form>
-
 HTML;
+		return $html;
 	} else{
 		return <<<HTML
 			<p class="acces_denied">Accès non autorisé</p>
