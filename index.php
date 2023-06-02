@@ -1028,11 +1028,11 @@ HTML;
 		<label for="annee_naissance">année naissance</label>
 			<input type="number" min="1900" max="$year" name="annee_naissance" value="$annee_naissance" required>
 		<label for="annee_obtention_these">année obtention thèse</label>
-			<input type="number" min="1900" max="$year" name="annee_obtention_these" value="$annee_these" required>
+			<input type="number" min="1900" max="$year" name="annee_obtention_these" value="$annee_these">
 		<label for="annee_obtention_hdr">année obtention HDR</label>
-			<input type="number" min="1900" max="$year" name="annee_obtention_hdr" value="$annee_hdr" required>
+			<input type="number" min="1900" max="$year" name="annee_obtention_hdr" value="$annee_hdr">
 		<label for="annee_obtention_these_etat">année obtention Thèse d'état</label>
-			<input type="number" min="1900" max="$year" name="annee_obtention_these_etat" value="$annee_etat" required>
+			<input type="number" min="1900" max="$year" name="annee_obtention_these_etat" value="$annee_etat">
 		<button type="submit" name="submit1">Envoyer</button>
 	</form>
 HTML;

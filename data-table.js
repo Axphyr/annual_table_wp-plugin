@@ -159,4 +159,31 @@ if (window.location.pathname === "/dt-formulaire-publications-2/") {
     }
 }
 
+if (window.location.pathname === "/dt-formulaire-discipline/"){
+    function disableOptions(select1, select2) {
+        const selectedValue1 = select1.value;
+        const selectedValue2 = select2.value;
 
+        select1.querySelectorAll('option').forEach(function(option) {
+            option.disabled = (option.value === selectedValue2 && selectedValue2 !== '');
+        });
+
+        select2.querySelectorAll('option').forEach(function(option) {
+            option.disabled = (option.value === selectedValue1 && selectedValue1 !== '');
+        });
+    }
+
+    const select1 = document.getElementById('select1');
+    const select2 = document.getElementById('select2');
+
+    // Call the disableOptions function on page load
+    disableOptions(select1, select2);
+
+    select1.addEventListener('change', function() {
+        disableOptions(select1, select2);
+    });
+
+    select2.addEventListener('change', function() {
+        disableOptions(select1, select2);
+    });
+}
