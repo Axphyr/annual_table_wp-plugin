@@ -87,6 +87,29 @@ function confirmDelete() {
     return window.confirm("Voulez-vous vraiment supprimer vos données?");
 }
 
+const currentPage = window.location.pathname;
+
+if (currentPage.startsWith('/dt-')) {
+    const form = document.querySelector('.data-table-form');
+
+    if (form) {
+        const labels = form.querySelectorAll('label');
+        console.log(labels);
+        labels.forEach(function (label) {
+            const inputId = label.getAttribute('for');
+            const input = form.querySelector('#' + inputId);
+
+            if (input && input.required) {
+                const asterisk = document.createElement('span');
+                asterisk.textContent = '*';
+                asterisk.style.color = 'red';
+                asterisk.style.marginLeft = '5px';
+
+                label.appendChild(asterisk);
+            }
+        });
+    }
+}
 
 if (window.location.pathname === "/dt-formulaire-publications-2/") {
     const formSections = Array.from(document.querySelectorAll("#hceres__var__form .dt__year"));
@@ -173,8 +196,8 @@ if (window.location.pathname === "/dt-formulaire-discipline/"){
         });
     }
 
-    const select1 = document.getElementById('select1');
-    const select2 = document.getElementById('select2');
+    const select1 = document.getElementById('discipline1');
+    const select2 = document.getElementById('discipline2');
 
     // Call the disableOptions function on page load
     disableOptions(select1, select2);
