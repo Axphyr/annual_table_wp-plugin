@@ -16,34 +16,33 @@ function enqueue_my_scripts_and_styles(): void {
 }
 add_action('wp_enqueue_scripts', 'enqueue_my_scripts_and_styles');
 
-/**
- * Créer le fichier xls lors de l'activation du plugin
+/** Creates the csv file with the headers and initializes the plugin
  * @return void
  */
 function annual_data_table_install(): void
 {
-	// définit le nom du répertoire et le crée s'il n'existe pas
+	// defines the directories name
 	$dirName = 'hceres';
 
 	if (!is_dir($dirName)) {
 		mkdir($dirName);
 	}
 
-	// Définit le nom du fichier ainsi que son chemin
+	// defines the files name and path
 	$filename = 'data-table.csv';
 	$filepath = $dirName . '/' . $filename;
 
-	// Vérifie si le fichier existe déjà
+	// verifies if the file exists or not
 	if (file_exists($filepath)) {
-		// Supprime le fichier
+		// erases the file
 		unlink($filepath);
 	}
 
-	// Définit les données à inscrire dans le fichier CSV
+	// defines the csv file's headers
 	$data = array(
 		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilité de projets de recherche (ou tasks indépendantes)', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilités, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
-		// Catégories (un retour par catégories et espaces pour centrer)
-		// les ' ' ne servent qu'à centrer les catégories par rapport au nombre de champs
+		// categories (a backspace per categories and spaces to align)
+		// ' ' are here only to center the headers
 		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations générales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
 			'Discipline', ' ', '|',
 			' ', '|',
@@ -72,7 +71,7 @@ function annual_data_table_install(): void
 			' ', '|',
 			'Brevet', ' ', '|'),
 
-		// Champs par catégories (un retour par catégories)
+		// fields per categories (a backspace per categories)
 		array('NOM ', 'PRENOM', 'Equipe 2017-2022', 'Equipe 2022-2025', 'Equipe 2025-…', 'Pôles des services généraux (le cas échéant)', 'Fonction exercée', 'Corps', 'Rang', 'Date entrée (MM/AAAA)', 'Date sortie (MM/AAAA)', 'année naissance', 'année obtention thèse', 'année obtention HDR', "annee obtention thèse d'état", '|',
 			'Discipline	1', 'Discipline	2', '|',
 			'Thèmes de recherche','|',
@@ -102,18 +101,18 @@ function annual_data_table_install(): void
 			"Intitulé de l'élément et votre fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|')
 	);
 
-	// Ouvre le fichier pour l'écriture
+	// opens the file for writing
 	$file = fopen($filepath, 'w');
 
-	// Inscrit les données dans le fichier
+	// inserts the headers into the file
 	foreach ($data as $row) {
 		fputcsv($file, $row);
 	}
 
-	// Ferme le fichier
+	// closes the file
 	fclose($file);
 
-	// ajout des pages pour les différents blocks
+	// adds WP pages for every headers
 	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	for($i = 0; $i < 22; $i++){
 		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
@@ -121,6 +120,9 @@ function annual_data_table_install(): void
 }
 register_activation_hook( __FILE__, 'annual_data_table_install' );
 
+/** Function to delete custom pages on plugin deactivation.
+ * @return void
+ */
 function delete_custom_pages(): void {
 	// Get all page IDs where the title starts with "(DT) Formulaire"
 	$args = array(
@@ -132,9 +134,11 @@ function delete_custom_pages(): void {
 		's'              => '(DT) Formulaire',
 	);
 
+	// starts a querry to search the pages
 	$query = new WP_Query($args);
 	$page_ids = array();
 
+	// registers the page's id
 	while ($query->have_posts()) {
 		$query->the_post();
 		$page_ids[] = get_the_ID();
@@ -147,10 +151,20 @@ function delete_custom_pages(): void {
 		wp_delete_post($page_id, true);
 	}
 }
+
+/**
+ * function to launch on plugin deactivation
+ */
 register_deactivation_hook(__FILE__, 'delete_custom_pages');
 
 add_shortcode('add_istep_annual_table_download','download_annual_table');
 
+/** Function to create custom pages with a specific shortcode.
+ * @param $title
+ * @param $content
+ *
+ * @return void
+ */
 function create_custom_pages($title, $content): void {
 	$shortcode = "[" . $content . "]";
 	// Create the page post object
@@ -165,44 +179,74 @@ function create_custom_pages($title, $content): void {
 	wp_insert_post($page);
 }
 
+/** Returns the button to download the csv file.
+ * @return string button html element
+ */
 function download_annual_table(): string {
 	return <<<HTML
 	<button><a class="dt-download" href="/wp-admin/hceres/data-table.csv" download> Accéder au fichier </a></button>
 HTML;
 }
 
+/** Searches in the csv file if the current WP user is registered by looking
+ * at the WP user's last name.
+ * @return bool returns true if the user is found, false else.
+ */
 function isRegistered(): bool {
+	// opens the file
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
-	$is_registered = false;
-	$last_name = ucfirst(wp_get_current_user()->last_name);
 
+	// initializes the returned boolean
+	$is_registered = false;
+
+	// searches through the file for an occurence of the WP user's last name
 	while (($row = fgetcsv($file)) !== false) {
-		if (in_array($last_name, $row)) {
+		if (ucfirst(wp_get_current_user()->last_name) === $row[0]) {
 			$is_registered = true;
 			break;
 		}
 	}
 
+	// closes the file
 	fclose($file);
+
 	return $is_registered;
 }
 
+/** Searches in the file the first occurence of a user's name to locate him.
+ * @return int the id of the user in the csv file
+ */
 function user_id_in_csv_file(): int
 {
+	// opens the file
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
+
+	// initializes the user's id to 1
 	$id = 1;
 
+	// searches through the file for the user's last name
 	while (($row = fgetcsv($file)) !== false) {
 		if (in_array(ucfirst(wp_get_current_user()->first_name), $row)) {
 			fclose($file);
 			return $id;
 		}
+		// increments the id variable if the user is not found on the current row
 		$id++;
 	}
+
+	// closes the file
 	fclose($file);
+
 	return 0;
 }
 
+/** Deletes the user's row in the csv file to replace by the new one
+ * @param $file
+ * @param $rowNumber
+ * @param $newRow
+ *
+ * @return void
+ */
 function deleteAndInsertRowInCSV($file, $rowNumber, $newRow): void {
 	// Read the original file
 	$rows = [];
@@ -228,54 +272,104 @@ function deleteAndInsertRowInCSV($file, $rowNumber, $newRow): void {
 	}
 }
 
+/** Replaces the values of the csv file by new ones, or adds a new line if the
+ * user is not registered in the file
+ * @param int $column
+ * @param array $values
+ *
+ * @return void
+ */
 function push(int $column, array $values): void{
+
+	// adds a "|" element to act as a separator between the headers
 	$values[] = "|";
+
+	// looks if the user is registered into the file
 	if (isRegistered()) {
+
+		// opens the file
 		$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r+');
 
-		// Skip the first rows
+		// Skip rows to reach the user
 		for ($i = 1; $i < user_id_in_csv_file(); $i++) {
 			fgetcsv($file);
 		}
 
-		// Get the nth row as an array
+		// Get the user's row as an array
 		$row = fgetcsv($file);
 
-		// Modify the original array if needed
+		// Modify the original array if the array is to short
 		if(count($row) <= $column + count($values)) {
 			for($i = 0; $i < $column + count($values); $i++) {
 				$row[] = " ";
 			}
 		}
 
-		// Modify the original values
+		// Modify the original values by adding the new ones
 		for($i = $column; $i < count($values) + $column; $i++){
 			$row[$i] = $values[$i-$column];
 		}
 
+		// deletes the old row from the file and adds the new one
 		deleteAndInsertRowInCSV(ABSPATH . 'wp-admin/hceres/data-table.csv', user_id_in_csv_file(), $row);
 
 	} else{
+		// adds the new values to the csv file in append mode if the user is not found
 		$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'a');
 		fputcsv($file, $values);
 	}
 	fclose($file);
 }
 
+/** Searches the number of times the user appears in the csv file
+ * @return int
+ */
+function userTime(): int {
+	$count = 0;
+
+	if (($handle = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', "r")) !== false) {
+		while (($row = fgetcsv($handle)) !== false) {
+			if ($row[0] === ucfirst(wp_get_current_user()->last_name)) {
+				$count++;
+			}
+		}
+		fclose($handle);
+	}
+
+	return $count;
+}
+
+/** Upgrades version of push() to handle multiple line modifications
+ * NOTE : took me a while, change it at your own risk
+ * @param int $column
+ * @param array $values
+ *
+ * @return void
+ */
 function replace_or_pushes_values(int $column, array $values): void
 {
+	// verifies if the last element of an array is equal to a randomly
+	//generated RSA key as to secure the field a make it so that a user
+	//can't randomly type it
+	// This serves to change the behaviour of the function so that it
+	//treats the multiline feature (see block5 for better understanding)
 	if($values[count($values) - 1] === "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw=="){
 		$beg = [];
+
+		// deletes the RSA key from the treated values
 		array_pop($values);
+
+		// if the form values are only up to 1 year, then just add a single line
 		for ($i = 0; $i < 6; $i++){
 			$beg[] = $values[$i];
 		}
 
+		// pushes the line into the file
 		push($column, $beg);
 
 		$file = ABSPATH . 'wp-admin/hceres/data-table.csv';
 
-		// Read the original file
+		// Retrieves the data from the original file
 		$rows = [];
 		if (($handle = fopen($file, 'r')) !== false) {
 			while (($data = fgetcsv($handle)) !== false) {
@@ -284,28 +378,37 @@ function replace_or_pushes_values(int $column, array $values): void
 			fclose($handle);
 		}
 
+		// deletes the excess of rows if the user deleted them in the form
 		if(count($values) === 6){
-			for ($i = user_id_in_csv_file(); $i <= date('Y') - 2022 + user_id_in_csv_file(); $i++){
+			for ($i = user_id_in_csv_file(); $i <= userTime() - 2 + user_id_in_csv_file(); $i++){
 				unset($rows[$i]);
 			}
 		}
 
+		// if the number of years is above 1 (6 fields per year)
 		if(count($values) > 6){
 
+			// creates an array to add just after the user with the publication information
 			$ini = [ucfirst(wp_get_current_user()->last_name), ucfirst(wp_get_current_user()->first_name)];
 			for($i = 0; $i < 27; $i++){
 				$ini[] = " ";
 			}
 
+			// year count
 			$count = 0;
 
+			// for each year (every 6 elements in the array)
 			for ($i = 6; $i < count($values); $i += 6) {
+
+				// takes one year worth of elements into a separate array
 				$subArray = array_slice($values, $i, 6);
+
+				// if the nth year already exists then it replaces it
 				if(isset($rows[user_id_in_csv_file() + $count][0]) && $rows[user_id_in_csv_file() + $count][0] === ucfirst(wp_get_current_user()->last_name)){
 					$rows[user_id_in_csv_file() + $count] = array_merge($ini, $subArray);
 
 				} else{
-					// Insert the new row at the specified position
+					// Insert the new row just after the user
 					array_splice($rows, user_id_in_csv_file() + $count, 0, [array_merge($ini, $subArray)]);
 				}
 				$count++;
@@ -324,12 +427,21 @@ function replace_or_pushes_values(int $column, array $values): void
 	}
 }
 
+/** Returns the value of a cell, used to show the user their informations back
+ * @param int $column
+ * @param int $add
+ *
+ * @return string
+ */
 function getCell(int $column, int $add = 0): string {
+	// opens the file
 	$file = fopen( ABSPATH . 'wp-admin/hceres/data-table.csv', 'r' );
 
 	$id = 1;
+
+	// gets the given parameters cell
 	while (($row = fgetcsv($file)) !== false) {
-		if ($id == user_id_in_csv_file() + $add) {
+		if ($id === user_id_in_csv_file() + $add && $row[0] === ucfirst(wp_get_current_user()->last_name)) {
 			if (isset($row[$column])) {
 				fclose($file);
 				return $row[$column];
@@ -337,23 +449,32 @@ function getCell(int $column, int $add = 0): string {
 		}
 		$id++;
 	}
-	fclose( $file );
+
+	// closes the file
+	fclose($file);
 
 	return "";
 }
 
+/** References the anwsers of a user
+ * @return array returns an array of booleans, true if the user has answered
+ * to a specific part, else false
+ */
 function hasAnswered(): array {
+
+	// opens the file and initializes the returned array
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$answered = [];
 
-	// Skip the specified number of rows
+	// Skip rows to reach the user
 	for ($i = 1; $i < user_id_in_csv_file(); $i++) {
 		fgetcsv($file);
 	}
 
+	// gets the headers position in the file
 	$numbers = getHeadersId();
 
-	// Read the first row and check for elements after each given number
+	// Read the first row and check for elements after each given headers id
 	$row = fgetcsv($file);
 	if ($row !== false) {
 		foreach ($numbers as $number) {
@@ -365,12 +486,20 @@ function hasAnswered(): array {
 		}
 	}
 
+	// closes the file
 	fclose($file);
 
 	return $answered;
 }
 
+/** Checks an array of boolean
+ * @param $arr
+ *
+ * @return bool returns true if every boolean of the array are true, else false
+ */
 function checkArray($arr): bool {
+
+	// checks the value of every elements
 	foreach ($arr as $value) {
 		if ($value !== true) {
 			return false;
@@ -379,18 +508,27 @@ function checkArray($arr): bool {
 	return true;
 }
 
+/** Used for statistics, references the % of people that are done with the table
+ * @return float returns the % of people that have compleated the data table
+ */
 function haveAnswered(): float {
+
+	// opens the file and initializes the variable that counts the number of users done with the dt
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$res = 0;
+
+	// gets the number of users in the csv file
 	$nbUsers = count(getUsersFromCSV());
 
+	// gets the headers id in the file
 	$numbers = getHeadersId();
 
-	// Skip the header rows
+	// Skip the headers to reach the users
 	fgetcsv($file);
 	fgetcsv($file);
 	fgetcsv($file);
 
+	// searches in the file for every users
 	while (($row = fgetcsv($file)) !== false) {
 		$answered = [];
 		foreach ($numbers as $number) {
@@ -405,23 +543,34 @@ function haveAnswered(): float {
 		}
 	}
 
+	// returns 0 if there are no users in the data table
 	if($nbUsers === 0){
 		return 0;
 	}
 
+	// transforms the number of users done into a stat that can be used
 	return $res * 100 / $nbUsers;
 }
 
+/** Transforms an array into percentage
+ * @param $arr
+ *
+ * @return float|int returns the percentage of users done with the dt
+ */
 function calculatePercentage($arr): float|int {
+
+	// gets the total number of elements
 	$totalElements = count($arr);
 	$trueCount = 0;
 
+	// increments a count for every users done
 	foreach ($arr as $value) {
 		if ($value === true) {
 			$trueCount++;
 		}
 	}
 
+	// returns the percentage if there are elements into the array
 	if ($totalElements > 0) {
 		return ($trueCount / $totalElements) * 100;
 	} else {
@@ -429,55 +578,78 @@ function calculatePercentage($arr): float|int {
 	}
 }
 
-
+/** Calculs the percentage of average answered parts of the dt for all users
+ * @return float percentage of users's average answers
+ */
 function averageAnswer(): float{
+
+	// opens the file and initializes the average number to 0
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 	$avg = 0;
 
+	// gets the headers id
 	$numbers = getHeadersId();
 
-	// Skip the header rows
+	// Skip the headers to reach the users
 	fgetcsv($file);
 	fgetcsv($file);
 	fgetcsv($file);
 
+	// array of already done perople, so as to not go through a user multiple times
 	$present = [];
 
+	// searches through the array
 	while (($row = fgetcsv($file)) !== false) {
 		$answered = [];
 		foreach ($numbers as $number) {
+			// if the user is already done, skips
 			if(in_array($row[0], $present)){
 				break;
 			}
+
+			// if the value of the headers are not null, then it means the user
+			//has answered the current part
 			if (isset($row[$number + 1]) && $row[$number + 1] !== " ") {
 				$answered[] = true;
 			} else {
 				$answered[] = false;
 			}
 		}
+
+		// gets the percentage of answers for every users
 		$avg += calculatePercentage($answered);
+
+		// adds the user to the already done ones
 		$present[] = $row[0];
 	}
 
+	// if there are no users in the file, it returns 0
 	if (count(getUsersFromCSV()) === 0){
 		return 0;
 	}
 
+	// transforms the variables into a final usable percentage
 	return $avg / count(getUsersFromCSV());
 }
 
+/** Gets an array with every user of the csv file
+ * @return array
+ */
 function getUsersFromCSV(): array {
+
+	// opens the file
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 
+	// initializes the array of users and already done users
 	$users = [];
-
 	$present = [];
 
-	// Skip the header rows
+	// Skip the headers row to reach the users
 	fgetcsv($file);
 	fgetcsv($file);
 	fgetcsv($file);
 
+	// searches through the file every users
 	while (($row = fgetcsv($file)) !== false) {
 		$firstName = $row[1];
 		$lastName = $row[0];
@@ -487,18 +659,29 @@ function getUsersFromCSV(): array {
 			$users[] = $firstName . ' ' . $lastName;
 		}
 
+		// adds the user to the already done ones
 		$present[] = $firstName;
 	}
 
+	// closes the file
 	fclose($file);
 
 	return $users;
 }
 
-function getUsersFromWordPress($roles = ''): array {
+/** Gets every WP users in the database from given roles
+ *
+ * @param string $roles
+ *
+ * @return array
+ */
+function getUsersFromWordPress(string $roles = ''): array {
+
+	// if the role isn't specified, returns every users
 	if ($roles === ''){
 		$users = get_users();
 	} else {
+		// returns every users of a given role
 		$args = array(
 			'role__in' => $roles,
 		);
@@ -508,7 +691,14 @@ function getUsersFromWordPress($roles = ''): array {
 	return $users;
 }
 
-function getAbsentUsers($roles = ''): array {
+/** Gets the users from the WP database that are absent from the csv file
+ * @param string $roles
+ *
+ * @return array
+ */
+function getAbsentUsers(string $roles = ''): array {
+
+	// initializes the array of absent users
 	$absent = [];
 
 	// Get all WordPress users
@@ -517,17 +707,21 @@ function getAbsentUsers($roles = ''): array {
 	// Get the list of users from the CSV file
 	$csvUsers = getUsersFromCSV();
 
+	// goes through every WP users and looks if they are in the csv file
 	for ($i = 0; $i < count($wpUsers); $i++){
 		if(!in_array(ucfirst($wpUsers[$i]->first_name) . " " . ucfirst($wpUsers[$i]->last_name), $csvUsers)){
 			$absent[] = $wpUsers[$i];
 		}
 	}
 
-	// Return the absent users
 	return $absent;
 }
 
 add_shortcode('add_istep_annual_table_panel','panel');
+
+/** Returns a panel of statistics and useful informations
+ * @return string
+ */
 function panel(): string {
 
 	$nbUsers = round(count(getUsersFromCSV()) * 100 / count(get_users()));
@@ -623,11 +817,24 @@ HTML;
 	return $html;
 }
 
+/** Transforms a string into a string usable as a url
+ * @param $str
+ *
+ * @return string
+ */
 function transformString($str): string {
 	return trim(strtolower(preg_replace('/[^a-zA-Z0-9]+/', '-', iconv('UTF-8', 'ASCII//TRANSLIT', $str))), '-');
 }
 
 add_shortcode('add_istep_annual_table_summary','summary');
+
+/** Gives the user a summary of the parts of the HCERES data table that they
+ * have completed or not, as well as a progress bar based on a system of
+ * classes.
+ * CAREFUL : this works on harmony with some CSS and JS, modify it at your
+ * ow risk.
+ * @return string
+ */
 function summary(): string{
 	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	$year = date('Y');
@@ -671,6 +878,9 @@ HTML;
 	return $html;
 }
 
+/** Gets an array of ints of every id of headers in the csv file
+ * @return array
+ */
 function getHeadersId(): array {
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 
@@ -685,6 +895,9 @@ function getHeadersId(): array {
 	$reg = false;
 	$loc = false;
 
+	// looks into the file and adds each time an int into the returned array
+	//of every time it finds a "|" in the file (because it acts as a separator
+	//between the headers)
 	foreach ($row as $index => $value) {
 
 		if ($value === '|') {
@@ -702,6 +915,7 @@ function getHeadersId(): array {
 			$loc = false;
 		}
 
+		// handles the specfific headers with multiple part in them
 		if ($value === 'Régional et local') {
 			$skipCount = 3;
 			$reg = true;
@@ -712,15 +926,25 @@ function getHeadersId(): array {
 		}
 	}
 
+	// deletes the last unused id
 	array_pop($indexes);
 
+	// closes the file
 	fclose($file);
 
+	// skips the rows that are to be skipped
 	$indexes = array_diff($indexes, $skipIndexes);
 
 	return array_merge([0], $indexes);
 }
 
+/** Gets the number of times the user is in the file (could actually be
+ * replaced by the userTimes() function)
+ * @param $arr
+ * @param $str
+ *
+ * @return int
+ */
 function countStringOccurrencesInFirstPosition($arr, $str): int {
 	$count = 0;
 
@@ -733,6 +957,11 @@ function countStringOccurrencesInFirstPosition($arr, $str): int {
 	return $count;
 }
 
+/** Deletes the user from the file.
+ * The user can delete his information from the file if wanted.
+ * Used to respect the RGPD French laws.
+ * @return void
+ */
 function deleteSelf(): void {
 	$filePath = ABSPATH . 'wp-admin/hceres/data-table.csv';
 
@@ -745,6 +974,7 @@ function deleteSelf(): void {
 		fclose($file);
 	}
 
+	// deletes the datas of the user
 	for ($i = user_id_in_csv_file() - 1; $i <= countStringOccurrencesInFirstPosition($rows, ucfirst(wp_get_current_user()->last_name)) + user_id_in_csv_file() - 1; $i++){
 		unset($rows[$i]);
 	}
@@ -760,6 +990,10 @@ function deleteSelf(): void {
 }
 
 add_shortcode('add_istep_annual_table_delete','deleteUser');
+
+/** Shows a delete button using the deleteSelf feature
+ * @return string
+ */
 function deleteUser(): string{
 	if (isRegistered()){
 		if(isset($_POST["dt__delete"])){
@@ -780,8 +1014,17 @@ HTML;
 	}
 }
 
+/** Gets and sanitizes the data from a form depending on the data's type
+ * @param $form_data
+ *
+ * @return array
+ */
 function sanitize_form_values($form_data): array {
+
+	// initializes the sanitized elements array
 	$sanitized_data = [];
+
+	// sanitizes every elements of the form
 	foreach ($form_data as $value) {
 		if (isset($value)) {
 			if (is_string($value)) {
@@ -798,16 +1041,28 @@ function sanitize_form_values($form_data): array {
 		}
 	}
 
+	// deletes the submit button from the array
 	array_pop($sanitized_data);
+
 	return $sanitized_data;
 }
 
+/** Verifies if the given data is a date but as a string
+ * @param $value
+ *
+ * @return bool
+ */
 function is_date_field($value): bool {
 	$date_format = "Y-m-d";
 	$parsed_date = date_parse_from_format($date_format, $value);
 	return $parsed_date['error_count'] === 0 && $parsed_date['warning_count'] === 0;
 }
 
+/** Transforms the string date into an actual Date
+ * @param $value
+ *
+ * @return string
+ */
 function format_date_field($value): string {
 	return date("m/Y", strtotime($value));
 }
