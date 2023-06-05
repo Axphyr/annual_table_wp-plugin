@@ -218,11 +218,13 @@
     background-color: lightgray;
 }
 
-.dt__delete{
+form.data-table-delete > button.dt__delete{
     background-color: indianred;
+    margin: 20px 0 20px 0;
+    padding: 13px;
 }
 
-.dt__delete:hover{
+form.data-table-delete > button.dt__delete:hover{
     background-color: #cc4646;
 }
 

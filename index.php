@@ -871,7 +871,11 @@ HTML;
 				<p id="pourcent">0%</p>
 HTML;
 
+	$del = deleteUser();
+
 	$html .= <<<HTML
+		<p class="donnees__hceres__delete">Données HCERES</p>
+		$del
 		</div>
 		<div class="nb__buttons">$count</div>
 HTML;

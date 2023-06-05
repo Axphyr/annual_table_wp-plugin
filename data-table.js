@@ -210,3 +210,10 @@ if (window.location.pathname === "/dt-formulaire-discipline/"){
         disableOptions(select1, select2);
     });
 }
+
+if (!document.querySelector(".dt__green")) {
+    const deleteElement = document.querySelector(".donnees__hceres__delete");
+    if (deleteElement) {
+        deleteElement.style.display = "none";
+    }
+}
