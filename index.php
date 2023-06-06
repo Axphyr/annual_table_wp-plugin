@@ -112,7 +112,7 @@ function annual_data_table_install(): void
 	// closes the file
 	fclose($file);
 
-	// adds WP pages for every headers
+	// adds WP pages for every header
 	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	for($i = 0; $i < 22; $i++){
 		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
@@ -298,7 +298,7 @@ function push(int $column, array $values): void{
 		// Get the user's row as an array
 		$row = fgetcsv($file);
 
-		// Modify the original array if the array is to short
+		// Modify the original array if the array is too short
 		if(count($row) <= $column + count($values)) {
 			for($i = 0; $i < $column + count($values); $i++) {
 				$row[] = " ";
@@ -427,7 +427,7 @@ function replace_or_pushes_values(int $column, array $values): void
 	}
 }
 
-/** Returns the value of a cell, used to show the user their informations back
+/** Returns the value of a cell, used to show the user their information back
  * @param int $column
  * @param int $add
  *
@@ -499,7 +499,7 @@ function hasAnswered(): array {
  */
 function checkArray($arr): bool {
 
-	// checks the value of every elements
+	// checks the value of every element
 	foreach ($arr as $value) {
 		if ($value !== true) {
 			return false;
@@ -528,7 +528,7 @@ function haveAnswered(): float {
 	fgetcsv($file);
 	fgetcsv($file);
 
-	// searches in the file for every users
+	// searches in the file for every user
 	while (($row = fgetcsv($file)) !== false) {
 		$answered = [];
 		foreach ($numbers as $number) {
@@ -563,7 +563,7 @@ function calculatePercentage($arr): float|int {
 	$totalElements = count($arr);
 	$trueCount = 0;
 
-	// increments a count for every users done
+	// increments a count for every user done
 	foreach ($arr as $value) {
 		if ($value === true) {
 			$trueCount++;
@@ -579,7 +579,7 @@ function calculatePercentage($arr): float|int {
 }
 
 /** Calculs the percentage of average answered parts of the dt for all users
- * @return float percentage of users's average answers
+ * @return float percentage of user's average answers
  */
 function averageAnswer(): float{
 
@@ -595,7 +595,7 @@ function averageAnswer(): float{
 	fgetcsv($file);
 	fgetcsv($file);
 
-	// array of already done perople, so as to not go through a user multiple times
+	// array of already done people, to not go through a user multiple times
 	$present = [];
 
 	// searches through the array
@@ -616,7 +616,7 @@ function averageAnswer(): float{
 			}
 		}
 
-		// gets the percentage of answers for every users
+		// gets the percentage of answers for every user
 		$avg += calculatePercentage($answered);
 
 		// adds the user to the already done ones
@@ -649,7 +649,7 @@ function getUsersFromCSV(): array {
 	fgetcsv($file);
 	fgetcsv($file);
 
-	// searches through the file every users
+	// searches through the file every user
 	while (($row = fgetcsv($file)) !== false) {
 		$firstName = $row[1];
 		$lastName = $row[0];
@@ -677,11 +677,11 @@ function getUsersFromCSV(): array {
  */
 function getUsersFromWordPress(string $roles = ''): array {
 
-	// if the role isn't specified, returns every users
+	// if the role isn't specified, returns every user
 	if ($roles === ''){
 		$users = get_users();
 	} else {
-		// returns every users of a given role
+		// returns every user of a given role
 		$args = array(
 			'role__in' => $roles,
 		);
@@ -719,7 +719,7 @@ function getAbsentUsers(string $roles = ''): array {
 
 add_shortcode('add_istep_annual_table_panel','panel');
 
-/** Returns a panel of statistics and useful informations
+/** Returns a panel of statistics and useful information
  * @return string
  */
 function panel(): string {
@@ -817,7 +817,7 @@ HTML;
 	return $html;
 }
 
-/** Transforms a string into a string usable as a url
+/** Transforms a string into a string usable as an url
  * @param $str
  *
  * @return string
@@ -1028,7 +1028,7 @@ function sanitize_form_values($form_data): array {
 	// initializes the sanitized elements array
 	$sanitized_data = [];
 
-	// sanitizes every elements of the form
+	// sanitizes every element of the form
 	foreach ($form_data as $value) {
 		if (isset($value)) {
 			if (is_string($value)) {
@@ -1151,43 +1151,26 @@ function block1(): string{
 	$date_sortie = "";
 
 	$poles = [
-		"Secrétariat",
-		"Direction",
-		"Gestion administrative",
-		"Gestion financière",
-		"Informatique",
-		"Cartographie, SIG",
-		"Communication",
-		"Plateformes d’analyses",
-		"Assistant de prévention"
+		"Direction UMR",
+		"Direction adjointe UMR",
+		"Référent Communication",
+		"Référent Plateformes d’analyses",
+		"Assistant de prévention",
+		"Référent Radioprotection",
+		"Référent Risques Psycho-Sociaux, Egalité et Parité",
+		"Référent Développement durable",
+		"Référent Ethique, Déontologie, Intégrité",
+		"Référent Liaison avec les formations L, M, EPU",
+		"Référent Séminaires"
 	];
 
 	$selectedPole = getCell(5);
 
 	$fonctions = [
 		"Enseignant-Chercheur",
-		"Direction",
-		"Gestion administrative",
-		"Gestion financière",
-		"Gestion administrative",
-		"Direction UMR",
-		"Direction adjointe UMR",
-		"Secrétaire général",
-		"Responsable gestion administrative",
-		"Responsable gestion financière",
+		"Chercheur",
 		"ATER",
 		"Doctorant",
-		"Cartographe",
-		"Sciences de l’information géographique",
-		"Traitement des données",
-		"Gestion base de données",
-		"Science et caractérisation de matériaux",
-		"Litholamellage",
-		"Gestion d’application / assistant support",
-		"Analyse chimique",
-		"Développement d’expérimentation",
-		"Calcul Scientifique",
-		"Communication",
 		"Bénévole",
 		"CRCT",
 		"Emérite",
@@ -1197,22 +1180,18 @@ function block1(): string{
 	$selectedFonction = getCell(6);
 
 	$corps = [
-		"AI",
-		"AJT",
-		"ATER",
-		"Bénévole",
+		"Détachement",
+		"Bénévole;",
 		"CR",
 		"DR",
 		"DREM",
-		"IE",
 		"IR",
 		"MCF",
 		"MCFEM",
 		"PAST",
 		"Post-doc",
 		"PR",
-		"PREM",
-		"TCH"
+		"PREM"
 	];
 
 	$selectedCoprs = getCell(7);
