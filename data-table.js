@@ -217,3 +217,19 @@ if (!document.querySelector(".dt__green")) {
         deleteElement.style.display = "none";
     }
 }
+
+// Check if a form with class "data-table-form" exists
+const dataTableForm = document.querySelector('.data-table-form');
+if (dataTableForm) {
+    // Create the new element with the desired structure and styles
+    const messageElement = document.createElement('p');
+    messageElement.innerHTML = 'Les champs marqués par un<span style="color: red; margin-left: 5px;">*</span> sont obligatoires.';
+
+    // Find the element with class "nv-page-title"
+    const pageTitleElement = document.querySelector('.nv-page-title');
+
+    // Insert the new element after the "nv-page-title" element
+    pageTitleElement.insertAdjacentElement('afterend', messageElement);
+}
+
+
