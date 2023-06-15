@@ -23,9 +23,14 @@ function annual_data_table_install(): void
 {
 	// defines the directories name
 	$dirName = 'hceres';
+	$backupDir = "backup-hceres";
 
 	if (!is_dir($dirName)) {
 		mkdir($dirName);
+	}
+
+	if (!is_dir($backupDir)) {
+		mkdir($backupDir);
 	}
 
 	// defines the files name and path
@@ -117,6 +122,8 @@ function annual_data_table_install(): void
 	for($i = 0; $i < 22; $i++){
 		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
 	}
+
+	create_custom_pages("Hceres Backups", "add_istep_annual_table_backups");
 }
 register_activation_hook( __FILE__, 'annual_data_table_install' );
 
@@ -134,13 +141,29 @@ function delete_custom_pages(): void {
 		's'              => '(DT) Formulaire',
 	);
 
+	$args2 = array(
+		'post_type'      => 'page',
+		'posts_per_page' => -1,
+		'post_status'    => 'any',
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+		's'              => 'Hceres Backups',
+	);
+
 	// starts a querry to search the pages
 	$query = new WP_Query($args);
+	$query2 = new WP_Query($args2);
+
 	$page_ids = array();
 
 	// registers the page's id
 	while ($query->have_posts()) {
 		$query->the_post();
+		$page_ids[] = get_the_ID();
+	}
+
+	while ($query2->have_posts()) {
+		$query2->the_post();
 		$page_ids[] = get_the_ID();
 	}
 
@@ -789,7 +812,6 @@ function panel(): string {
 	$avg = round(averageAnswer());
 	$absent = getAbsentUsers();
 
-
 	$html = <<<HTML
 	<div class="dt__panel">
 		<p>Panel HCERES</p>
@@ -868,10 +890,19 @@ HTML;
 HTML;
 	}
 
+	$back = backup();
+
 	$html .= <<<HTML
 			</tbody>
 		</table>
 		</div>
+		
+		<p>Télécharger le fichier csv</p>
+		<button class="hceres__buttons"><a href="/wp-admin/hceres/data-table.csv" download> Accéder au fichier </a></button>
+
+		<p>Backups</p>
+		<button class="hceres__buttons" onclick="window.location.href='/hceres-backups'"> Backups des données HCERES </button>
+		$back
 	</div>
 HTML;
 
@@ -901,7 +932,7 @@ function summary(): string{
 	$year = date('Y');
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
-			<p> Liste des formulaires HCERES $year</p>
+			<p> Liste des formulaires HCERES</p>
 			<div class="bouttons">
 HTML;
 
@@ -1079,6 +1110,64 @@ HTML;
 		return "";
 	}
 }
+
+add_shortcode('add_istep_annual_table_backup','backup');
+
+/** Shows a save button that creates a backup of the data table.
+ * @return string
+ */
+function backup(): string{
+	if(isset($_POST["dt__backup"])) {
+		setlocale(LC_TIME, 'fr_FR');
+		$date = new DateTime();
+		$date->add(new DateInterval('PT2H'));
+		$format = $date->format('d-m-Y_H:i:s');
+
+		copy(ABSPATH . 'wp-admin/hceres/data-table.csv', ABSPATH . 'wp-admin/backup-hceres/backup' . $format . ".csv");
+	}
+
+		return <<<HTML
+	<form class="hceres-backup" method="post">
+		<button class="hceres__buttons" name="dt__backup" type="submit">Sauvegarder les données HCERES</button>
+	</form>
+HTML;
+
+}
+
+add_shortcode('add_istep_annual_table_backups','backups');
+
+/** Shows every backups of the HCERES data table.
+ * @return string
+ */
+function backups(): string{
+
+	$html = <<<HTML
+	<div class="hceres__backups">
+HTML;
+
+	$files = scandir(ABSPATH . 'wp-admin/backup-hceres'); // Retrieve all files and directories in the specified directory
+
+	foreach ($files as $file) {
+		if ($file !== '.' && $file !== '..') {
+			if (is_file(ABSPATH . 'wp-admin/backup-hceres/' . $file)) {
+				$path = ABSPATH . 'wp-admin/backup-hceres/' . $file;
+				$html .= <<<HTML
+		<div class="hceres__backup">
+			<div class="hceres__file"><a class="hceres__backup__name" href="/wp-admin/backup-hceres/$file" download> $file </a></div>
+			<button class="hceres__download__button"><a class="hceres__download" href="/wp-admin/backup-hceres/$file" download> Télécharger le fichier </a></button>
+		</div>
+HTML;
+			}
+		}
+	}
+
+	$html .= "</div>";
+
+	return $html;
+
+}
+
+
 
 /** Gets and sanitizes the data from a form depending on the data's type
  * @param $form_data

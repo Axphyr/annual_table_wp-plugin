@@ -1,6 +1,43 @@
-.dt-download, .dt-download:hover{
+
+.dt-download, .dt-download:hover, .hceres__download, .hceres__download:hover{
     color: white;
     text-decoration: none;
+}
+
+.hceres__backup{
+    display: flex;
+    margin: 20px 10px 20px 10px;
+    justify-content: space-between;
+}
+
+div.dt__panel > button:nth-child(6) > a{
+    color: white;
+    text-decoration: none;
+}
+
+.hceres__file{
+    align-self: center;
+}
+
+.hceres__backup__name{
+    color: darkslategray;
+}
+
+.hceres__download__button{
+    background-color: darkslategray;
+}
+
+.hceres__download__button:hover{
+    background-color: #243d3d;
+}
+
+.hceres__buttons{
+    margin: 10px;
+    background-color: darkslategray;
+}
+
+.hceres__buttons:hover{
+    background-color: #243d3d;
 }
 
 .data-table-form {
