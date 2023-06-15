@@ -348,30 +348,17 @@ function userTime(): int {
 function getHeaderId(string $str): ?int {
 	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r'); // Open the CSV file
 
-	// Read the first two rows
+	// Read the first three rows
 	$header1 = fgetcsv($file);
 	$header2 = fgetcsv($file);
+	$header3 = fgetcsv($file);
 
 	$headerId = null;
 
 	// Find the index of the given string in the headers
 	$index1 = array_search($str, $header1);
 	$index2 = array_search($str, $header2);
-	echo "<br>";
-
-	echo "<br>";
-	var_dump("indexe 1 : " . $index1);
-	echo "<br>";
-	var_dump("indexe 2 : " . $index2);
-	echo "<br>";
-	echo "<br>";
-
-var_dump($index1 !== false && isset($header1[$index1 - 1]));
-	echo "<br>";
-	echo "<br>";
-var_dump($index2 !== false && isset($header2[$index2 - 1]));
-	echo "<br>";
-	echo "<br>";
+	$index3 = array_search($str, $header3);
 
 	if ($index1 !== false && isset($header1[$index1 - 1])) {
 		// Search backward from the index in header1 for the first "|" element
@@ -382,9 +369,14 @@ var_dump($index2 !== false && isset($header2[$index2 - 1]));
 	} elseif ($index2 !== false && isset($header2[$index2 - 1])) {
 		// Search backward from the index in header2 for the first "|" element
 		$pipeIndex = array_search('|', array_reverse(array_slice($header2, 0, $index2)));
-		echo "<hr>";
 		if ($pipeIndex !== false) {
 			$headerId = $index2 - $pipeIndex;
+		}
+	} elseif ($index3 !== false && isset($header3[$index3 - 1])) {
+		// Search backward from the index in header3 for the first "|" element
+		$pipeIndex = array_search('|', array_reverse(array_slice($header3, 0, $index3)));
+		if ($pipeIndex !== false) {
+			$headerId = $index3 - $pipeIndex;
 		}
 	}
 
@@ -797,7 +789,6 @@ function panel(): string {
 	$avg = round(averageAnswer());
 	$absent = getAbsentUsers();
 
-	var_dump(getHeaderId("Enseignement"));
 
 	$html = <<<HTML
 	<div class="dt__panel">
@@ -1073,8 +1064,9 @@ function deleteUser(): string{
 		if(isset($_POST["dt__delete"])){
 			deleteSelf();
 			return <<<HTML
-			<p class="dt__data__erased">Données supprimées.</p>
-			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
 HTML;
 		}
 
@@ -1161,9 +1153,12 @@ function block1(): string{
 			}
 		}
 		replace_or_pushes_values(0, $data);
-//		$current_url = home_url(get_option('default_redirect_link')."/?");
-//
-//		wp_redirect($current_url . "/ezafqszf");
+
+		return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 	}
 
 
@@ -1394,7 +1389,13 @@ function block2(): string{
 				sanitize_text_field($_POST["discipline1"]),
 				sanitize_text_field($_POST["discipline2"])
 			];
-			replace_or_pushes_values(16, $data);
+			replace_or_pushes_values(getHeaderId("Discipline"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$disciplines = [
@@ -1481,7 +1482,13 @@ function block3(): string{
 				$data = [
 					sanitize_text_field($_POST["theme_recherche"])
 				];
-				replace_or_pushes_values(19, $data);
+				replace_or_pushes_values(getHeaderId("Thèmes de recherche"), $data);
+
+				return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 			}
 
 	$theme = "";
@@ -1519,7 +1526,13 @@ function block4(): string{
 				sanitize_text_field($_POST["h_factor_google"]),
 				$_POST["nb_resume_conference"]
 			];
-			replace_or_pushes_values(21, $data);
+			replace_or_pushes_values(getHeaderId("Publications sur l'ensemble de la carrière jusqu'à aujourd'hui"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$nb_publi_rang_a1 = null;
@@ -1606,7 +1619,13 @@ HTML;
 			}
 			array_pop($data);
 			$data[] = "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw==";
-			replace_or_pushes_values(29, $data);
+			replace_or_pushes_values(getHeaderId("Détail des publications par année depuis 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$arr = ["", " "];
@@ -1696,7 +1715,13 @@ function block6(): string{
 				$_POST["enseignement3"],
 				$_POST["enseignement4"],
 			];
-			replace_or_pushes_values(36, $data);
+			replace_or_pushes_values(getHeaderId("Enseignement"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$enseignement1 = null;
@@ -1755,7 +1780,13 @@ function block7(): string{
 				sanitize_text_field($_POST["master1_nom_prenom_co-encadrants"]),
 				sanitize_text_field($_POST["master1_sujet"])
 			];
-			replace_or_pushes_values(41, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement Master 1 (à partir de 2022)"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$master1_nom = null;
@@ -1823,7 +1854,13 @@ function block8(): string{
 				sanitize_text_field($_POST["master2_nom_prenom_co-encadrants"]),
 				sanitize_text_field($_POST["master2_sujet"])
 			];
-			replace_or_pushes_values(47, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement Master 2 (à partir de 2022)"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$master2_nom = null;
@@ -1896,7 +1933,13 @@ function block9(): string{
 				sanitize_text_field($_POST["encadrement_istep_financement_doctorat"]),
 				sanitize_text_field($_POST["encadrement_istep_fonction"])
 			];
-			replace_or_pushes_values(53, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement thèse ISTeP à partir de 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$encadrement_istep_nom = null;
@@ -2064,7 +2107,13 @@ function block10(): string{
 				sanitize_text_field($_POST["encadrement_histep_financement_doctorat"]),
 				sanitize_text_field($_POST["encadrement_histep_fonction"])
 			];
-			replace_or_pushes_values(65, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement thèse hors ISTeP à partir de 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$encadrement_histep_nom = null;
@@ -2233,7 +2282,14 @@ function block11(): string{
 				$_POST["encadrement_pd_annee_naissance"],
 				sanitize_text_field($_POST["encadrement_pd_employeur"])
 			];
-			replace_or_pushes_values(78, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement de post-doctorats à partir de 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
+
 		}
 
 		$encadrement_pd_nom = null;
@@ -2320,7 +2376,13 @@ function block12(): string{
 				sanitize_text_field($_POST["distinction_intitule"]),
 				$_POST["distinction_annee"]
 			];
-			replace_or_pushes_values(86, $data);
+			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifiques	"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$distinction_intitule = null;
@@ -2360,7 +2422,13 @@ function block13(): string{
 				sanitize_text_field($_POST["iuf_intitule"]),
 				$_POST["iuf_annee"]
 			];
-			replace_or_pushes_values(89, $data);
+			replace_or_pushes_values(getHeaderId("Appartenance à l'IUF"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$iuf_intitule = null;
@@ -2400,7 +2468,13 @@ function block14(): string{
 				sanitize_text_field($_POST["sejour_lieu"]),
 				$_POST["sejour_annee"]
 			];
-			replace_or_pushes_values(92, $data);
+			replace_or_pushes_values(getHeaderId("Séjours dans des laboratoires étrangers"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$sejour_lieu = null;
@@ -2441,7 +2515,13 @@ function block15(): string{
 				sanitize_text_field($_POST["organisation_nom"]),
 				$_POST["organisation_annee"]
 			];
-			replace_or_pushes_values(95, $data);
+			replace_or_pushes_values(getHeaderId("Organisations de colloques/congrès internationaux"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$organisation_nom = null;
@@ -2482,7 +2562,13 @@ function block16(): string{
 				sanitize_text_field($_POST["societe_savantes_nom"]),
 				$_POST["societe_savantes_annee"]
 			];
-			replace_or_pushes_values(98, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilités dans des sociétés savantes"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$societe_savantes_nom = null;
@@ -2531,7 +2617,13 @@ function block17(): string{
 				$_POST["responsabilite1_partenariat_montant"],
 				sanitize_text_field($_POST["responsabilite1_partenariat_nom"])
 			];
-			replace_or_pushes_values(101, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilité de projets de recherche (ou tasks indépendantes)"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$responsabilite1_region_montant = null;
@@ -2627,7 +2719,13 @@ function block18(): string{
 				sanitize_text_field($_POST["responsabilite2_international_intitule"]),
 				$_POST["responsabilite2_international_annee"]
 			];
-			replace_or_pushes_values(113, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilités, Expertises & administration de la recherche"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$responsabilite2_locale_intitule = null;
@@ -2701,7 +2799,13 @@ function block19(): string{
 				sanitize_text_field($_POST["responsabilite3_intitule"]),
 				$_POST["responsabilite3_annee"]
 			];
-			replace_or_pushes_values(122, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilités & administration de la formation/enseignement"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$responsabilite3_intitule = null;
@@ -2741,7 +2845,13 @@ function block20(): string{
 				sanitize_text_field($_POST["vulgarisation_intitule"]),
 				$_POST["vulgarisation_annee"]
 			];
-			replace_or_pushes_values(125, $data);
+			replace_or_pushes_values(getHeaderId("Vulgarisation, dissémination scientifique"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$vulgarisation_intitule = null;
@@ -2780,7 +2890,13 @@ function block21(): string{
 			$data = [
 				sanitize_text_field($_POST["rayonnement"])
 			];
-			replace_or_pushes_values(128, $data);
+			replace_or_pushes_values(getHeaderId("Rayonnement / résultats majeurs sur la période à mettre en avant"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$rayonnement = null;
@@ -2812,7 +2928,13 @@ function block22(): string{
 				sanitize_text_field($_POST["brevet_intitule"]),
 				$_POST["brevet_annee"]
 			];
-			replace_or_pushes_values(130, $data);
+			replace_or_pushes_values(getHeaderId("Brevet"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$brevet_intitule = null;
