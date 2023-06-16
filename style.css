@@ -15,8 +15,38 @@ div.dt__panel > button:nth-child(6) > a{
     text-decoration: none;
 }
 
+.backup__buttons{
+    display: flex;
+}
+
+.backup__buttons > *{
+    margin: 0 2px 0 2px;
+}
+
+.backup__delete{
+    background-color: #502b2b;
+}
+
+.backup__delete:hover{
+    background-color: #311a1a;
+}
+
 .hceres__file{
+    display: flex;
     align-self: center;
+}
+
+.hceres__file > svg{
+    margin: 0 0 5px 10px;
+    align-self: center;
+}
+
+.hceres__file > svg:hover{
+    cursor: pointer;
+}
+
+div.hceres__file > form > input{
+    border: none;
 }
 
 .hceres__backup__name{

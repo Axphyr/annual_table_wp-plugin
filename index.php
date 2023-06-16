@@ -800,6 +800,35 @@ function getAbsentUsers(string $roles = ''): array {
 	return $absent;
 }
 
+/**
+ * Check if a given directory has any files (excluding "." and "..").
+ *
+ * @param string $directory The directory path to check.
+ *
+ * @return bool True if the directory contains files, false otherwise.
+ */
+function hasFilesInDirectory(string $directory): bool {
+	var_dump($directory);
+	// Open the directory
+	if ($handle = opendir($directory)) {
+		// Read each entry in the directory
+		while (($file = readdir($handle)) !== false) {
+			// Exclude "." and ".."
+			if ($file != "." && $file != "..") {
+				// Check if it's a file
+				if (is_file($directory . '/' . $file)) {
+					closedir($handle); // Close the directory handle
+					return true; // Found a file, return true
+				}
+			}
+		}
+		closedir($handle); // Close the directory handle
+	}
+
+	return false; // No files found, return false
+}
+
+
 add_shortcode('add_istep_annual_table_panel','panel');
 
 /** Returns a panel of statistics and useful information
@@ -892,6 +921,15 @@ HTML;
 
 	$back = backup();
 
+	$backback = "";
+
+	if(hasFilesInDirectory(ABSPATH . "/wp-admin/hceres-backups/")){
+		$backback = <<<HTML
+		<button class="hceres__buttons" onclick="window.location.href='/backups-hceres'"> Backups des données HCERES </button>
+HTML;
+
+	}
+
 	$html .= <<<HTML
 			</tbody>
 		</table>
@@ -901,7 +939,7 @@ HTML;
 		<button class="hceres__buttons"><a href="/wp-admin/hceres/data-table.csv" download> Accéder au fichier </a></button>
 
 		<p>Backups</p>
-		<button class="hceres__buttons" onclick="window.location.href='/hceres-backups'"> Backups des données HCERES </button>
+		$backback
 		$back
 	</div>
 HTML;
@@ -1085,6 +1123,24 @@ function deleteSelf(): void {
 	}
 }
 
+/**
+ * Adds the ".csv" extension to a filename if it doesn't have an extension.
+ *
+ * @param string $filename The filename to process.
+ *
+ * @return string The filename with the ".csv" extension added if necessary.
+ */
+function addCSVExtension(string $filename): string {
+	$extension = '.csv';
+	$regex = '/\.[^.]*$/';
+
+	if (!preg_match($regex, $filename)) {
+		return $filename . $extension;
+	}
+
+	return $filename;
+}
+
 add_shortcode('add_istep_annual_table_delete','deleteUser');
 
 /** Shows a delete button using the deleteSelf feature
@@ -1111,6 +1167,53 @@ HTML;
 	}
 }
 
+/**
+ * Deletes the file at the specified position in the given directory.
+ *
+ * @param int $id The position of the file to delete (starting from 1).
+ */
+function deleteFile(int $id) : void {
+	// Get all files in the directory
+	$files = glob(ABSPATH . 'wp-admin/backup-hceres' . '/*');
+
+	// Get the file path at the specified position
+	$filePath = $files[$id - 1];
+
+	// Delete the file
+	if (is_file($filePath)) {
+		unlink($filePath);
+	}
+}
+
+/**
+ * Edit the file in the specified directory with a new name if it matches the provided string.
+ *
+ * @param string $str     The string to match against file names.
+ * @param string $newName The new name for the file.
+ *
+ * @return void
+ */
+function editFile(string $str, string $newName) : void {
+	$directory = ABSPATH . 'wp-admin/backup-hceres/';
+	$files = scandir($directory);
+
+	$newName = addCSVExtension($newName);
+
+	array_shift($files);
+	array_shift($files);
+
+	$fileIndex = array_search($str, $files);
+
+	if ($fileIndex !== false) {
+		$oldName = $files[$fileIndex];
+		$newPath = $directory . $newName;
+
+		rename($directory . $oldName, $newPath);
+	}
+}
+
+
+
 add_shortcode('add_istep_annual_table_backup','backup');
 
 /** Shows a save button that creates a backup of the data table.
@@ -1124,6 +1227,11 @@ function backup(): string{
 		$format = $date->format('d-m-Y_H:i:s');
 
 		copy(ABSPATH . 'wp-admin/hceres/data-table.csv', ABSPATH . 'wp-admin/backup-hceres/backup' . $format . ".csv");
+		return <<<HTML
+  <script>
+        window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres-backups/";
+  </script>
+HTML;
 	}
 
 		return <<<HTML
@@ -1147,16 +1255,46 @@ HTML;
 
 	$files = scandir(ABSPATH . 'wp-admin/backup-hceres'); // Retrieve all files and directories in the specified directory
 
+	$i = 1;
 	foreach ($files as $file) {
 		if ($file !== '.' && $file !== '..') {
 			if (is_file(ABSPATH . 'wp-admin/backup-hceres/' . $file)) {
-				$path = ABSPATH . 'wp-admin/backup-hceres/' . $file;
+				if(isset($_POST["submit$i"])){
+					deleteFile($i);
+					return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
+				}
+
+				if(isset($_POST["hceres__edit$i"])){
+					editFile($file, sanitize_file_name($_POST["new__backup__name"]));
+					return <<<HTML
+  <script>
+        window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres-backups/";
+  </script>
+HTML;
+				}
+
 				$html .= <<<HTML
 		<div class="hceres__backup">
-			<div class="hceres__file"><a class="hceres__backup__name" href="/wp-admin/backup-hceres/$file" download> $file </a></div>
-			<button class="hceres__download__button"><a class="hceres__download" href="/wp-admin/backup-hceres/$file" download> Télécharger le fichier </a></button>
+			<div class="hceres__file">
+				<form method="post" name="backup__edit" class=".backup__edit">
+					<input value="$file" name="new__backup__name" class=".new__backup__name" disabled>
+					<button type="submit" name="hceres__edit$i" style="display: none"></button>
+				</form>
+				<svg class="backup__pen__svg" xmlns="http://www.w3.org/2000/svg" height="0.625em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#0b140e}</style><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"/></svg>
+			</div>
+			<div class="backup__buttons">
+				<button class="hceres__download__button"><a class="hceres__download" href="/wp-admin/backup-hceres/$file" download>Télécharger</a></button>
+				<form method="post" name="delete__backup">
+					<button class="backup__delete" type="submit" name="submit$i">Supprimer</button>
+				</form>
+			</div>
 		</div>
 HTML;
+				$i++;
 			}
 		}
 	}

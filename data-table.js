@@ -232,4 +232,45 @@ if (dataTableForm) {
     pageTitleElement.insertAdjacentElement('afterend', messageElement);
 }
 
+try {
+    const svgPens = document.querySelectorAll('.hceres__backups .backup__pen__svg');
+    const inputFields = document.querySelectorAll('.hceres__backups input');
 
+    svgPens.forEach((pen, index) => {
+        const inputField = inputFields[index];
+
+        pen.addEventListener('click', function() {
+            inputField.disabled = false;
+            pen.style.display = 'none';
+        });
+    });
+
+    const inputs = document.querySelectorAll('.hceres__backups input');
+
+    function adjustInputWidth() {
+        inputs.forEach((input) => {
+            const valueLength = input.value.length;
+            const minWidth = 20; // Minimum width in pixels
+            input.style.width = Math.max(valueLength, minWidth) + 'ch';
+        });
+    }
+
+    inputs.forEach((input) => {
+        input.addEventListener('input', adjustInputWidth);
+    });
+
+    window.addEventListener('load', adjustInputWidth);
+
+    const inputss = document.querySelectorAll('.hceres__backups input');
+
+    inputss.forEach((input) => {
+        input.addEventListener('input', function() {
+            if (input.value.length > 60) {
+                input.value = input.value.slice(0, 60);
+            }
+        });
+    });
+
+} catch (e) {
+    
+}
