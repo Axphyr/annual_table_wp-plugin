@@ -45,65 +45,65 @@ function annual_data_table_install(): void
 
 	// defines the csv file's headers
 	$data = array(
-		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilité de projets de recherche (ou tasks indépendantes)', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilités, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
+		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilite de projets de recherche dans les formations (ou tasks independantes)', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilites, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
 		// categories (a backspace per categories and spaces to align)
 		// ' ' are here only to center the headers
-		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations générales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
+		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations generales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
 			'Discipline', ' ', '|',
 			' ', '|',
-			' ', ' ', ' ', "Publications sur l'ensemble de la carrière jusqu'à aujourd'hui", ' ', ' ', ' ', '|',
-			' ', ' ', 'Détail des publications par année depuis 2022', ' ', ' ', ' ', '|',
+			' ', ' ', ' ', "Publications sur l ensemble de la carriere jusqu a aujourd hui", ' ', ' ', ' ', '|',
+			' ', ' ', 'Detail des publications par annee depuis 2022', ' ', ' ', ' ', '|',
 			' ', 'Enseignement', ' ', ' ', '|',
-			' ', ' ', 'Encadrement Master 1 (à partir de 2022)', ' ', ' ', '|',
-			' ', ' ', 'Encadrement Master 2 (à partir de 2022)', ' ', ' ', '|',
-			' ', ' ', ' ', ' ', ' ', 'Encadrement thèse ISTeP à partir de 2022', ' ', ' ', ' ', ' ', ' ', '|',
-			' ', ' ', ' ', ' ', ' ', 'Encadrement thèse hors ISTeP à partir de 2022', ' ', ' ', ' ', ' ', ' ', ' ', '|',
-			' ', ' ', ' ', 'Encadrement de post-doctorats à partir de 2022', ' ', ' ', ' ', '|',
+			' ', ' ', 'Encadrement Master 1 (a partir de 2022)', ' ', ' ', '|',
+			' ', ' ', 'Encadrement Master 2 (a partir de 2022)', ' ', ' ', '|',
+			' ', ' ', ' ', ' ', ' ', 'Encadrement these ISTeP a partir de 2022', ' ', ' ', ' ', ' ', ' ', '|',
+			' ', ' ', ' ', ' ', ' ', 'Encadrement these hors ISTeP a partir de 2022', ' ', ' ', ' ', ' ', ' ', ' ', '|',
+			' ', ' ', ' ', 'Encadrement de post-doctorats a partir de 2022', ' ', ' ', ' ', '|',
 			'Prix ou distinctions scientifiques', ' ', '|',
-			"Appartenance à l'IUF", ' ', '|',
-			"Séjours dans des laboratoires étrangers", ' ', '|',
-			"Organisations de colloques/congrès internationaux", "", "|",
-			'Responsabilités dans des sociétés savantes', ' ', '|',
-			"Régional et local", ' ', '|',
-			'National', ' ', '|',
-			'International', ' ', '|',
-			'Partenariat (industrie, EPIC)', ' ', '|',
+			"Appartenance a l IUF", ' ', '|',
+			"Sejours dans des laboratoires etrangers", ' ', '|',
+			"Organisations de colloques/congres internationaux", "", "|",
+			'Responsabilites dans des societes savantes', ' ', '|',
+			"Regional et local", ' ', ' ', '|',
+			'National', ' ', ' ', '|',
+			'International', ' ', ' ', '|',
+			'Partenariat (industrie, EPIC)', ' ', ' ', '|',
 			'Locale', ' ', '|',
-			'Régional', ' ', '|',
+			'Regional', ' ', '|',
 			'Internationale', ' ', '|',
-			'Responsabilités & administration de la formation/enseignement', ' ', '|',
-			'Vulgarisation, dissémination scientifique', ' ', '|',
+			'Responsabilites & administration de la formation/enseignement', ' ', '|',
+			'Vulgarisation, dissemination scientifique', ' ', '|',
 			' ', '|',
 			'Brevet', ' ', '|'),
 
 		// fields per categories (a backspace per categories)
-		array('NOM', 'PRENOM', 'Equipe 2017-2022', 'Equipe 2022-2025', 'Equipe 2025-…', 'Pôles des services généraux (le cas échéant)', 'Fonction exercée', 'Corps', 'Rang', 'Date entrée (MM/AAAA) IG', 'Date sortie (MM/AAAA) IG', 'Année Naissance IG', 'Année Obtention Thèse', 'Année obtention HDR', "Annee Obtention Thèse d'état", '|',
+		array('NOM', 'PRENOM', 'Equipe 2017-2022', 'Equipe 2022-2025', 'Equipe 2025-…', 'Poles des services generaux (le cas echeant)', 'Fonction exercee', 'Corps', 'Sections disciplinaires', 'Date entree (MM/AAAA) IG', 'Date sortie (MM/AAAA) IG', 'Annee Naissance IG', 'Annee Obtention These', 'Annee obtention HDR', "Annee Obtention These d etat", '|',
 			'Discipline 1', 'Discipline 2', '|',
-			'Thèmes de recherche','|',
-			'Nombre total de publi de rang A', 'Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant', 'nombre de citations (isi-web of science)', 'h-factor (Isi-Web)', 'nombre de citations (google scholar)', 'h-factor (google scholar)', 'Nbre de résumé à conférence avec comité de lecture', '|',
-			'Nombre total de publications de rang A', 'Nbre article en 1er auteur ', 'Nbre article  derrière un doctorant', "Nbre d'articles rang A avec des collab. (autres laboratoires)", "Chapitre d'ouvrage / livre", 'Nombre de résumé à des congrès avec comité de lecture', '|',
-			'nb heures enseignées 2022-2023', 'nb heures enseignées 2023-2024', 'nb heures enseignées 2024-2025', 'nb heures enseignées 2025-2026', '|',
-			'Nom M1', 'Prénom M1', 'Année M1', 'NOM Prénom des Co-encadrants M1', 'Titre sujet (indiquer si hors ISTeP) M1', '|',
-			'Nom M2', 'Prénom M2', 'Année M2', 'NOM Prénom des Co-encadrants M2', 'Titre sujet (indiquer si hors ISTeP) M2', '|',
-			'Nom I', 'Prénom I', 'H/F I', "Date d'inscription en thèse (MM/AAAA) I", 'Date de soutenance (MM/AAAA) I', 'NOM Prénom des Co-directeurs I', 'Titre thèse I', 'Établissement ayant délivré le master (ou diplôme équivalent) I', "Numéro de l'ED de rattachement I", 'Financement du doctorat I', 'Fonction de direction ou encadrement ? I', '|',
-			'Nom HI', 'Prénom HI', 'H/F HI', "Date d'inscription en thèse (MM/AAAA) HI", 'Date de soutenance (MM/AAAA) HI', 'Direction de thèse (Nom, Prénom) HI', 'Titre thèse HI', 'Établissement ayant délivré le master (ou diplôme équivalent) HI', "Numéro de l'ED de rattachement HI", "Etablissement de rattachement de la direction de thèse HI", 'Financement du doctorat HI', 'Fonction de direction ou encadrement ? HI', '|',
-			'Nom PD', 'Prénom PD', 'H/F PD', "Date d'entrée (MM/AAAA) PD", 'Date de sortie (MM/AAAA) PD', 'Année de naissance PD', 'Etablissement ou organisme employeur PD', '|',
-			"Intitulé de l'élément de distinction (nom du prix par exemple)",'Année ou période (début MM/AAAA - fin MM/AAAA) D', '|',
-			"Intitulé de l'élément (membre, fonction …)", 'Année ou période (début MM/AAAA - fin MM/AAAA) IUF', '|',
-			"Lieu, fonction", "Année ou période (début MM/AAAA - fin MM/AAAA) S", "|",
-			"Nom de l'évènement, fonction O", 'Année ou période (début MM/AAAA - fin MM/AAAA) O', '|',
-			'Nom de la société, fonction SS', 'Année ou période (début MM/AAAA - fin MM/AAAA) SS', '|',
-			'montant (k€) RL', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) RL', '|',
-			'montant (k€) N', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) N', '|',
-			'montant (k€) I', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) I', '|',
-			"montant (k€) P", 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) P', '|',
-			"Intitulé de l'élément et fonction L", 'Année ou période (début MM/AAAA - fin MM/AAAA) L', '|',
-			"Intitulé de l'élément et fonction R", 'Année ou période (début MM/AAAA - fin MM/AAAA) R', '|',
-			"Intitulé de l'élément et fonction I", 'Année ou période (début MM/AAAA - fin MM/AAAA) I', '|',
-			"Intitulé de l'élément et votre fonction Res", 'Année ou période (début MM/AAAA - fin MM/AAAA) Res', '|',
-			"Intitulé de l'élément (évènement, vidéo, livre, …) et fonction V", 'Année ou période (début MM/AAAA - fin MM/AAAA) V', '|',
-			'Rayonnement / résultats majeurs sur la période à mettre en avant', '|',
-			"Intitulé de l'élément et votre fonction B", 'Année ou période (début MM/AAAA - fin MM/AAAA) B', '|')
+			'Themes de recherche','|',
+			'Nombre de publi de rang A', 'Nombre de publi de rang A en 1ier auteur ou derriere un doctorant', 'nombre de citations (isi-web of science)', 'h-factor (Isi-Web)', 'nombre de citations (google scholar)', 'h-factor (google scholar)', 'Nbre de resume a conference avec comite de lecture', '|',
+			'Nombre de publications de rang A', 'Nbre article en 1er auteur ', 'Nbre article  derriere un doctorant', "Nbre d'articles rang A avec des collab. (autres laboratoires)", "Chapitre d ouvrage / livre", 'Nombre de resume a des congres avec comite de lecture', '|',
+			'nb heures enseignees 2022-2023', 'nb heures enseignees 2023-2024', 'nb heures enseignees 2024-2025', 'nb heures enseignees 2025-2026', '|',
+			'Nom M1', 'Prenom M1', 'Annee M1', 'NOM Prenom des Co-encadrants M1', 'Titre sujet (indiquer si hors ISTeP) M1', '|',
+			'Nom M2', 'Prenom M2', 'Annee M2', 'NOM Prenom des Co-encadrants M2', 'Titre sujet (indiquer si hors ISTeP) M2', '|',
+			'Nom I', 'Prenom I', 'H/F I', "Date d'inscription en these (MM/AAAA) I", 'Date de soutenance (MM/AAAA) I', 'NOM Prenom des Co-directeurs I', 'Titre these I', 'Etablissement ayant delivre le master (ou diplome equivalent) I', "Numero de l ED de rattachement I", 'Financement du doctorat I', 'Fonction de direction ou encadrement ? I', '|',
+			'Nom HI', 'Prenom HI', 'H/F HI', "Date d inscription en these (MM/AAAA) HI", 'Date de soutenance (MM/AAAA) HI', 'Direction de these (Nom, Prenom) HI', 'Titre these HI', 'Etablissement ayant delivre le master (ou diplome equivalent) HI', "Numero de l ED de rattachement HI", "Etablissement de rattachement de la direction de these HI", 'Financement du doctorat HI', 'Fonction de direction ou encadrement ? HI', '|',
+			'Nom PD', 'Prenom PD', 'H/F PD', "Date d entree (MM/AAAA) PD", 'Date de sortie (MM/AAAA) PD', 'Annee de naissance PD', 'Etablissement ou organisme employeur PD', '|',
+			"Intitule de l element de distinction (nom du prix par exemple)",'Annee ou periode (debut MM/AAAA - fin MM/AAAA) D', '|',
+			"Intitule de l element (membre, fonction …)", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF', '|',
+			"Lieu, fonction", "Annee ou periode (debut MM/AAAA - fin MM/AAAA) S", "|",
+			"Nom de l'evenement, fonction O", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) O', '|',
+			'Nom de la societe, fonction SS', 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS', '|',
+			'montant (k€) RL', 'Nom projet (titre et acronyme) RL', 'Fonction Regionale', '|',
+			'montant (k€) N', 'Nom projet (titre et acronyme) N', 'Fonction Nationale', '|',
+			'montant (k€) I', 'Nom projet (titre et acronyme) I', 'Fonction Internationale', '|',
+			"montant (k€) P", 'Nom projet (titre et acronyme) P', 'Fonction Partenariat', '|',
+			"Intitule de l element et fonction L", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) L', '|',
+			"Intitule de l element et fonction R", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) R', '|',
+			"Intitule de l element et fonction I", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) I', '|',
+			"Intitule de l element et votre fonction Res", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res', '|',
+			"Intitule de l element (evenement, video, livre, …) et fonction V", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) V', '|',
+			'Rayonnement / resultats majeurs sur la periode a mettre en avant', '|',
+			"Intitule de l element et votre fonction B", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) B', '|')
 	);
 
 	// opens the file for writing
@@ -118,7 +118,7 @@ function annual_data_table_install(): void
 	fclose($file);
 
 	// adds WP pages for every header
-	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
+	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche dans les formations", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	for($i = 0; $i < 22; $i++){
 		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
 	}
@@ -966,7 +966,7 @@ add_shortcode('add_istep_annual_table_summary','summary');
  * @return string
  */
 function summary(): string{
-	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
+	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche dans les formations", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	$year = date('Y');
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
@@ -1050,7 +1050,7 @@ function getHeadersId(): array {
 		}
 
 		// handles the specfific headers with multiple part in them
-		if ($value === 'Régional et local') {
+		if ($value === 'Regional et local') {
 			$skipCount = 3;
 			$reg = true;
 		}
@@ -1435,7 +1435,7 @@ HTML;
 		$prisme = "selected";
 	}
 
-	$rang = getCell("Rang");
+	$selectedRang = getCell("Rang");
 	$year = date('Y');
 
 	$annee_naissance = null;
@@ -1448,35 +1448,35 @@ HTML;
 	$poles = [
 		"Direction UMR",
 		"Direction adjointe UMR",
-		"Référent Communication",
-		"Référent Plateformes d’analyses",
-		"Assistant de prévention",
-		"Référent Radioprotection",
-		"Référent Risques Psycho-Sociaux, Egalité et Parité",
-		"Référent Développement durable",
-		"Référent Ethique, Déontologie, Intégrité",
-		"Référent Liaison avec les formations L, M, EPU",
-		"Référent Séminaires"
+		"Referent Communication",
+		"Referent Plateformes d analyses",
+		"Assistant de prevention",
+		"Referent Radioprotection",
+		"Referent Risques Psycho-Sociaux, Egalite et Parite",
+		"Referent Developpement durable",
+		"Referent Ethique, Deontologie, Integrite",
+		"Referent Liaison avec les formations L, M, EPU",
+		"Referent Seminaires"
 	];
 
-	$selectedPole = getCell("Pôles des services généraux (le cas échéant)");
+	$selectedPole = getCell("Poles des services generaux (le cas echeant)");
 
 	$fonctions = [
 		"Enseignant-Chercheur",
 		"Chercheur",
 		"ATER",
 		"Doctorant",
-		"Bénévole",
+		"Benevole",
 		"CRCT",
-		"Emérite",
-		"Détachement"
+		"Emerite",
+		"Detachement"
 	];
 
-	$selectedFonction = getCell("Fonction exercée");
+	$selectedFonction = getCell("Fonction exercee");
 
 	$corps = [
-		"Détachement",
-		"Bénévole",
+		"Detachement",
+		"Benevole",
 		"CR",
 		"DR",
 		"DREM",
@@ -1489,14 +1489,28 @@ HTML;
 		"PREM"
 	];
 
+	$rangs = [
+		"CNU 36",
+		"CNU 35",
+		"CNU autre",
+		"CoCNRS 18",
+		"BAP A",
+		"BAP B",
+		"BAP C",
+		"BAP D",
+		"BAP E",
+		"BAP F",
+		"BAP J"
+	];
+
 	$selectedCoprs = getCell("Corps");
 
 	if(isRegistered()){
-		$annee_naissance = (int)getCell("Année Naissance IG");
-		$annee_these = (($value = (int)getCell("Année Obtention Thèse")) === 0) ? null : $value;
-		$annee_hdr = (($value = (int)getCell("Année obtention HDR")) === 0) ? null : $value;
-		$annee_etat = (($value = (int)getCell("Annee Obtention Thèse d'état")) === 0) ? null : $value;
-		$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date entrée (MM/AAAA) IG"))));
+		$annee_naissance = (int)getCell("Annee Naissance IG");
+		$annee_these = (($value = (int)getCell("Annee Obtention These")) === 0) ? null : $value;
+		$annee_hdr = (($value = (int)getCell("Annee obtention HDR")) === 0) ? null : $value;
+		$annee_etat = (($value = (int)getCell("Annee Obtention These d etat")) === 0) ? null : $value;
+		$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date entree (MM/AAAA) IG"))));
 		if(getCell("Date sortie (MM/AAAA) IG") !== ""){
 			$date_sortie = 'value="' . date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date sortie (MM/AAAA) IG")))) . '"';
 		}
@@ -1533,7 +1547,7 @@ HTML;
 			<option value="PRISME" $prisme>PRISME</option>
 		</select>
 		<label for="poles">Pôles des services généraux (le cas échéant)</label>
-		<select id="poles" name="poles" required>
+		<select id="poles" name="poles">
 			<option value=" "></option>
 HTML;
 
@@ -1586,8 +1600,24 @@ HTML;
 
 	$html .= <<<HTML
 		</select>
-		<label for="rang">Rang</label>
-			<input type="text" id="rang" name="rang" value="$rang" required>
+		<label for="rang">Sections disciplinaires</label>
+		<select id="rangs" name="rangs" required>
+			<option value=" "></option>
+HTML;
+
+	$selectedR = "";
+	for ($i = 0; $i < count($rangs); $i++){
+		if($rangs[$i] === $selectedRang){
+			$selectedR = "selected";
+		}
+		$html .= <<<HTML
+			<option value="$rangs[$i]" $selectedR>$rangs[$i]</option>
+HTML;
+		$selectedR = "";
+	}
+
+	$html .= <<<HTML
+		</select>
 		<label for="date_entree">Date entrée (MM/AAAA)</label>
 			<input type="date" id="date_entree" name="date_entree" value="$date_entree" required>
 		<label for="date_sortie">Date sortie (MM/AAAA)</label>
@@ -1626,25 +1656,25 @@ HTML;
 		}
 
 		$disciplines = [
-			"Géochimie",
+			"Geochimie",
 			"Volcanologie",
-			"Pétrologie",
-			"Minéralogie",
+			"Petrologie",
+			"Mineralogie",
 			"Sismologie",
-			"Gravimétrie-Géodésie",
-			"Magnétisme",
-			"Géologie",
+			"Gravimetrie-Geodesie",
+			"Magnetisme",
+			"Geologie",
 			"Tectonique",
-			"Géophysique",
-			"Sédimentologie",
-			"Paléontologie",
-			"Paléoenvironnement",
-			"Pédologie",
-			"Géomorphologie",
+			"Geophysique",
+			"Sedimentologie",
+			"Paleontologie",
+			"Paleoenvironnement",
+			"Pedologie",
+			"Geomorphologie",
 			"Stratigraphie",
-			"Géodynamique",
-			"Hydrologie-hydrogéologie",
-			"Pétrophysique"
+			"Geodynamique",
+			"Hydrologie-hydrogeologie",
+			"Petrophysique"
 		];
 
 		$html = <<<HTML
@@ -1709,7 +1739,7 @@ function block3(): string{
 				$data = [
 					sanitize_text_field($_POST["theme_recherche"])
 				];
-				replace_or_pushes_values(getHeaderId("Thèmes de recherche"), $data);
+				replace_or_pushes_values(getHeaderId("Themes de recherche"), $data);
 
 				return <<<HTML
   <script>
@@ -1720,8 +1750,8 @@ HTML;
 
 	$theme = "";
 
-	if(getCell("Thèmes de recherche") !== " "){
-		$theme = getCell("Thèmes de recherche");
+	if(getCell("Themes de recherche") !== " "){
+		$theme = getCell("Themes de recherche");
 	}
 
 	return <<<HTML
@@ -1753,7 +1783,7 @@ function block4(): string{
 				sanitize_text_field($_POST["h_factor_google"]),
 				$_POST["nb_resume_conference"]
 			];
-			replace_or_pushes_values(getHeaderId("Publications sur l'ensemble de la carrière jusqu'à aujourd'hui"), $data);
+			replace_or_pushes_values(getHeaderId("Publications sur l ensemble de la carriere jusqu a aujourd hui"), $data);
 
 			return <<<HTML
   <script>
@@ -1770,12 +1800,12 @@ HTML;
 		$h_factor_google = null;
 		$nb_resume_conference = null;
 
-		if(getCell("Nombre total de publi de rang A") !== " "){
-			$nb_publi_rang_a1 = (int)getCell("Nombre total de publi de rang A");
+		if(getCell("Nombre de publi de rang A") !== " "){
+			$nb_publi_rang_a1 = (int)getCell("Nombre de publi de rang A");
 		}
 
-		if(getCell("Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant") !== " "){
-			$nb_publi_rang_premier = (int)getCell("Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant");
+		if(getCell("Nombre de publi de rang A en 1ier auteur ou derriere un doctorant") !== " "){
+			$nb_publi_rang_premier = (int)getCell("Nombre de publi de rang A en 1ier auteur ou derriere un doctorant");
 		}
 
 		if(getCell("nombre de citations (isi-web of science)") !== " "){
@@ -1794,16 +1824,16 @@ HTML;
 			$h_factor_google = getCell("h-factor (google scholar)");
 		}
 
-		if(getCell("Nbre de résumé à conférence avec comité de lecture") !== " "){
-			$nb_resume_conference = (int)getCell("Nbre de résumé à conférence avec comité de lecture");
+		if(getCell("Nbre de resume a conference avec comite de lecture") !== " "){
+			$nb_resume_conference = (int)getCell("Nbre de resume a conference avec comite de lecture");
 		}
 
 		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
-		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
+		<label for="nb_publi_rang_a1">Nombre de publi de rang A</label>
 			<input type="number" id="nb_publi_rang_a1" name="nb_publi_rang_a1" min="0" value="$nb_publi_rang_a1" required>
-		<label for="nb_publi_rang_premier">Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant</label>
+		<label for="nb_publi_rang_premier">Nombre de publi de rang A en 1ier auteur ou derrière un doctorant</label>
 			<input type="number" id="nb_publi_rang_premier" name="nb_publi_rang_premier" min="0" value="$nb_publi_rang_premier" required>
 		<label for="nb_citations_isi">nombre de citations (isi-web of science)</label>
 			<input type="number" id="nb_citations_isi" name="nb_citations_isi" min="0" value="$nb_citations_isi" required>
@@ -1846,7 +1876,7 @@ HTML;
 			}
 			array_pop($data);
 			$data[] = "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw==";
-			replace_or_pushes_values(getHeaderId("Détail des publications par année depuis 2022"), $data);
+			replace_or_pushes_values(getHeaderId("Detail des publications par annee depuis 2022"), $data);
 
 			return <<<HTML
   <script>
@@ -1859,8 +1889,8 @@ HTML;
 
 		for ($i = 0; $i <= date('Y') - 2022; $i++){
 
-			if(!in_array(getCell("Nombre total de publications de rang A", $i), $arr)){
-				$nb_publi_rang_a2 = (int)getCell("Nombre total de publications de rang A", $i);
+			if(!in_array(getCell("Nombre de publications de rang A", $i), $arr)){
+				$nb_publi_rang_a2 = (int)getCell("Nombre de publications de rang A", $i);
 			} else {
 				$nb_publi_rang_a2 = null;
 			}
@@ -1871,26 +1901,26 @@ HTML;
 				$nb_publi_premier = null;
 			}
 
-			if(!in_array(getCell("Nbre article  derrière un doctorant", $i), $arr)){
-				$nb_article_doctorant = (int)getCell("Nbre article  derrière un doctorant", $i);
+			if(!in_array(getCell("Nbre article derriere un doctorant", $i), $arr)){
+				$nb_article_doctorant = (int)getCell("Nbre article derriere un doctorant", $i);
 			} else {
 				$nb_article_doctorant = null;
 			}
 
-			if(!in_array(getCell("Nbre d'articles rang A avec des collab. (autres laboratoires)", $i), $arr)){
-				$nb_article_rang_a_collab = (int)getCell("Nbre d'articles rang A avec des collab. (autres laboratoires)", $i);
+			if(!in_array(getCell("Nbre d articles rang A avec des collab. (autres laboratoires)", $i), $arr)){
+				$nb_article_rang_a_collab = (int)getCell("Nbre d articles rang A avec des collab. (autres laboratoires)", $i);
 			} else {
 				$nb_article_rang_a_collab = null;
 			}
 
-			if(!in_array(getCell("Chapitre d'ouvrage / livre", $i), $arr)){
-				$chapitre_ouvrage = getCell("Chapitre d'ouvrage / livre", $i);
+			if(!in_array(getCell("Chapitre d ouvrage / livre", $i), $arr)){
+				$chapitre_ouvrage = getCell("Chapitre d ouvrage / livre", $i);
 			} else {
 				$chapitre_ouvrage = null;
 			}
 
-			if(!in_array(getCell("Nombre de résumé à des congrès avec comité de lecture", $i), $arr)){
-				$nb_resume_comite_lecture = (int)getCell("Nombre de résumé à des congrès avec comité de lecture", $i);
+			if(!in_array(getCell("Nombre de resume a des congres avec comite de lecture", $i), $arr)){
+				$nb_resume_comite_lecture = (int)getCell("Nombre de resume a des congres avec comite de lecture", $i);
 			} else {
 				$nb_resume_comite_lecture = null;
 			}
@@ -1899,7 +1929,7 @@ HTML;
 			$html .= <<<HTML
 		<div class="dt__year__$i dt__year">
 			<h2>$year</h2>
-			<label for="nb_publi_rang_a2__$i">Nombre total de publications de rang A</label>
+			<label for="nb_publi_rang_a2__$i">Nombre de publications de rang A</label>
 				<input type="number" id="nb_publi_rang_a2__$i" name="nb_publi_rang_a2__$i" min="0" value="$nb_publi_rang_a2" required>
 			<label for="nb_publi_premier__$i">Nombre d'articles en 1er auteur</label>
 				<input type="number" id="nb_publi_premier__$i"name="nb_publi_premier__$i" min="0" value="$nb_publi_premier" required>
@@ -1956,20 +1986,20 @@ HTML;
 		$enseignement3 = null;
 		$enseignement4 = null;
 
-		if(getCell("nb heures enseignées 2022-2023") !== " "){
-			$enseignement1 = (int)getCell("nb heures enseignées 2022-2023");
+		if(getCell("nb heures enseignees 2022-2023") !== " "){
+			$enseignement1 = (int)getCell("nb heures enseignees 2022-2023");
 		}
 
-		if(getCell("nb heures enseignées 2023-2024") !== " "){
-			$enseignement2 = (int)getCell("nb heures enseignées 2023-2024");
+		if(getCell("nb heures enseignees 2023-2024") !== " "){
+			$enseignement2 = (int)getCell("nb heures enseignees 2023-2024");
 		}
 
-		if(getCell("nb heures enseignées 2024-2025") !== " "){
-			$enseignement3 = (int)getCell("nb heures enseignées 2024-2025");
+		if(getCell("nb heures enseignees 2024-2025") !== " "){
+			$enseignement3 = (int)getCell("nb heures enseignees 2024-2025");
 		}
 
-		if(getCell("nb heures enseignées 2025-2026") !== " "){
-			$enseignement4 = (int)getCell("nb heures enseignées 2025-2026");
+		if(getCell("nb heures enseignees 2025-2026") !== " "){
+			$enseignement4 = (int)getCell("nb heures enseignees 2025-2026");
 		}
 
 		return <<<HTML
@@ -2007,7 +2037,7 @@ function block7(): string{
 				sanitize_text_field($_POST["master1_nom_prenom_co-encadrants"]),
 				sanitize_text_field($_POST["master1_sujet"])
 			];
-			replace_or_pushes_values(getHeaderId("Encadrement Master 1 (à partir de 2022)"), $data);
+			replace_or_pushes_values(getHeaderId("Encadrement Master 1 (a partir de 2022)"), $data);
 
 			return <<<HTML
   <script>
@@ -2026,16 +2056,16 @@ HTML;
 			$master1_nom = getCell("Nom M1");
 		}
 
-		if(getCell("Prénom M1") !== " "){
-			$master1_prenom = getCell("Prénom M1");
+		if(getCell("Prenom M1") !== " "){
+			$master1_prenom = getCell("Prenom M1");
 		}
 
-		if(getCell("Année M1") !== " "){
-			$master1_annee = (int)getCell("Année M1");
+		if(getCell("Annee M1") !== " "){
+			$master1_annee = (int)getCell("Annee M1");
 		}
 
-		if(getCell("NOM Prénom des Co-encadrants M1") !== " "){
-			$master1_nom_prenom_co_encadrants = getCell("NOM Prénom des Co-encadrants M1");
+		if(getCell("NOM Prenom des Co-encadrants M1") !== " "){
+			$master1_nom_prenom_co_encadrants = getCell("NOM Prenom des Co-encadrants M1");
 		}
 
 		if(getCell("Titre sujet (indiquer si hors ISTeP) M1") !== " "){
@@ -2081,7 +2111,7 @@ function block8(): string{
 				sanitize_text_field($_POST["master2_nom_prenom_co-encadrants"]),
 				sanitize_text_field($_POST["master2_sujet"])
 			];
-			replace_or_pushes_values(getHeaderId("Encadrement Master 2 (à partir de 2022)"), $data);
+			replace_or_pushes_values(getHeaderId("Encadrement Master 2 (a partir de 2022)"), $data);
 
 			return <<<HTML
   <script>
@@ -2100,16 +2130,16 @@ HTML;
 			$master2_nom = getCell("Nom M2");
 		}
 
-		if(getCell("Prénom M2") !== " "){
-			$master2_prenom = getCell("Prénom M2");
+		if(getCell("Prenom M2") !== " "){
+			$master2_prenom = getCell("Prenom M2");
 		}
 
-		if(getCell("Année M2") !== " "){
-			$master2_annee = (int)getCell("Année M2");
+		if(getCell("Annee M2") !== " "){
+			$master2_annee = (int)getCell("Annee M2");
 		}
 
-		if(getCell("NOM Prénom des Co-encadrants M2") !== " "){
-			$master2_nom_prenom_co_encadrants = getCell("NOM Prénom des Co-encadrants M2");
+		if(getCell("NOM Prenom des Co-encadrants M2") !== " "){
+			$master2_nom_prenom_co_encadrants = getCell("NOM Prenom des Co-encadrants M2");
 		}
 
 		if(getCell("Titre sujet (indiquer si hors ISTeP) M2") !== " "){
@@ -2160,7 +2190,7 @@ function block9(): string{
 				sanitize_text_field($_POST["encadrement_istep_financement_doctorat"]),
 				sanitize_text_field($_POST["encadrement_istep_fonction"])
 			];
-			replace_or_pushes_values(getHeaderId("Encadrement thèse ISTeP à partir de 2022"), $data);
+			replace_or_pushes_values(getHeaderId("Encadrement these ISTeP a partir de 2022"), $data);
 
 			return <<<HTML
   <script>
@@ -2185,8 +2215,8 @@ HTML;
 			$encadrement_istep_nom = getCell("Nom I");
 		}
 
-		if(getCell("Prénom I") !== " "){
-			$encadrement_istep_prenom = getCell("Prénom I");
+		if(getCell("Prenom I") !== " "){
+			$encadrement_istep_prenom = getCell("Prenom I");
 		}
 
 		if(getCell("H/F I") === "Homme"){
@@ -2196,27 +2226,27 @@ HTML;
 			$femme = "selected";
 		}
 
-		if(getCell("Date d'inscription en thèse (MM/AAAA) I") !== " "){
-			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d'inscription en thèse (MM/AAAA) I"))));
+		if(getCell("Date d inscription en these (MM/AAAA) I") !== " "){
+			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d'inscription en these (MM/AAAA) I"))));
 		}
 
 		if(getCell("Date de soutenance (MM/AAAA) I") !== " "){
 			$encadrement_istep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de soutenance (MM/AAAA) I"))));
 		}
 
-		if(getCell("NOM Prénom des Co-directeurs I") !== " "){
-			$encadrement_istep_nom_prenom_co = getCell("NOM Prénom des Co-directeurs I");
+		if(getCell("NOM Prenom des Co-directeurs I") !== " "){
+			$encadrement_istep_nom_prenom_co = getCell("NOM Prenom des Co-directeurs I");
 		}
 
-		if(getCell("Titre thèse I") !== " "){
-			$encadrement_istep_titre_these = getCell("Titre thèse I");
+		if(getCell("Titre these I") !== " "){
+			$encadrement_istep_titre_these = getCell("Titre these I");
 		}
 
-		if(getCell("Établissement ayant délivré le master (ou diplôme équivalent) I") !== " "){
-			$encadrement_istep_etablissement = getCell("Établissement ayant délivré le master (ou diplôme équivalent) I");
+		if(getCell("Etablissement ayant delivre le master (ou diplome equivalent) I") !== " "){
+			$encadrement_istep_etablissement = getCell("Etablissement ayant delivre le master (ou diplome equivalent) I");
 		}
-		if(getCell("Numéro de l'ED de rattachement I") !== " "){
-			$encadrement_istep_numero_ed = getCell("Numéro de l'ED de rattachement I");
+		if(getCell("Numero de l ED de rattachement I") !== " "){
+			$encadrement_istep_numero_ed = getCell("Numero de l ED de rattachement I");
 		}
 
 		$html = <<<HTML
@@ -2233,7 +2263,7 @@ HTML;
 				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_istep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_istep_date_inscription_these" id="encadrement_istep_date_inscription_these" value="$encadrement_istep_date_inscription_these" required>
+			<input type="date" name="encadrement_istep_date_inscription_these" id="encadrement_istep_date_inscription_these" value="$encadrement_istep_date_inscription_these">
 		<label for="encadrement_istep_date_soutenance">Date de soutenance (MM/AAAA)</label>
 			<input type="date" name="encadrement_istep_date_soutenance" id="encadrement_istep_date_soutenance" value="$encadrement_istep_date_soutenance" required>
 		<label for="encadrement_istep_nom_prenom_co-directerurs">NOM Prénom des Co-directeurs</label>
@@ -2251,11 +2281,11 @@ HTML;
 
 		$financement = [
 			"Contrat Doctoral",
-			"Collectivités Territoriales",
+			"Collectivites Territoriales",
 			"Agence Française de Financement Recherche",
 			"CIFRE",
-			"Financements Privés France",
-			"Comission Européenne",
+			"Financements Prives France",
+			"Comission Europeenne",
 			"Financements Etrangers",
 			"Formation Continue",
 			"Organismes Internationaux",
@@ -2334,7 +2364,7 @@ function block10(): string{
 				sanitize_text_field($_POST["encadrement_histep_financement_doctorat"]),
 				sanitize_text_field($_POST["encadrement_histep_fonction"])
 			];
-			replace_or_pushes_values(getHeaderId("Encadrement thèse hors ISTeP à partir de 2022"), $data);
+			replace_or_pushes_values(getHeaderId("Encadrement these hors ISTeP a partir de 2022"), $data);
 
 			return <<<HTML
   <script>
@@ -2360,8 +2390,8 @@ HTML;
 			$encadrement_histep_nom = getCell("Nom HI");
 		}
 
-		if(getCell("Prénom HI") !== " "){
-			$encadrement_histep_prenom = getCell("Prénom HI");
+		if(getCell("Prenom HI") !== " "){
+			$encadrement_histep_prenom = getCell("Prenom HI");
 		}
 
 		if(getCell("H/F HI") === "Homme"){
@@ -2371,31 +2401,31 @@ HTML;
 			$femme = "selected";
 		}
 
-		if(getCell("Date d'inscription en thèse (MM/AAAA) HI") !== " "){
-			$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d'inscription en thèse (MM/AAAA) HI"))));
+		if(getCell("Date d inscription en these (MM/AAAA) HI") !== " "){
+			$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d inscription en these (MM/AAAA) HI"))));
 		}
 
 		if(getCell("Date de soutenance (MM/AAAA) HI") !== " "){
 			$encadrement_histep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de soutenance (MM/AAAA) HI"))));
 		}
 
-		if(getCell("Direction de thèse (Nom, Prénom) HI") !== " "){
-			$encadrement_histep_direction_these = getCell("Direction de thèse (Nom, Prénom) HI");
+		if(getCell("Direction de these (Nom, Prenom) HI") !== " "){
+			$encadrement_histep_direction_these = getCell("Direction de these (Nom, Prenom) HI");
 		}
 
-		if(getCell("Titre thèse HI") !== " "){
-			$encadrement_histep_titre_these = getCell("Titre thèse HI");
+		if(getCell("Titre these HI") !== " "){
+			$encadrement_histep_titre_these = getCell("Titre these HI");
 		}
 
-		if(getCell("Établissement ayant délivré le master (ou diplôme équivalent) HI") !== " "){
-			$encadrement_histep_etablissement = getCell("Établissement ayant délivré le master (ou diplôme équivalent) HI");
+		if(getCell("Etablissement ayant delivre le master (ou diplome equivalent) HI") !== " "){
+			$encadrement_histep_etablissement = getCell("Etablissement ayant delivre le master (ou diplome equivalent) HI");
 		}
-		if(getCell("Numéro de l'ED de rattachement HI") !== " "){
-			$encadrement_histep_numero_ed = getCell("Numéro de l'ED de rattachement HI");
+		if(getCell("Numero de l'ED de rattachement HI") !== " "){
+			$encadrement_histep_numero_ed = getCell("Numero de l ED de rattachement HI");
 		}
 
-		if(getCell("Etablissement de rattachement de la direction de thèse HI") !== " "){
-			$encadrement_histep_etablissement_rattachement_direction_these = getCell("Etablissement de rattachement de la direction de thèse HI");
+		if(getCell("Etablissement de rattachement de la direction de these HI") !== " "){
+			$encadrement_histep_etablissement_rattachement_direction_these = getCell("Etablissement de rattachement de la direction de these HI");
 		}
 
 		$html = <<<HTML
@@ -2412,7 +2442,7 @@ HTML;
 				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_histep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_histep_date_inscription_these" id="encadrement_histep_date_inscription_these" value="$encadrement_histep_date_inscription_these" required>
+			<input type="date" name="encadrement_histep_date_inscription_these" id="encadrement_histep_date_inscription_these" value="$encadrement_histep_date_inscription_these">
 		<label for="encadrement_histep_date_soutenance">Date de soutenance (MM/AAAA)</label>
 			<input type="date" name="encadrement_histep_date_soutenance" id="encadrement_histep_date_soutenance" value="$encadrement_histep_date_soutenance" required>
 		<label for="encadrement_histep_direction_these">Direction de thèse (Nom, Prénom)</label>
@@ -2432,11 +2462,11 @@ HTML;
 
 		$financement = [
 			"Contrat Doctoral",
-			"Collectivités Territoriales",
+			"Collectivites Territoriales",
 			"Agence Française de Financement Recherche",
 			"CIFRE",
-			"Financements Privés France",
-			"Comission Européenne",
+			"Financements Prives France",
+			"Comission Europeenne",
 			"Financements Etrangers",
 			"Formation Continue",
 			"Organismes Internationaux",
@@ -2509,7 +2539,7 @@ function block11(): string{
 				$_POST["encadrement_pd_annee_naissance"],
 				sanitize_text_field($_POST["encadrement_pd_employeur"])
 			];
-			replace_or_pushes_values(getHeaderId("Encadrement de post-doctorats à partir de 2022"), $data);
+			replace_or_pushes_values(getHeaderId("Encadrement de post-doctorats a partir de 2022"), $data);
 
 			return <<<HTML
   <script>
@@ -2533,8 +2563,8 @@ HTML;
 			$encadrement_pd_nom = getCell("Nom PD");
 		}
 
-		if(getCell("Prénom PD") !== " "){
-			$encadrement_pd_prenom = getCell("Prénom PD");
+		if(getCell("Prenom PD") !== " "){
+			$encadrement_pd_prenom = getCell("Prenom PD");
 		}
 
 		if(getCell("H/F PD") === "Homme"){
@@ -2544,16 +2574,16 @@ HTML;
 			$femme = "selected";
 		}
 
-		if(getCell("Date d'entrée (MM/AAAA) PD") !== " "){
-			$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d'entrée (MM/AAAA) PD"))));
+		if(getCell("Date d entree (MM/AAAA) PD") !== " "){
+			$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d entree (MM/AAAA) PD"))));
 		}
 
 		if(getCell("Date de sortie (MM/AAAA) PD") !== " "){
 			$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de sortie (MM/AAAA) PD"))));
 		}
 
-		if(getCell("Année de naissance PD") !== " "){
-			$encadrement_pd_annee_naissance = getCell("Année de naissance PD");
+		if(getCell("Annee de naissance PD") !== " "){
+			$encadrement_pd_annee_naissance = getCell("Annee de naissance PD");
 		}
 
 		if(getCell("Etablissement ou organisme employeur PD") !== " "){
@@ -2578,7 +2608,7 @@ HTML;
 		<label for="encadrement_pd_date_entree">Date d'entrée (MM/AAAA)</label>
 			<input type="date" name="encadrement_pd_date_entree" id="encadrement_pd_date_entree" value="$encadrement_pd_date_entree" required>
 		<label for="encadrement_pd_date_sortie">Date de sortie (MM/AAAA)</label>
-			<input type="date" name="encadrement_pd_date_sortie" id="encadrement_pd_date_sortie" value="$encadrement_pd_date_sortie" required>
+			<input type="date" name="encadrement_pd_date_sortie" id="encadrement_pd_date_sortie" value="$encadrement_pd_date_sortie">
 		<label for="encadrement_pd_annee_naissance">Année de naissance</label>
 			<input type="number" name="encadrement_pd_annee_naissance" min="1900" max="$year" id="encadrement_pd_annee_naissance" value="$encadrement_pd_annee_naissance" required>
 		<label for="encadrement_pd_employeur">Etablissement ou organisme employeur</label>
@@ -2603,7 +2633,7 @@ function block12(): string{
 				sanitize_text_field($_POST["distinction_intitule"]),
 				$_POST["distinction_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifiques	"), $data);
+			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifique	"), $data);
 
 			return <<<HTML
   <script>
@@ -2615,12 +2645,12 @@ HTML;
 		$distinction_intitule = null;
 		$distinction_annee = null;
 
-		if(getCell("Intitulé de l'élément de distinction (nom du prix par exemple)") !== " "){
-			$distinction_intitule = getCell("Intitulé de l'élément de distinction (nom du prix par exemple)");
+		if(getCell("Intitule de l element de distinction (nom du prix par exemple)") !== " "){
+			$distinction_intitule = getCell("Intitule de l element de distinction (nom du prix par exemple)");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) D") !== " "){
-			$distinction_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) D");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) D") !== " "){
+			$distinction_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) D");
 		}
 
 		return <<<HTML
@@ -2649,7 +2679,7 @@ function block13(): string{
 				sanitize_text_field($_POST["iuf_intitule"]),
 				$_POST["iuf_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Appartenance à l'IUF"), $data);
+			replace_or_pushes_values(getHeaderId("Appartenance a l IUF"), $data);
 
 			return <<<HTML
   <script>
@@ -2661,12 +2691,12 @@ HTML;
 		$iuf_intitule = null;
 		$iuf_annee = null;
 
-		if(getCell("Intitulé de l'élément (membre, fonction …)") !== " "){
-			$iuf_intitule = getCell("Intitulé de l'élément (membre, fonction …)");
+		if(getCell("Intitule de l'element (membre, fonction …)") !== " "){
+			$iuf_intitule = getCell("Intitule de l'element (membre, fonction …)");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) IUF") !== " "){
-			$iuf_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) IUF");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF") !== " "){
+			$iuf_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF");
 		}
 
 		return <<<HTML
@@ -2695,7 +2725,7 @@ function block14(): string{
 				sanitize_text_field($_POST["sejour_lieu"]),
 				$_POST["sejour_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Séjours dans des laboratoires étrangers"), $data);
+			replace_or_pushes_values(getHeaderId("Sejours dans des laboratoires etrangers"), $data);
 
 			return <<<HTML
   <script>
@@ -2707,8 +2737,8 @@ HTML;
 		$sejour_lieu = null;
 		$sejour_annee = null;
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) S") !== " "){
-			$sejour_lieu = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) S");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) S") !== " "){
+			$sejour_lieu = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) S");
 		}
 
 		if(getCell("Lieu, fonction") !== " "){
@@ -2742,7 +2772,7 @@ function block15(): string{
 				sanitize_text_field($_POST["organisation_nom"]),
 				$_POST["organisation_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Organisations de colloques/congrès internationaux"), $data);
+			replace_or_pushes_values(getHeaderId("Organisations de colloques/congres internationaux"), $data);
 
 			return <<<HTML
   <script>
@@ -2754,12 +2784,12 @@ HTML;
 		$organisation_nom = null;
 		$organisation_annee = null;
 
-		if(getCell("Nom de l'évènement, fonction O") !== " "){
-			$organisation_nom = getCell("Nom de l'évènement, fonction O");
+		if(getCell("Nom de l'evenement, fonction O") !== " "){
+			$organisation_nom = getCell("Nom de l'evenement, fonction O");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) O") !== " "){
-			$organisation_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) O");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) O") !== " "){
+			$organisation_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) O");
 		}
 
 		return <<<HTML
@@ -2789,7 +2819,7 @@ function block16(): string{
 				sanitize_text_field($_POST["societe_savantes_nom"]),
 				$_POST["societe_savantes_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Responsabilités dans des sociétés savantes"), $data);
+			replace_or_pushes_values(getHeaderId("Responsabilites dans des societes savantes"), $data);
 
 			return <<<HTML
   <script>
@@ -2801,12 +2831,12 @@ HTML;
 		$societe_savantes_nom = null;
 		$societe_savantes_annee = null;
 
-		if(getCell("Nom de la société, fonction SS") !== " "){
-			$societe_savantes_nom = getCell("Nom de la société, fonction SS");
+		if(getCell("Nom de la societe, fonction SS") !== " "){
+			$societe_savantes_nom = getCell("Nom de la societe, fonction SS");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) SS") !== " "){
-			$societe_savantes_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) SS");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS") !== " "){
+			$societe_savantes_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS");
 		}
 
 		return <<<HTML
@@ -2834,17 +2864,21 @@ function block17(): string{
 			$data = [
 				$_POST["responsabilite1_region_montant"],
 				sanitize_text_field($_POST["responsabilite1_region_nom"]),
+				sanitize_text_field($_POST["responsabilite1_fonction_regional"]),
 				"|",
 				$_POST["responsabilite1_national_montant"],
 				sanitize_text_field($_POST["responsabilite1_national_nom"]),
+				sanitize_text_field($_POST["responsabilite1_national_fonction"]),
 				"|",
 				$_POST["responsabilite1_international_montant"],
 				sanitize_text_field($_POST["responsabilite1_international_nom"]),
+				sanitize_text_field($_POST["responsabilite1_international_fonction"]),
 				"|",
 				$_POST["responsabilite1_partenariat_montant"],
-				sanitize_text_field($_POST["responsabilite1_partenariat_nom"])
+				sanitize_text_field($_POST["responsabilite1_partenariat_nom"]),
+				sanitize_text_field($_POST["responsabilite1_fonction_partenariat"]),
 			];
-			replace_or_pushes_values(getHeaderId("Responsabilité de projets de recherche (ou tasks indépendantes)"), $data);
+			replace_or_pushes_values(getHeaderId("Responsabilite de projets de recherche dans les formations (ou tasks independantes)"), $data);
 
 			return <<<HTML
   <script>
@@ -2866,64 +2900,150 @@ HTML;
 			$responsabilite1_region_montant = getCell("montant (k€) RL");
 		}
 
-		if(getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) RL") !== " "){
-			$responsabilite1_region_nom = getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) RL");
+		if(getCell("Nom projet (titre et acronyme) RL") !== " "){
+			$responsabilite1_region_nom = getCell("Nom projet (titre et acronyme) RL");
 		}
 
 		if(getCell("montant (k€) N") !== " "){
 			$responsabilite1_national_montant = getCell("montant (k€) N");
 		}
 
-		if(getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) N") !== " "){
-			$responsabilite1_national_nom = getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) N");
+		if(getCell("Nom projet (titre et acronyme) N") !== " "){
+			$responsabilite1_national_nom = getCell("Nom projet (titre et acronyme) N");
 		}
 
 		if(getCell("montant (k€) I") !== " "){
 			$responsabilite1_international_montant = getCell("montant (k€) I");
 		}
 
-		if(getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) I") !== " "){
-			$responsabilite1_international_nom = getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) I");
+		if(getCell("Nom projet (titre et acronyme) I") !== " "){
+			$responsabilite1_international_nom = getCell("Nom projet (titre et acronyme) I");
 		}
 
 		if(getCell("montant (k€) P") !== " "){
 			$responsabilite1_partenariat_montant = getCell("montant (k€) P");
 		}
 
-		if(getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) P") !== " "){
-			$responsabilite1_partenariat_nom = getCell("Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant) P");
+		if(getCell("Nom projet (titre et acronyme) P") !== " "){
+			$responsabilite1_partenariat_nom = getCell("Nom projet (titre et acronyme) P");
 		}
 
-		return <<<HTML
+		$fonctions = [
+			"PI",
+			"coPI",
+			"Partenaire",
+			"Participant"
+		];
+
+		$selectedFoncR = getCell("Fonction Regionale");
+		$selectedFoncN = getCell("Fonction Nationale");
+		$selectedFoncI = getCell("Fonction Internationale");
+		$selectedFoncP = getCell("Fonction Partenariat");
+
+		$html = <<<HTML
 	<form method="POST" class="data-table-form">
 		<h4>Responsabilité de projets de recherche (ou tasks indépendantes)</h4>
 		
 		<h5>Régional et local</h5>
 		<label for="responsabilite1_region_montant">montant (k€)</label>
-			<input type="number" min="0" name="responsabilite1_region_montant" id="responsabilite1_region_montant" value="$responsabilite1_region_montant" required>
+			<input type="number" min="0" name="responsabilite1_region_montant" id="responsabilite1_region_montant" value="$responsabilite1_region_montant">
 		<label for="responsabilite1_region_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_region_nom"  id="responsabilite1_region_nom" value="$responsabilite1_region_nom" required>
+			<input type="text" name="responsabilite1_region_nom"  id="responsabilite1_region_nom" value="$responsabilite1_region_nom">
+		<label for="responsabilite1_fonction_regional">Fonction</label>
+			<select name="responsabilite1_fonction_regional" id="responsabilite1_fonction_regional">
+				<option value=" "></option>
+HTML;
+
+		$selectedFR = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncR){
+				$selectedFR = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFR>$fonctions[$i]</option>
+HTML;
+			$selectedFR = "";
+		}
+
+		$html .= <<<HTML
+			</select>
 		
 		<h5>National</h5>
 		<label for="responsabilite1_national_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_national_montant"  min="0" id="responsabilite1_national_montant" value="$responsabilite1_national_montant" required>
-		<label for="responsabilite1_national_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_national_nom"  id="responsabilite1_national_nom" value="$responsabilite1_national_nom" required>
+			<input type="number" name="responsabilite1_national_montant"  min="0" id="responsabilite1_national_montant" value="$responsabilite1_national_montant">
+		<label for="responsabilite1_national_nom">Nom projet (titre et acronyme)</label>
+			<input type="text" name="responsabilite1_national_nom"  id="responsabilite1_national_nom" value="$responsabilite1_national_nom">
+		<label for="responsabilite1_national_fonction">Fonction</label>
+			<select name="responsabilite1_national_fonction" id="responsabilite1_national_fonction">
+				<option value=" "></option>
+HTML;
+
+		$selectedFN = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncN){
+				$selectedFN = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFN>$fonctions[$i]</option>
+HTML;
+			$selectedFN = "";
+		}
+
+		$html .= <<<HTML
+			</select>
 		
 		<h5>International</h5>
 		<label for="responsabilite1_international_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_international_montant" min="0" id="responsabilite1_international_montant" value="$responsabilite1_international_montant" required>
-		<label for="responsabilite1_international_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_international_nom"  id="responsabilite1_international_nom" value="$responsabilite1_international_nom" required>
+			<input type="number" name="responsabilite1_international_montant" min="0" id="responsabilite1_international_montant" value="$responsabilite1_international_montant">
+		<label for="responsabilite1_international_nom">Nom projet (titre et acronyme)</label>
+			<input type="text" name="responsabilite1_international_nom"  id="responsabilite1_international_nom" value="$responsabilite1_international_nom">
+		<label for="responsabilite1_international_fonction">Fonction</label>
+		<select name="responsabilite1_international_fonction" id="responsabilite1_international_fonction">
+			<option value=" "></option>
+HTML;
+
+		$selectedFI = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncI){
+				$selectedFI = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFI>$fonctions[$i]</option>
+HTML;
+			$selectedFI = "";
+		}
+
+		$html .= <<<HTML
+			</select>
 		
 		<h5>Partenariat (industrie, EPIC)</h5>
 		<label for="responsabilite1_partenariat_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_partenariat_montant"  min="0" id="responsabilite1_partenariat_montant" value="$responsabilite1_partenariat_montant" required>
-		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_partenariat_nom"  id="responsabilite1_partenariat_nom" value="$responsabilite1_partenariat_nom" required>
+			<input type="number" name="responsabilite1_partenariat_montant"  min="0" id="responsabilite1_partenariat_montant" value="$responsabilite1_partenariat_montant">
+		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme)</label>
+			<input type="text" name="responsabilite1_partenariat_nom"  id="responsabilite1_partenariat_nom" value="$responsabilite1_partenariat_nom">
+		<label for="responsabilite1_fonction_partenariat">Fonction</label>
+			<select name="responsabilite1_fonction_partenariat" id="responsabilite1_fonction_partenariat">
+				<option value=" "></option>
+HTML;
+
+		$selectedFP = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncP){
+				$selectedFP = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFP>$fonctions[$i]</option>
+HTML;
+			$selectedFP = "";
+		}
+
+		$html .= <<<HTML
+		</select>
 		<button type="submit" name="submit17">Envoyer</button>
 	</form>
 HTML;
+
+		return $html;
 	} else{
 		return <<<HTML
 			<p class="acces_denied">Accès non autorisé</p>
@@ -2946,7 +3066,7 @@ function block18(): string{
 				sanitize_text_field($_POST["responsabilite2_international_intitule"]),
 				$_POST["responsabilite2_international_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Responsabilités, Expertises & administration de la recherche"), $data);
+			replace_or_pushes_values(getHeaderId("Responsabilites, Expertises & administration de la recherche"), $data);
 
 			return <<<HTML
   <script>
@@ -2962,28 +3082,28 @@ HTML;
 		$responsabilite2_international_intitule = null;
 		$responsabilite2_international_annee = null;
 
-		if(getCell("Intitulé de l'élément et fonction L") !== " "){
-			$responsabilite2_locale_intitule = getCell("Intitulé de l'élément et fonction L");
+		if(getCell("Intitule de l'element et fonction L") !== " "){
+			$responsabilite2_locale_intitule = getCell("Intitule de l'element et fonction L");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) L") !== " "){
-			$responsabilite2_locale_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) L");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) L") !== " "){
+			$responsabilite2_locale_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) L");
 		}
 
-		if(getCell("Intitulé de l'élément et fonction R") !== " "){
-			$responsabilite2_regional_intitule = getCell("Intitulé de l'élément et fonction R");
+		if(getCell("Intitule de l'element et fonction R") !== " "){
+			$responsabilite2_regional_intitule = getCell("Intitule de l'element et fonction R");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) R") !== " "){
-			$responsabilite2_regional_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) R");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) R") !== " "){
+			$responsabilite2_regional_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) R");
 		}
 
-		if(getCell("Intitulé de l'élément et fonction I") !== " "){
-			$responsabilite2_international_intitule = getCell("Intitulé de l'élément et fonction I");
+		if(getCell("Intitule de l'element et fonction I") !== " "){
+			$responsabilite2_international_intitule = getCell("Intitule de l'element et fonction I");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) I") !== " "){
-			$responsabilite2_international_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) I");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) I") !== " "){
+			$responsabilite2_international_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) I");
 		}
 
 		return <<<HTML
@@ -2992,21 +3112,21 @@ HTML;
 		
 		<h5>Locale</h5>
 		<label for="responsabilite2_locale_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_locale_intitule" id="responsabilite2_locale_intitule" value="$responsabilite2_locale_intitule" required>
+			<input type="text" name="responsabilite2_locale_intitule" id="responsabilite2_locale_intitule" value="$responsabilite2_locale_intitule">
 		<label for="responsabilite2_locale_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_locale_annee" min="1900" id="responsabilite2_locale_annee" value="$responsabilite2_locale_annee" required>
+			<input type="text" name="responsabilite2_locale_annee" min="1900" id="responsabilite2_locale_annee" value="$responsabilite2_locale_annee">
 		
 		<h5>Régional</h5>
 		<label for="responsabilite2_regional_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_regional_intitule" id="responsabilite2_regional_intitule" value="$responsabilite2_regional_intitule" required>
+			<input type="text" name="responsabilite2_regional_intitule" id="responsabilite2_regional_intitule" value="$responsabilite2_regional_intitule">
 		<label for="responsabilite2_regional_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_regional_annee" min="1900" id="responsabilite2_regional_annee" value="$responsabilite2_regional_annee" required>
+			<input type="text" name="responsabilite2_regional_annee" min="1900" id="responsabilite2_regional_annee" value="$responsabilite2_regional_annee">
 		
 		<h5>Internationale</h5>
 		<label for="responsabilite2_international_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_international_intitule" id="responsabilite2_international_intitule" value="$responsabilite2_international_intitule" required>
+			<input type="text" name="responsabilite2_international_intitule" id="responsabilite2_international_intitule" value="$responsabilite2_international_intitule">
 		<label for="responsabilite2_international_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_international_annee" min="1900" id="responsabilite2_international_annee" value="$responsabilite2_international_annee" required>
+			<input type="text" name="responsabilite2_international_annee" min="1900" id="responsabilite2_international_annee" value="$responsabilite2_international_annee">
 		<button type="submit" name="submit18">Envoyer</button>
 	</form>
 HTML;
@@ -3026,7 +3146,7 @@ function block19(): string{
 				sanitize_text_field($_POST["responsabilite3_intitule"]),
 				$_POST["responsabilite3_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Responsabilités & administration de la formation/enseignement"), $data);
+			replace_or_pushes_values(getHeaderId("Responsabilites & administration de la formation/enseignement"), $data);
 
 			return <<<HTML
   <script>
@@ -3038,12 +3158,12 @@ HTML;
 		$responsabilite3_intitule = null;
 		$responsabilite3_annee = null;
 
-		if(getCell("Intitulé de l'élément et votre fonction Res") !== " "){
-			$responsabilite3_intitule = getCell("Intitulé de l'élément et votre fonction Res");
+		if(getCell("Intitule de l'element et votre fonction Res") !== " "){
+			$responsabilite3_intitule = getCell("Intitule de l'element et votre fonction Res");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) Res") !== " "){
-			$responsabilite3_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) Res");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res") !== " "){
+			$responsabilite3_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res");
 		}
 
 		return <<<HTML
@@ -3072,7 +3192,7 @@ function block20(): string{
 				sanitize_text_field($_POST["vulgarisation_intitule"]),
 				$_POST["vulgarisation_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Vulgarisation, dissémination scientifique"), $data);
+			replace_or_pushes_values(getHeaderId("Vulgarisation, dissemination scientifique"), $data);
 
 			return <<<HTML
   <script>
@@ -3084,12 +3204,12 @@ HTML;
 		$vulgarisation_intitule = null;
 		$vulgarisation_annee = null;
 
-		if(getCell("Intitulé de l'élément (évènement, vidéo, livre, …) et fonction V") !== " "){
-			$vulgarisation_intitule = getCell("Intitulé de l'élément (évènement, vidéo, livre, …) et fonction V");
+		if(getCell("Intitule de l'element (evenement, video, livre, …) et fonction V") !== " "){
+			$vulgarisation_intitule = getCell("Intitule de l'element (evenement, video, livre, …) et fonction V");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) V") !== " "){
-			$vulgarisation_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) V");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) V") !== " "){
+			$vulgarisation_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) V");
 		}
 
 		return <<<HTML
@@ -3117,7 +3237,7 @@ function block21(): string{
 			$data = [
 				sanitize_text_field($_POST["rayonnement"])
 			];
-			replace_or_pushes_values(getHeaderId("Rayonnement / résultats majeurs sur la période à mettre en avant"), $data);
+			replace_or_pushes_values(getHeaderId("Rayonnement / resultats majeurs sur la periode a mettre en avant"), $data);
 
 			return <<<HTML
   <script>
@@ -3128,8 +3248,8 @@ HTML;
 
 		$rayonnement = null;
 
-		if(getCell("Rayonnement / résultats majeurs sur la période à mettre en avant") !== " "){
-			$rayonnement = getCell("Rayonnement / résultats majeurs sur la période à mettre en avant");
+		if(getCell("Rayonnement / resultats majeurs sur la periode a mettre en avant") !== " "){
+			$rayonnement = getCell("Rayonnement / resultats majeurs sur la periode a mettre en avant");
 		}
 
 		return <<<HTML
@@ -3167,12 +3287,12 @@ HTML;
 		$brevet_intitule = null;
 		$brevet_annee = null;
 
-		if(getCell("Intitulé de l'élément et votre fonction B") !== " "){
-			$brevet_intitule = getCell("Intitulé de l'élément et votre fonction B");
+		if(getCell("Intitule de l'element et votre fonction B") !== " "){
+			$brevet_intitule = getCell("Intitule de l'element et votre fonction B");
 		}
 
-		if(getCell("Année ou période (début MM/AAAA - fin MM/AAAA) B") !== " "){
-			$brevet_annee = getCell("Année ou période (début MM/AAAA - fin MM/AAAA) B");
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) B") !== " "){
+			$brevet_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) B");
 		}
 
 		return <<<HTML
