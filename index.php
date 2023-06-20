@@ -23,9 +23,14 @@ function annual_data_table_install(): void
 {
 	// defines the directories name
 	$dirName = 'hceres';
+	$backupDir = "backup-hceres";
 
 	if (!is_dir($dirName)) {
 		mkdir($dirName);
+	}
+
+	if (!is_dir($backupDir)) {
+		mkdir($backupDir);
 	}
 
 	// defines the files name and path
@@ -40,65 +45,65 @@ function annual_data_table_install(): void
 
 	// defines the csv file's headers
 	$data = array(
-		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilité de projets de recherche (ou tasks indépendantes)', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilités, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
+		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilite de projets de recherche dans les formations (ou tasks independantes)', ' ','  ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilites, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
 		// categories (a backspace per categories and spaces to align)
 		// ' ' are here only to center the headers
-		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations générales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
+		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations generales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
 			'Discipline', ' ', '|',
 			' ', '|',
-			' ', ' ', ' ', "Publications sur l'ensemble de la carrière jusqu'à aujourd'hui", ' ', ' ', ' ', '|',
-			' ', ' ', 'Détail des publications par année depuis 2022', ' ', ' ', ' ', '|',
+			' ', ' ', ' ', "Publications sur l ensemble de la carriere jusqu a aujourd hui", ' ', ' ', ' ', '|',
+			' ', ' ', 'Detail des publications par annee depuis 2022', ' ', ' ', ' ', '|',
 			' ', 'Enseignement', ' ', ' ', '|',
-			' ', ' ', 'Encadrement Master 1 (à partir de 2022)', ' ', ' ', '|',
-			' ', ' ', 'Encadrement Master 2 (à partir de 2022)', ' ', ' ', '|',
-			' ', ' ', ' ', ' ', ' ', 'Encadrement thèse ISTeP à partir de 2022', ' ', ' ', ' ', ' ', ' ', '|',
-			' ', ' ', ' ', ' ', ' ', 'Encadrement thèse hors ISTeP à partir de 2022', ' ', ' ', ' ', ' ', ' ', ' ', '|',
-			' ', ' ', ' ', 'Encadrement de post-doctorats à partir de 2022', ' ', ' ', ' ', '|',
-			'Prix ou distinctions scientifiques	', ' ', '|',
-			"Appartenance à l'IUF", ' ', '|',
-			"Séjours dans des laboratoires étrangers", ' ', '|',
-			"Organisations de colloques/congrès internationaux", "", "|",
-			'Responsabilités dans des sociétés savantes', ' ', '|',
-			"Régional et local", ' ', '|',
-			'National', ' ', '|',
-			'International', ' ', '|',
-			'Partenariat (industrie, EPIC)', ' ', '|',
+			' ', ' ', 'Encadrement Master 1 (a partir de 2022)', ' ', ' ', '|',
+			' ', ' ', 'Encadrement Master 2 (a partir de 2022)', ' ', ' ', '|',
+			' ', ' ', ' ', ' ', ' ', 'Encadrement these ISTeP a partir de 2022', ' ', ' ', ' ', ' ', ' ', '|',
+			' ', ' ', ' ', ' ', ' ', 'Encadrement these hors ISTeP a partir de 2022', ' ', ' ', ' ', ' ', ' ', ' ', '|',
+			' ', ' ', ' ', 'Encadrement de post-doctorats a partir de 2022', ' ', ' ', ' ', '|',
+			'Prix ou distinctions scientifiques', ' ', '|',
+			"Appartenance a l IUF", ' ', '|',
+			"Sejours dans des laboratoires etrangers", ' ', '|',
+			"Organisations de colloques/congres internationaux", "", "|",
+			'Responsabilites dans des societes savantes', ' ', '|',
+			"Regional et local", ' ', ' ', '|',
+			'National', ' ', ' ', '|',
+			'International', ' ', ' ', '|',
+			'Partenariat (industrie, EPIC)', ' ', ' ', '|',
 			'Locale', ' ', '|',
-			'Régional', ' ', '|',
+			'Regional', ' ', '|',
 			'Internationale', ' ', '|',
-			'Responsabilités & administration de la formation/enseignement', ' ', '|',
-			'Vulgarisation, dissémination scientifique', ' ', '|',
+			'Responsabilites & administration de la formation/enseignement', ' ', '|',
+			'Vulgarisation, dissemination scientifique', ' ', '|',
 			' ', '|',
 			'Brevet', ' ', '|'),
 
 		// fields per categories (a backspace per categories)
-		array('NOM ', 'PRENOM', 'Equipe 2017-2022', 'Equipe 2022-2025', 'Equipe 2025-…', 'Pôles des services généraux (le cas échéant)', 'Fonction exercée', 'Corps', 'Rang', 'Date entrée (MM/AAAA)', 'Date sortie (MM/AAAA)', 'année naissance', 'année obtention thèse', 'année obtention HDR', "annee obtention thèse d'état", '|',
-			'Discipline	1', 'Discipline	2', '|',
-			'Thèmes de recherche','|',
-			'Nombre total de publi de rang A', 'Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant', 'nombre de citations (isi-web of science)', 'h-factor (Isi-Web)', 'nombre de citations (google scholar)', 'h-factor (google scholar)', 'Nbre de résumé à conférence avec comité de lecture', '|',
-			'Nombre total de publications de rang A', 'Nbre article en 1er auteur ', 'Nbre article  derrière un doctorant', "Nbre d'articles rang A avec des collab. (autres laboratoires)", "Chapitre d'ouvrage / livre", 'Nombre de résumé à des congrès avec comité de lecture', '|',
-			'nb heures enseignées 2022-2023', 'nb heures enseignées 2023-2024', 'nb heures enseignées 2024-2025', 'nb heures enseignées 2025-2026', '|',
-			'Nom', 'Prénom', 'Année', 'NOM Prénom des Co-encadrants', 'Titre sujet (indiquer si hors ISTeP)', '|',
-			'Nom', 'Prénom', 'Année', 'NOM Prénom des Co-encadrants', 'Titre sujet (indiquer si hors ISTeP)', '|',
-			'Nom', 'Prénom', 'H/F', "Date d'inscription en thèse (MM/AAAA)", 'Date de soutenance (MM/AAAA)', 'NOM Prénom des Co-directeurs', 'Titre thèse', 'Établissement ayant délivré le master (ou diplôme équivalent)', "Numéro de l'ED de rattachement", 'Financement du doctorat', 'Fonction de direction ou encadrement ?', '|',
-			'Nom', 'Prénom', 'H/F', "Date d'inscription en thèse (MM/AAAA)", 'Date de soutenance (MM/AAAA)', 'Direction de thèse (Nom, Prénom)', 'Titre thèse', 'Établissement ayant délivré le master (ou diplôme équivalent)', "Numéro de l'ED de rattachement", "Etablissement de rattachement de la direction de thèse", 'Financement du doctorat', 'Fonction de direction ou encadrement ?', '|',
-			'Nom', 'Prénom', 'Année', "Date d'entrée (MM/AAAA)", 'Date de sortie (MM/AAAA)', 'Année de naissance', 'Etablissement ou organisme employeur', '|',
-			"Intitulé de l'élément de distinction (nom du prix par exemple)",'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			"Intitulé de l'élément (membre, fonction …)", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			"Lieu, fonction", "Année ou période (début MM/AAAA - fin MM/AAAA)", "|",
-			"Nom de l'évènement, fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			'Nom de la société, fonction', 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			'montant (k€)', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)', '|',
-			'montant (k€)', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)', '|',
-			'montant (k€)', 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)', '|',
-			"Intitulé de l'élément et fonction", 'Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)', '|',
-			"Intitulé de l'élément et fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			"Intitulé de l'élément et fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			"Intitulé de l'élément et fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			"Intitulé de l'élément et votre fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			"Intitulé de l'élément (évènement, vidéo, livre, …) et fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|',
-			'Rayonnement / résultats majeurs sur la période à mettre en avant', '|',
-			"Intitulé de l'élément et votre fonction", 'Année ou période (début MM/AAAA - fin MM/AAAA)', '|')
+		array('NOM', 'PRENOM', 'Equipe 2017-2022', 'Equipe 2022-2025', 'Equipe 2025-…', 'Poles des services generaux (le cas echeant)', 'Fonction exercee', 'Corps', 'Sections disciplinaires', 'Date entree (MM/AAAA) IG', 'Date sortie (MM/AAAA) IG', 'Annee Naissance IG', 'Annee Obtention These', 'Annee obtention HDR', "Annee Obtention These d etat", '|',
+			'Discipline 1', 'Discipline 2', '|',
+			'Themes de recherche','|',
+			'Nombre de publi de rang A', 'Nombre de publi de rang A en 1ier auteur ou derriere un doctorant', 'nombre de citations (isi-web of science)', 'h-factor (Isi-Web)', 'nombre de citations (google scholar)', 'h-factor (google scholar)', 'Nbre de resume a conference avec comite de lecture', '|',
+			'Nombre de publications de rang A', 'Nbre article en 1er auteur ', 'Nbre article derriere un doctorant', "Nbre d articles rang A avec des collab. (autres laboratoires)", "Chapitre d ouvrage / livre", 'Nombre de resume a des congres avec comite de lecture', '|',
+			'nb heures enseignees 2022-2023', 'nb heures enseignees 2023-2024', 'nb heures enseignees 2024-2025', 'nb heures enseignees 2025-2026', '|',
+			'Nom M1', 'Prenom M1', 'Annee M1', 'NOM Prenom des Co-encadrants M1', 'Titre sujet (indiquer si hors ISTeP) M1', '|',
+			'Nom M2', 'Prenom M2', 'Annee M2', 'NOM Prenom des Co-encadrants M2', 'Titre sujet (indiquer si hors ISTeP) M2', '|',
+			'Nom I', 'Prenom I', 'H/F I', "Date d inscription en these (MM/AAAA) I", 'Date de soutenance (MM/AAAA) I', 'NOM Prenom des Co-directeurs I', 'Titre these I', 'Etablissement ayant delivre le master (ou diplome equivalent) I', "Numero de l ED de rattachement I", 'Financement du doctorat I', 'Fonction de direction ou encadrement ? I', '|',
+			'Nom HI', 'Prenom HI', 'H/F HI', "Date d inscription en these (MM/AAAA) HI", 'Date de soutenance (MM/AAAA) HI', 'Direction de these (Nom, Prenom) HI', 'Titre these HI', 'Etablissement ayant delivre le master (ou diplome equivalent) HI', "Numero de l ED de rattachement HI", "Etablissement de rattachement de la direction de these HI", 'Financement du doctorat HI', 'Fonction de direction ou encadrement ? HI', '|',
+			'Nom PD', 'Prenom PD', 'H/F PD', "Date d entree (MM/AAAA) PD", 'Date de sortie (MM/AAAA) PD', 'Annee de naissance PD', 'Etablissement ou organisme employeur PD', '|',
+			"Intitule de l element de distinction (nom du prix par exemple)",'Annee ou periode (debut MM/AAAA - fin MM/AAAA) D', '|',
+			"Intitule de l element (membre, fonction …)", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF', '|',
+			"Lieu, fonction", "Annee ou periode (debut MM/AAAA - fin MM/AAAA) S", "|",
+			"Nom de l evenement, fonction O", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) O', '|',
+			'Nom de la societe, fonction SS', 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS', '|',
+			'montant (k€) RL', 'Nom projet (titre et acronyme) RL', 'Fonction Regionale', '|',
+			'montant (k€) N', 'Nom projet (titre et acronyme) N', 'Fonction Nationale', '|',
+			'montant (k€) I', 'Nom projet (titre et acronyme) I', 'Fonction Internationale', '|',
+			"montant (k€) P", 'Nom projet (titre et acronyme) P', 'Fonction Partenariat', '|',
+			"Intitule de l element et fonction L", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) L', '|',
+			"Intitule de l element et fonction R", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) R', '|',
+			"Intitule de l element et fonction I", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) I', '|',
+			"Intitule de l element et votre fonction Res", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res', '|',
+			"Intitule de l element (evenement, video, livre, …) et fonction V", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) V', '|',
+			'Rayonnement / resultats majeurs sur la periode a mettre en avant', '|',
+			"Intitule de l element et votre fonction B", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) B', '|')
 	);
 
 	// opens the file for writing
@@ -113,10 +118,12 @@ function annual_data_table_install(): void
 	fclose($file);
 
 	// adds WP pages for every header
-	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
+	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche dans les formations", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
 	for($i = 0; $i < 22; $i++){
 		create_custom_pages("(DT) Formulaire " . $lst[$i], "add_istep_annual_table_form_block_" . $i + 1);
 	}
+
+	create_custom_pages("Hceres Backups", "add_istep_annual_table_backups");
 }
 register_activation_hook( __FILE__, 'annual_data_table_install' );
 
@@ -134,13 +141,29 @@ function delete_custom_pages(): void {
 		's'              => '(DT) Formulaire',
 	);
 
+	$args2 = array(
+		'post_type'      => 'page',
+		'posts_per_page' => -1,
+		'post_status'    => 'any',
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+		's'              => 'Hceres Backups',
+	);
+
 	// starts a querry to search the pages
 	$query = new WP_Query($args);
+	$query2 = new WP_Query($args2);
+
 	$page_ids = array();
 
 	// registers the page's id
 	while ($query->have_posts()) {
 		$query->the_post();
+		$page_ids[] = get_the_ID();
+	}
+
+	while ($query2->have_posts()) {
+		$query2->the_post();
 		$page_ids[] = get_the_ID();
 	}
 
@@ -339,6 +362,53 @@ function userTime(): int {
 	return $count;
 }
 
+/**
+ * Retrieves the ID of the first "|" element + 1 before the specified string in the first two rows of the CSV file.
+ *
+ * @param string $str The string to search for.
+ * @return int|null The ID of the "|" element + 1, or null if not found.
+ */
+function getHeaderId(string $str): ?int {
+	$file = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r'); // Open the CSV file
+
+	// Read the first three rows
+	$header1 = fgetcsv($file);
+	$header2 = fgetcsv($file);
+	$header3 = fgetcsv($file);
+
+	$headerId = null;
+
+	// Find the index of the given string in the headers
+	$index1 = array_search($str, $header1);
+	$index2 = array_search($str, $header2);
+	$index3 = array_search($str, $header3);
+
+	if ($index1 !== false && isset($header1[$index1 - 1])) {
+		// Search backward from the index in header1 for the first "|" element
+		$pipeIndex = array_search('|', array_reverse(array_slice($header1, 0, $index1)));
+		if ($pipeIndex !== false) {
+			$headerId = $index1 - $pipeIndex;
+		}
+	} elseif ($index2 !== false && isset($header2[$index2 - 1])) {
+		// Search backward from the index in header2 for the first "|" element
+		$pipeIndex = array_search('|', array_reverse(array_slice($header2, 0, $index2)));
+		if ($pipeIndex !== false) {
+			$headerId = $index2 - $pipeIndex;
+		}
+	} elseif ($index3 !== false && isset($header3[$index3 - 1])) {
+		// Search backward from the index in header3 for the first "|" element
+		$pipeIndex = array_search('|', array_reverse(array_slice($header3, 0, $index3)));
+		if ($pipeIndex !== false) {
+			$headerId = $index3 - $pipeIndex;
+		}
+	}
+
+	fclose($file); // Close the CSV file
+
+	return $headerId;
+}
+
+
 /** Upgrades version of push() to handle multiple line modifications
  * NOTE : took me a while, change it at your own risk
  * @param int $column
@@ -427,24 +497,33 @@ function replace_or_pushes_values(int $column, array $values): void
 	}
 }
 
-/** Returns the value of a cell, used to show the user their information back
- * @param int $column
- * @param int $add
- *
- * @return string
- */
-function getCell(int $column, int $add = 0): string {
+
+function getCell(string $str, int $offset = 0): string {
 	// opens the file
 	$file = fopen( ABSPATH . 'wp-admin/hceres/data-table.csv', 'r' );
 
-	$id = 1;
+	$id = 4;
+
+	$rawrId = 0;
+
+	fgetcsv($file);
+	fgetcsv($file);
+
+	$roro = fgetcsv($file);
+
+	for ($i = 0; $i < count($roro); $i++){
+		if ($roro[$i] === $str){
+			$rawrId = $i;
+			break;
+		}
+	}
 
 	// gets the given parameters cell
 	while (($row = fgetcsv($file)) !== false) {
-		if ($id === user_id_in_csv_file() + $add && $row[0] === ucfirst(wp_get_current_user()->last_name)) {
-			if (isset($row[$column])) {
+		if ($id === user_id_in_csv_file() + $offset && $row[0] === ucfirst(wp_get_current_user()->last_name)) {
+			if (isset($row[$rawrId])) {
 				fclose($file);
-				return $row[$column];
+				return $row[$rawrId];
 			}
 		}
 		$id++;
@@ -717,6 +796,34 @@ function getAbsentUsers(string $roles = ''): array {
 	return $absent;
 }
 
+/**
+ * Check if a given directory has any files (excluding "." and "..").
+ *
+ * @param string $directory The directory path to check.
+ *
+ * @return bool True if the directory contains files, false otherwise.
+ */
+function hasFilesInDirectory(string $directory): bool {
+	// Open the directory
+	if ($handle = opendir($directory)) {
+		// Read each entry in the directory
+		while (($file = readdir($handle)) !== false) {
+			// Exclude "." and ".."
+			if ($file != "." && $file != "..") {
+				// Check if it's a file
+				if (is_file($directory . '/' . $file)) {
+					closedir($handle); // Close the directory handle
+					return true; // Found a file, return true
+				}
+			}
+		}
+		closedir($handle); // Close the directory handle
+	}
+
+	return false; // No files found, return false
+}
+
+
 add_shortcode('add_istep_annual_table_panel','panel');
 
 /** Returns a panel of statistics and useful information
@@ -807,10 +914,28 @@ HTML;
 HTML;
 	}
 
+	$back = backup();
+
+	$backback = "";
+
+	if(hasFilesInDirectory(ABSPATH . "/wp-admin/backup-hceres/")){
+		$backback = <<<HTML
+		<button class="hceres__buttons" onclick="window.location.href='/hceres-backups'"> Backups des données HCERES </button>
+HTML;
+
+	}
+
 	$html .= <<<HTML
 			</tbody>
 		</table>
 		</div>
+		
+		<p>Télécharger le fichier csv</p>
+		<button class="hceres__buttons"><a href="/wp-admin/hceres/data-table.csv" download> Accéder au fichier </a></button>
+
+		<p>Backups</p>
+		$backback
+		$back
 	</div>
 HTML;
 
@@ -836,11 +961,11 @@ add_shortcode('add_istep_annual_table_summary','summary');
  * @return string
  */
 function summary(): string{
-	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
-	$year = date('Y');
+	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche dans les formations", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
+
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
-			<p> Liste des formulaires HCERES $year</p>
+			<p> Liste des formulaires HCERES</p>
 			<div class="bouttons">
 HTML;
 
@@ -920,7 +1045,7 @@ function getHeadersId(): array {
 		}
 
 		// handles the specfific headers with multiple part in them
-		if ($value === 'Régional et local') {
+		if ($value === 'Regional et local') {
 			$skipCount = 3;
 			$reg = true;
 		}
@@ -993,6 +1118,24 @@ function deleteSelf(): void {
 	}
 }
 
+/**
+ * Adds the ".csv" extension to a filename if it doesn't have an extension.
+ *
+ * @param string $filename The filename to process.
+ *
+ * @return string The filename with the ".csv" extension added if necessary.
+ */
+function addCSVExtension(string $filename): string {
+	$extension = '.csv';
+	$regex = '/\.[^.]*$/';
+
+	if (!preg_match($regex, $filename)) {
+		return $filename . $extension;
+	}
+
+	return $filename;
+}
+
 add_shortcode('add_istep_annual_table_delete','deleteUser');
 
 /** Shows a delete button using the deleteSelf feature
@@ -1003,8 +1146,9 @@ function deleteUser(): string{
 		if(isset($_POST["dt__delete"])){
 			deleteSelf();
 			return <<<HTML
-			<p class="dt__data__erased">Données supprimées.</p>
-			<p class="back_to_home">Revenir à l'<a href="/">accueil</a>.</p>
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
 HTML;
 		}
 
@@ -1017,6 +1161,146 @@ HTML;
 		return "";
 	}
 }
+
+/**
+ * Deletes the file at the specified position in the given directory.
+ *
+ * @param int $id The position of the file to delete (starting from 1).
+ */
+function deleteFile(int $id) : void {
+	// Get all files in the directory
+	$files = glob(ABSPATH . 'wp-admin/backup-hceres' . '/*');
+
+	// Get the file path at the specified position
+	$filePath = $files[$id - 1];
+
+	// Delete the file
+	if (is_file($filePath)) {
+		unlink($filePath);
+	}
+}
+
+/**
+ * Edit the file in the specified directory with a new name if it matches the provided string.
+ *
+ * @param string $str     The string to match against file names.
+ * @param string $newName The new name for the file.
+ *
+ * @return void
+ */
+function editFile(string $str, string $newName) : void {
+	$directory = ABSPATH . 'wp-admin/backup-hceres/';
+	$files = scandir($directory);
+
+	$newName = addCSVExtension($newName);
+
+	array_shift($files);
+	array_shift($files);
+
+	$fileIndex = array_search($str, $files);
+
+	if ($fileIndex !== false) {
+		$oldName = $files[$fileIndex];
+		$newPath = $directory . $newName;
+
+		rename($directory . $oldName, $newPath);
+	}
+}
+
+
+
+add_shortcode('add_istep_annual_table_backup','backup');
+
+/** Shows a save button that creates a backup of the data table.
+ * @return string
+ */
+function backup(): string{
+	if(isset($_POST["dt__backup"])) {
+		setlocale(LC_TIME, 'fr_FR');
+		$date = new DateTime();
+		$date->add(new DateInterval('PT2H'));
+		$format = $date->format('d-m-Y_H:i:s');
+
+		copy(ABSPATH . 'wp-admin/hceres/data-table.csv', ABSPATH . 'wp-admin/backup-hceres/backup' . $format . ".csv");
+		return <<<HTML
+  <script>
+        window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres-backups/";
+  </script>
+HTML;
+	}
+
+		return <<<HTML
+	<form class="hceres-backup" method="post">
+		<button class="hceres__buttons" name="dt__backup" type="submit">Sauvegarder les données HCERES</button>
+	</form>
+HTML;
+
+}
+
+add_shortcode('add_istep_annual_table_backups','backups');
+
+/** Shows every backups of the HCERES data table.
+ * @return string
+ */
+function backups(): string{
+
+	$html = <<<HTML
+	<div class="hceres__backups">
+HTML;
+
+	$files = scandir(ABSPATH . 'wp-admin/backup-hceres'); // Retrieve all files and directories in the specified directory
+
+	$i = 1;
+	foreach ($files as $file) {
+		if ($file !== '.' && $file !== '..') {
+			if (is_file(ABSPATH . 'wp-admin/backup-hceres/' . $file)) {
+				if(isset($_POST["submit$i"])){
+					deleteFile($i);
+					return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
+				}
+
+				if(isset($_POST["hceres__edit$i"])){
+					editFile($file, sanitize_file_name($_POST["new__backup__name"]));
+					return <<<HTML
+  <script>
+        window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres-backups/";
+  </script>
+HTML;
+				}
+
+				$html .= <<<HTML
+		<div class="hceres__backup">
+			<div class="hceres__file">
+				<form method="post" name="backup__edit" class=".backup__edit">
+					<input value="$file" name="new__backup__name" class=".new__backup__name" disabled>
+					<button type="submit" name="hceres__edit$i" style="display: none"></button>
+				</form>
+				<svg class="backup__pen__svg" xmlns="http://www.w3.org/2000/svg" height="0.625em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#0b140e}</style><path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"/></svg>
+			</div>
+			<div class="backup__buttons">
+				<button class="hceres__download__button"><a class="hceres__download" href="/wp-admin/backup-hceres/$file" download>Télécharger</a></button>
+				<form method="post" name="delete__backup">
+					<button class="backup__delete" type="submit" name="submit$i">Supprimer</button>
+				</form>
+			</div>
+		</div>
+HTML;
+				$i++;
+			}
+		}
+	}
+
+	$html .= "</div>";
+
+	return $html;
+
+}
+
+
 
 /** Gets and sanitizes the data from a form depending on the data's type
  * @param $form_data
@@ -1091,6 +1375,12 @@ function block1(): string{
 			}
 		}
 		replace_or_pushes_values(0, $data);
+
+		return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 	}
 
 
@@ -1098,13 +1388,13 @@ function block1(): string{
 	$pgm2 = null;
 	$ppb = null;
 
-	if(getCell(2) == "DEMO"){
+	if(getCell("Equipe 2017-2022") == "DEMO"){
 		$demo = "selected";
 	}
-	if(getCell(2) == "PGM2"){
+	if(getCell("Equipe 2017-2022") == "PGM2"){
 		$pgm2 = "selected";
 	}
-	if(getCell(2) == "PPB"){
+	if(getCell("Equipe 2017-2022") == "PPB"){
 		$ppb = "selected";
 	}
 
@@ -1112,13 +1402,13 @@ function block1(): string{
 	$tecto = null;
 	$termer = null;
 
-	if(getCell(3) == "PETRODYN"){
+	if(getCell("Equipe 2022-2025") == "PETRODYN"){
 		$petrodyn = "selected";
 	}
-	if(getCell(3) == "TECTO"){
+	if(getCell("Equipe 2022-2025") == "TECTO"){
 		$tecto = "selected";
 	}
-	if(getCell(3) == "TERMER"){
+	if(getCell("Equipe 2022-2025") == "TERMER"){
 		$termer = "selected";
 	}
 
@@ -1127,20 +1417,20 @@ function block1(): string{
 	$termer2 = null;
 	$prisme = null;
 
-	if(getCell(4) == "PETRODYN"){
+	if(getCell("Equipe 2025-…") == "PETRODYN"){
 		$petrodyn2 = "selected";
 	}
-	if(getCell(4) == "TECTO"){
+	if(getCell("Equipe 2025-…") == "TECTO"){
 		$tecto2 = "selected";
 	}
-	if(getCell(4) == "TERMER"){
+	if(getCell("Equipe 2025-…") == "TERMER"){
 		$termer2 = "selected";
 	}
-	if(getCell(4) == "PRISME"){
+	if(getCell("Equipe 2025-…") == "PRISME"){
 		$prisme = "selected";
 	}
 
-	$rang = getCell(8);
+	$selectedRang = getCell("Sections disciplinaires");
 	$year = date('Y');
 
 	$annee_naissance = null;
@@ -1153,35 +1443,35 @@ function block1(): string{
 	$poles = [
 		"Direction UMR",
 		"Direction adjointe UMR",
-		"Référent Communication",
-		"Référent Plateformes d’analyses",
-		"Assistant de prévention",
-		"Référent Radioprotection",
-		"Référent Risques Psycho-Sociaux, Egalité et Parité",
-		"Référent Développement durable",
-		"Référent Ethique, Déontologie, Intégrité",
-		"Référent Liaison avec les formations L, M, EPU",
-		"Référent Séminaires"
+		"Referent Communication",
+		"Referent Plateformes d analyses",
+		"Assistant de prevention",
+		"Referent Radioprotection",
+		"Referent Risques Psycho-Sociaux, Egalite et Parite",
+		"Referent Developpement durable",
+		"Referent Ethique, Deontologie, Integrite",
+		"Referent Liaison avec les formations L, M, EPU",
+		"Referent Seminaires"
 	];
 
-	$selectedPole = getCell(5);
+	$selectedPole = getCell("Poles des services generaux (le cas echeant)");
 
 	$fonctions = [
 		"Enseignant-Chercheur",
 		"Chercheur",
 		"ATER",
 		"Doctorant",
-		"Bénévole",
+		"Benevole",
 		"CRCT",
-		"Emérite",
-		"Détachement"
+		"Emerite",
+		"Detachement"
 	];
 
-	$selectedFonction = getCell(6);
+	$selectedFonction = getCell("Fonction exercee");
 
 	$corps = [
-		"Détachement",
-		"Bénévole;",
+		"Detachement",
+		"Benevole",
 		"CR",
 		"DR",
 		"DREM",
@@ -1194,16 +1484,30 @@ function block1(): string{
 		"PREM"
 	];
 
-	$selectedCoprs = getCell(7);
+	$rangs = [
+		"CNU 36",
+		"CNU 35",
+		"CNU autre",
+		"CoCNRS 18",
+		"BAP A",
+		"BAP B",
+		"BAP C",
+		"BAP D",
+		"BAP E",
+		"BAP F",
+		"BAP J"
+	];
+
+	$selectedCoprs = getCell("Corps");
 
 	if(isRegistered()){
-		$annee_naissance = (int)getCell(11);
-		$annee_these = (int)getCell(12);
-		$annee_hdr = (int)getCell(13);
-		$annee_etat = (int)getCell(14);
-		$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(9))));
-		if(getCell(10) !== ""){
-			$date_sortie = 'value="' . date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(10)))) . '"';
+		$annee_naissance = (int)getCell("Annee Naissance IG");
+		$annee_these = (($value = (int)getCell("Annee Obtention These")) === 0) ? null : $value;
+		$annee_hdr = (($value = (int)getCell("Annee obtention HDR")) === 0) ? null : $value;
+		$annee_etat = (($value = (int)getCell("Annee Obtention These d etat")) === 0) ? null : $value;
+		$date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date entree (MM/AAAA) IG"))));
+		if(getCell("Date sortie (MM/AAAA) IG") !== ""){
+			$date_sortie = 'value="' . date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date sortie (MM/AAAA) IG")))) . '"';
 		}
 	}
 
@@ -1238,7 +1542,7 @@ function block1(): string{
 			<option value="PRISME" $prisme>PRISME</option>
 		</select>
 		<label for="poles">Pôles des services généraux (le cas échéant)</label>
-		<select id="poles" name="poles" required>
+		<select id="poles" name="poles">
 			<option value=" "></option>
 HTML;
 
@@ -1291,8 +1595,24 @@ HTML;
 
 	$html .= <<<HTML
 		</select>
-		<label for="rang">Rang</label>
-			<input type="text" id="rang" name="rang" value="$rang" required>
+		<label for="rang">Sections disciplinaires</label>
+		<select id="rangs" name="rangs" required>
+			<option value=" "></option>
+HTML;
+
+	$selectedR = "";
+	for ($i = 0; $i < count($rangs); $i++){
+		if($rangs[$i] === $selectedRang){
+			$selectedR = "selected";
+		}
+		$html .= <<<HTML
+			<option value="$rangs[$i]" $selectedR>$rangs[$i]</option>
+HTML;
+		$selectedR = "";
+	}
+
+	$html .= <<<HTML
+		</select>
 		<label for="date_entree">Date entrée (MM/AAAA)</label>
 			<input type="date" id="date_entree" name="date_entree" value="$date_entree" required>
 		<label for="date_sortie">Date sortie (MM/AAAA)</label>
@@ -1321,29 +1641,35 @@ function block2(): string{
 				sanitize_text_field($_POST["discipline1"]),
 				sanitize_text_field($_POST["discipline2"])
 			];
-			replace_or_pushes_values(16, $data);
+			replace_or_pushes_values(getHeaderId("Discipline"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$disciplines = [
-			"Géochimie",
+			"Geochimie",
 			"Volcanologie",
-			"Pétrologie",
-			"Minéralogie",
+			"Petrologie",
+			"Mineralogie",
 			"Sismologie",
-			"Gravimétrie-Géodésie",
-			"Magnétisme",
-			"Géologie",
+			"Gravimetrie-Geodesie",
+			"Magnetisme",
+			"Geologie",
 			"Tectonique",
-			"Géophysique",
-			"Sédimentologie",
-			"Paléontologie",
-			"Paléoenvironnement",
-			"Pédologie",
-			"Géomorphologie",
+			"Geophysique",
+			"Sedimentologie",
+			"Paleontologie",
+			"Paleoenvironnement",
+			"Pedologie",
+			"Geomorphologie",
 			"Stratigraphie",
-			"Géodynamique",
-			"Hydrologie-hydrogéologie",
-			"Pétrophysique"
+			"Geodynamique",
+			"Hydrologie-hydrogeologie",
+			"Petrophysique"
 		];
 
 		$html = <<<HTML
@@ -1355,8 +1681,8 @@ function block2(): string{
 HTML;
 
 
-		$selectedDisc1 = getCell(16);
-		$selectedDisc2 = getCell(17);
+		$selectedDisc1 = getCell("Discipline 1");
+		$selectedDisc2 = getCell("Discipline 2");
 
 		$selectedD = "";
 		for ($i = 0; $i < count($disciplines); $i++){
@@ -1408,13 +1734,19 @@ function block3(): string{
 				$data = [
 					sanitize_text_field($_POST["theme_recherche"])
 				];
-				replace_or_pushes_values(19, $data);
+				replace_or_pushes_values(getHeaderId("Themes de recherche"), $data);
+
+				return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 			}
 
 	$theme = "";
 
-	if(getCell(19) !== " "){
-		$theme = getCell(19);
+	if(getCell("Themes de recherche") !== " "){
+		$theme = getCell("Themes de recherche");
 	}
 
 	return <<<HTML
@@ -1446,7 +1778,13 @@ function block4(): string{
 				sanitize_text_field($_POST["h_factor_google"]),
 				$_POST["nb_resume_conference"]
 			];
-			replace_or_pushes_values(21, $data);
+			replace_or_pushes_values(getHeaderId("Publications sur l ensemble de la carriere jusqu a aujourd hui"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$nb_publi_rang_a1 = null;
@@ -1457,40 +1795,40 @@ function block4(): string{
 		$h_factor_google = null;
 		$nb_resume_conference = null;
 
-		if(getCell(21) !== " "){
-			$nb_publi_rang_a1 = (int)getCell(21);
+		if(getCell("Nombre de publi de rang A") !== " "){
+			$nb_publi_rang_a1 = (int)getCell("Nombre de publi de rang A");
 		}
 
-		if(getCell(22) !== " "){
-			$nb_publi_rang_premier = (int)getCell(22);
+		if(getCell("Nombre de publi de rang A en 1ier auteur ou derriere un doctorant") !== " "){
+			$nb_publi_rang_premier = (int)getCell("Nombre de publi de rang A en 1ier auteur ou derriere un doctorant");
 		}
 
-		if(getCell(23) !== " "){
-			$nb_citations_isi = (int)getCell(23);
+		if(getCell("nombre de citations (isi-web of science)") !== " "){
+			$nb_citations_isi = (int)getCell("nombre de citations (isi-web of science)");
 		}
 
-		if(getCell(24) !== " "){
-			$h_factor_isi = getCell(24);
+		if(getCell("h-factor (Isi-Web)") !== " "){
+			$h_factor_isi = getCell("h-factor (Isi-Web)");
 		}
 
-		if(getCell(25) !== " "){
-			$nb_citations_isi_google = (int)getCell(25);
+		if(getCell("nombre de citations (google scholar)") !== " "){
+			$nb_citations_isi_google = (int)getCell("nombre de citations (google scholar)");
 		}
 
-		if(getCell(26) !== " "){
-			$h_factor_google = getCell(26);
+		if(getCell("h-factor (google scholar)") !== " "){
+			$h_factor_google = getCell("h-factor (google scholar)");
 		}
 
-		if(getCell(27) !== " "){
-			$nb_resume_conference = (int)getCell(27);
+		if(getCell("Nbre de resume a conference avec comite de lecture") !== " "){
+			$nb_resume_conference = (int)getCell("Nbre de resume a conference avec comite de lecture");
 		}
 
 		return <<<HTML
 	<form method="POST" class="data-table-form">
 		<h5>Publications sur l'ensemble de la carrière jusqu'à aujourd'hui</h5>
-		<label for="nb_publi_rang_a1">Nombre total de publi de rang A</label>
+		<label for="nb_publi_rang_a1">Nombre de publi de rang A</label>
 			<input type="number" id="nb_publi_rang_a1" name="nb_publi_rang_a1" min="0" value="$nb_publi_rang_a1" required>
-		<label for="nb_publi_rang_premier">Nombre total de publi de rang A en 1ier auteur ou derrière un doctorant</label>
+		<label for="nb_publi_rang_premier">Nombre de publi de rang A en 1ier auteur ou derrière un doctorant</label>
 			<input type="number" id="nb_publi_rang_premier" name="nb_publi_rang_premier" min="0" value="$nb_publi_rang_premier" required>
 		<label for="nb_citations_isi">nombre de citations (isi-web of science)</label>
 			<input type="number" id="nb_citations_isi" name="nb_citations_isi" min="0" value="$nb_citations_isi" required>
@@ -1533,45 +1871,51 @@ HTML;
 			}
 			array_pop($data);
 			$data[] = "SjK8cVSHm6J7PSTgex0zrOmxaNwMZGBiAT5e07FC6tsOBCxHO+NEMWEq3A/RUiASZJ18M10RshYlRFQ/iGwLZw==";
-			replace_or_pushes_values(29, $data);
+			replace_or_pushes_values(getHeaderId("Detail des publications par annee depuis 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$arr = ["", " "];
 
 		for ($i = 0; $i <= date('Y') - 2022; $i++){
 
-			if(!in_array(getCell(29, $i), $arr)){
-				$nb_publi_rang_a2 = (int)getCell(29, $i);
+			if(!in_array(getCell("Nombre de publications de rang A", $i), $arr)){
+				$nb_publi_rang_a2 = (int)getCell("Nombre de publications de rang A", $i);
 			} else {
 				$nb_publi_rang_a2 = null;
 			}
 
-			if(!in_array(getCell(30, $i), $arr)){
-				$nb_publi_premier = (int)getCell(30, $i);
+			if(!in_array(getCell("Nbre article en 1er auteur ", $i), $arr)){
+				$nb_publi_premier = (int)getCell("Nbre article en 1er auteur ", $i);
 			} else {
 				$nb_publi_premier = null;
 			}
 
-			if(!in_array(getCell(31, $i), $arr)){
-				$nb_article_doctorant = (int)getCell(31, $i);
+			if(!in_array(getCell("Nbre article derriere un doctorant", $i), $arr)){
+				$nb_article_doctorant = (int)getCell("Nbre article derriere un doctorant", $i);
 			} else {
 				$nb_article_doctorant = null;
 			}
 
-			if(!in_array(getCell(32, $i), $arr)){
-				$nb_article_rang_a_collab = (int)getCell(32, $i);
+			if(!in_array(getCell("Nbre d articles rang A avec des collab. (autres laboratoires)", $i), $arr)){
+				$nb_article_rang_a_collab = (int)getCell("Nbre d articles rang A avec des collab. (autres laboratoires)", $i);
 			} else {
 				$nb_article_rang_a_collab = null;
 			}
 
-			if(!in_array(getCell(33, $i), $arr)){
-				$chapitre_ouvrage = getCell(33, $i);
+			if(!in_array(getCell("Chapitre d ouvrage / livre", $i), $arr)){
+				$chapitre_ouvrage = getCell("Chapitre d ouvrage / livre", $i);
 			} else {
 				$chapitre_ouvrage = null;
 			}
 
-			if(!in_array(getCell(34, $i), $arr)){
-				$nb_resume_comite_lecture = (int)getCell(34, $i);
+			if(!in_array(getCell("Nombre de resume a des congres avec comite de lecture", $i), $arr)){
+				$nb_resume_comite_lecture = (int)getCell("Nombre de resume a des congres avec comite de lecture", $i);
 			} else {
 				$nb_resume_comite_lecture = null;
 			}
@@ -1580,7 +1924,7 @@ HTML;
 			$html .= <<<HTML
 		<div class="dt__year__$i dt__year">
 			<h2>$year</h2>
-			<label for="nb_publi_rang_a2__$i">Nombre total de publications de rang A</label>
+			<label for="nb_publi_rang_a2__$i">Nombre de publications de rang A</label>
 				<input type="number" id="nb_publi_rang_a2__$i" name="nb_publi_rang_a2__$i" min="0" value="$nb_publi_rang_a2" required>
 			<label for="nb_publi_premier__$i">Nombre d'articles en 1er auteur</label>
 				<input type="number" id="nb_publi_premier__$i"name="nb_publi_premier__$i" min="0" value="$nb_publi_premier" required>
@@ -1623,7 +1967,13 @@ function block6(): string{
 				$_POST["enseignement3"],
 				$_POST["enseignement4"],
 			];
-			replace_or_pushes_values(36, $data);
+			replace_or_pushes_values(getHeaderId("Enseignement"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$enseignement1 = null;
@@ -1631,20 +1981,20 @@ function block6(): string{
 		$enseignement3 = null;
 		$enseignement4 = null;
 
-		if(getCell(36) !== " "){
-			$enseignement1 = (int)getCell(36);
+		if(getCell("nb heures enseignees 2022-2023") !== " "){
+			$enseignement1 = (int)getCell("nb heures enseignees 2022-2023");
 		}
 
-		if(getCell(37) !== " "){
-			$enseignement2 = (int)getCell(37);
+		if(getCell("nb heures enseignees 2023-2024") !== " "){
+			$enseignement2 = (int)getCell("nb heures enseignees 2023-2024");
 		}
 
-		if(getCell(38) !== " "){
-			$enseignement3 = (int)getCell(38);
+		if(getCell("nb heures enseignees 2024-2025") !== " "){
+			$enseignement3 = (int)getCell("nb heures enseignees 2024-2025");
 		}
 
-		if(getCell(39) !== " "){
-			$enseignement4 = (int)getCell(39);
+		if(getCell("nb heures enseignees 2025-2026") !== " "){
+			$enseignement4 = (int)getCell("nb heures enseignees 2025-2026");
 		}
 
 		return <<<HTML
@@ -1682,7 +2032,13 @@ function block7(): string{
 				sanitize_text_field($_POST["master1_nom_prenom_co-encadrants"]),
 				sanitize_text_field($_POST["master1_sujet"])
 			];
-			replace_or_pushes_values(41, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement Master 1 (a partir de 2022)"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$master1_nom = null;
@@ -1691,24 +2047,24 @@ function block7(): string{
 		$master1_nom_prenom_co_encadrants = null;
 		$master1_sujet = null;
 
-		if(getCell(41) !== " "){
-			$master1_nom = getCell(41);
+		if(getCell("Nom M1") !== " "){
+			$master1_nom = getCell("Nom M1");
 		}
 
-		if(getCell(42) !== " "){
-			$master1_prenom = getCell(42);
+		if(getCell("Prenom M1") !== " "){
+			$master1_prenom = getCell("Prenom M1");
 		}
 
-		if(getCell(43) !== " "){
-			$master1_annee = (int)getCell(43);
+		if(getCell("Annee M1") !== " "){
+			$master1_annee = (int)getCell("Annee M1");
 		}
 
-		if(getCell(44) !== " "){
-			$master1_nom_prenom_co_encadrants = getCell(44);
+		if(getCell("NOM Prenom des Co-encadrants M1") !== " "){
+			$master1_nom_prenom_co_encadrants = getCell("NOM Prenom des Co-encadrants M1");
 		}
 
-		if(getCell(45) !== " "){
-			$master1_sujet = getCell(45);
+		if(getCell("Titre sujet (indiquer si hors ISTeP) M1") !== " "){
+			$master1_sujet = getCell("Titre sujet (indiquer si hors ISTeP) M1");
 		}
 
 		$year = date('Y');
@@ -1750,7 +2106,13 @@ function block8(): string{
 				sanitize_text_field($_POST["master2_nom_prenom_co-encadrants"]),
 				sanitize_text_field($_POST["master2_sujet"])
 			];
-			replace_or_pushes_values(47, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement Master 2 (a partir de 2022)"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$master2_nom = null;
@@ -1759,24 +2121,24 @@ function block8(): string{
 		$master2_nom_prenom_co_encadrants = null;
 		$master2_sujet = null;
 
-		if(getCell(47) !== " "){
-			$master2_nom = getCell(47);
+		if(getCell("Nom M2") !== " "){
+			$master2_nom = getCell("Nom M2");
 		}
 
-		if(getCell(48) !== " "){
-			$master2_prenom = getCell(48);
+		if(getCell("Prenom M2") !== " "){
+			$master2_prenom = getCell("Prenom M2");
 		}
 
-		if(getCell(49) !== " "){
-			$master2_annee = (int)getCell(49);
+		if(getCell("Annee M2") !== " "){
+			$master2_annee = (int)getCell("Annee M2");
 		}
 
-		if(getCell(50) !== " "){
-			$master2_nom_prenom_co_encadrants = getCell(50);
+		if(getCell("NOM Prenom des Co-encadrants M2") !== " "){
+			$master2_nom_prenom_co_encadrants = getCell("NOM Prenom des Co-encadrants M2");
 		}
 
-		if(getCell(51) !== " "){
-			$master2_sujet = getCell(51);
+		if(getCell("Titre sujet (indiquer si hors ISTeP) M2") !== " "){
+			$master2_sujet = getCell("Titre sujet (indiquer si hors ISTeP) M2");
 		}
 
 		$year = date('Y');
@@ -1823,7 +2185,13 @@ function block9(): string{
 				sanitize_text_field($_POST["encadrement_istep_financement_doctorat"]),
 				sanitize_text_field($_POST["encadrement_istep_fonction"])
 			];
-			replace_or_pushes_values(53, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement these ISTeP a partir de 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$encadrement_istep_nom = null;
@@ -1838,42 +2206,42 @@ function block9(): string{
 		$encadrement_istep_numero_ed = null;
 
 
-		if(getCell(53) !== " "){
-			$encadrement_istep_nom = getCell(53);
+		if(getCell("Nom I") !== " "){
+			$encadrement_istep_nom = getCell("Nom I");
 		}
 
-		if(getCell(54) !== " "){
-			$encadrement_istep_prenom = getCell(54);
+		if(getCell("Prenom I") !== " "){
+			$encadrement_istep_prenom = getCell("Prenom I");
 		}
 
-		if(getCell(55) === "Homme"){
+		if(getCell("H/F I") === "Homme"){
 			$homme = "selected";
 		}
-		if(getCell(55) === "Femme"){
+		if(getCell("H/F I") === "Femme"){
 			$femme = "selected";
 		}
 
-		if(getCell(56) !== " "){
-			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(56))));
+		if(getCell("Date d inscription en these (MM/AAAA) I") !== " "){
+			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d inscription en these (MM/AAAA) I"))));
 		}
 
-		if(getCell(57) !== " "){
-			$encadrement_istep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(57))));
+		if(getCell("Date de soutenance (MM/AAAA) I") !== " "){
+			$encadrement_istep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de soutenance (MM/AAAA) I"))));
 		}
 
-		if(getCell(58) !== " "){
-			$encadrement_istep_nom_prenom_co = getCell(58);
+		if(getCell("NOM Prenom des Co-directeurs I") !== " "){
+			$encadrement_istep_nom_prenom_co = getCell("NOM Prenom des Co-directeurs I");
 		}
 
-		if(getCell(59) !== " "){
-			$encadrement_istep_titre_these = getCell(59);
+		if(getCell("Titre these I") !== " "){
+			$encadrement_istep_titre_these = getCell("Titre these I");
 		}
 
-		if(getCell(60) !== " "){
-			$encadrement_istep_etablissement = getCell(60);
+		if(getCell("Etablissement ayant delivre le master (ou diplome equivalent) I") !== " "){
+			$encadrement_istep_etablissement = getCell("Etablissement ayant delivre le master (ou diplome equivalent) I");
 		}
-		if(getCell(61) !== " "){
-			$encadrement_istep_numero_ed = getCell(61);
+		if(getCell("Numero de l ED de rattachement I") !== " "){
+			$encadrement_istep_numero_ed = getCell("Numero de l ED de rattachement I");
 		}
 
 		$html = <<<HTML
@@ -1890,7 +2258,7 @@ function block9(): string{
 				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_istep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_istep_date_inscription_these" id="encadrement_istep_date_inscription_these" value="$encadrement_istep_date_inscription_these" required>
+			<input type="date" name="encadrement_istep_date_inscription_these" id="encadrement_istep_date_inscription_these" value="$encadrement_istep_date_inscription_these">
 		<label for="encadrement_istep_date_soutenance">Date de soutenance (MM/AAAA)</label>
 			<input type="date" name="encadrement_istep_date_soutenance" id="encadrement_istep_date_soutenance" value="$encadrement_istep_date_soutenance" required>
 		<label for="encadrement_istep_nom_prenom_co-directerurs">NOM Prénom des Co-directeurs</label>
@@ -1908,19 +2276,19 @@ HTML;
 
 		$financement = [
 			"Contrat Doctoral",
-			"Collectivités Territoriales",
+			"Collectivites Territoriales",
 			"Agence Française de Financement Recherche",
 			"CIFRE",
-			"Financements Privés France",
-			"Comission Européenne",
+			"Financements Prives France",
+			"Comission Europeenne",
 			"Financements Etrangers",
 			"Formation Continue",
 			"Organismes Internationaux",
 			"Autres"
 		];
 
-		$selectedFinancement = getCell(62);
-		$selectedDirection = getCell(63);
+		$selectedFinancement = getCell("Financement du doctorat I");
+		$selectedDirection = getCell("Fonction de direction ou encadrement ? I");
 
 		$selectedF = "";
 		for ($i = 0; $i < count($financement); $i++){
@@ -1991,7 +2359,13 @@ function block10(): string{
 				sanitize_text_field($_POST["encadrement_histep_financement_doctorat"]),
 				sanitize_text_field($_POST["encadrement_histep_fonction"])
 			];
-			replace_or_pushes_values(65, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement these hors ISTeP a partir de 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$encadrement_histep_nom = null;
@@ -2007,46 +2381,46 @@ function block10(): string{
 		$encadrement_histep_etablissement_rattachement_direction_these = null;
 
 
-		if(getCell(65) !== " "){
-			$encadrement_histep_nom = getCell(65);
+		if(getCell("Nom HI") !== " "){
+			$encadrement_histep_nom = getCell("Nom HI");
 		}
 
-		if(getCell(66) !== " "){
-			$encadrement_histep_prenom = getCell(66);
+		if(getCell("Prenom HI") !== " "){
+			$encadrement_histep_prenom = getCell("Prenom HI");
 		}
 
-		if(getCell(67) === "Homme"){
+		if(getCell("H/F HI") === "Homme"){
 			$homme = "selected";
 		}
-		if(getCell(67) === "Femme"){
+		if(getCell("H/F HI") === "Femme"){
 			$femme = "selected";
 		}
 
-		if(getCell(68) !== " "){
-			$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(68))));
+		if(getCell("Date d inscription en these (MM/AAAA) HI") !== " "){
+			$encadrement_histep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d inscription en these (MM/AAAA) HI"))));
 		}
 
-		if(getCell(69) !== " "){
-			$encadrement_histep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(69))));
+		if(getCell("Date de soutenance (MM/AAAA) HI") !== " "){
+			$encadrement_histep_date_soutenance = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de soutenance (MM/AAAA) HI"))));
 		}
 
-		if(getCell(70) !== " "){
-			$encadrement_histep_direction_these = getCell(70);
+		if(getCell("Direction de these (Nom, Prenom) HI") !== " "){
+			$encadrement_histep_direction_these = getCell("Direction de these (Nom, Prenom) HI");
 		}
 
-		if(getCell(71) !== " "){
-			$encadrement_histep_titre_these = getCell(71);
+		if(getCell("Titre these HI") !== " "){
+			$encadrement_histep_titre_these = getCell("Titre these HI");
 		}
 
-		if(getCell(72) !== " "){
-			$encadrement_histep_etablissement = getCell(72);
+		if(getCell("Etablissement ayant delivre le master (ou diplome equivalent) HI") !== " "){
+			$encadrement_histep_etablissement = getCell("Etablissement ayant delivre le master (ou diplome equivalent) HI");
 		}
-		if(getCell(73) !== " "){
-			$encadrement_histep_numero_ed = getCell(73);
+		if(getCell("Numero de l ED de rattachement HI") !== " "){
+			$encadrement_histep_numero_ed = getCell("Numero de l ED de rattachement HI");
 		}
 
-		if(getCell(74) !== " "){
-			$encadrement_histep_etablissement_rattachement_direction_these = getCell(74);
+		if(getCell("Etablissement de rattachement de la direction de these HI") !== " "){
+			$encadrement_histep_etablissement_rattachement_direction_these = getCell("Etablissement de rattachement de la direction de these HI");
 		}
 
 		$html = <<<HTML
@@ -2063,7 +2437,7 @@ function block10(): string{
 				<option value="Femme" $femme>Femme</option>
 			</select>
 		<label for="encadrement_histep_date_inscription_these">Date d'inscription en thèse (MM/AAAA)</label>
-			<input type="date" name="encadrement_histep_date_inscription_these" id="encadrement_histep_date_inscription_these" value="$encadrement_histep_date_inscription_these" required>
+			<input type="date" name="encadrement_histep_date_inscription_these" id="encadrement_histep_date_inscription_these" value="$encadrement_histep_date_inscription_these">
 		<label for="encadrement_histep_date_soutenance">Date de soutenance (MM/AAAA)</label>
 			<input type="date" name="encadrement_histep_date_soutenance" id="encadrement_histep_date_soutenance" value="$encadrement_histep_date_soutenance" required>
 		<label for="encadrement_histep_direction_these">Direction de thèse (Nom, Prénom)</label>
@@ -2083,19 +2457,19 @@ HTML;
 
 		$financement = [
 			"Contrat Doctoral",
-			"Collectivités Territoriales",
+			"Collectivites Territoriales",
 			"Agence Française de Financement Recherche",
 			"CIFRE",
-			"Financements Privés France",
-			"Comission Européenne",
+			"Financements Prives France",
+			"Comission Europeenne",
 			"Financements Etrangers",
 			"Formation Continue",
 			"Organismes Internationaux",
 			"Autres"
 		];
 
-		$selectedFinancement = getCell(75);
-		$selectedDirection = getCell(76);
+		$selectedFinancement = getCell("Financement du doctorat HI");
+		$selectedDirection = getCell("Fonction de direction ou encadrement ? HI");
 
 		$selectedF = "";
 		for ($i = 0; $i < count($financement); $i++){
@@ -2160,7 +2534,14 @@ function block11(): string{
 				$_POST["encadrement_pd_annee_naissance"],
 				sanitize_text_field($_POST["encadrement_pd_employeur"])
 			];
-			replace_or_pushes_values(78, $data);
+			replace_or_pushes_values(getHeaderId("Encadrement de post-doctorats a partir de 2022"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
+
 		}
 
 		$encadrement_pd_nom = null;
@@ -2173,35 +2554,35 @@ function block11(): string{
 		$encadrement_pd_employeur = null;
 
 
-		if(getCell(78) !== " "){
-			$encadrement_pd_nom = getCell(78);
+		if(getCell("Nom PD") !== " "){
+			$encadrement_pd_nom = getCell("Nom PD");
 		}
 
-		if(getCell(79) !== " "){
-			$encadrement_pd_prenom = getCell(79);
+		if(getCell("Prenom PD") !== " "){
+			$encadrement_pd_prenom = getCell("Prenom PD");
 		}
 
-		if(getCell(80) === "Homme"){
+		if(getCell("H/F PD") === "Homme"){
 			$homme = "selected";
 		}
-		if(getCell(80) === "Femme"){
+		if(getCell("H/F PD") === "Femme"){
 			$femme = "selected";
 		}
 
-		if(getCell(81) !== " "){
-			$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(81))));
+		if(getCell("Date d entree (MM/AAAA) PD") !== " "){
+			$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d entree (MM/AAAA) PD"))));
 		}
 
-		if(getCell(82) !== " "){
-			$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell(82))));
+		if(getCell("Date de sortie (MM/AAAA) PD") !== " "){
+			$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de sortie (MM/AAAA) PD"))));
 		}
 
-		if(getCell(83) !== " "){
-			$encadrement_pd_annee_naissance = getCell(83);
+		if(getCell("Annee de naissance PD") !== " "){
+			$encadrement_pd_annee_naissance = getCell("Annee de naissance PD");
 		}
 
-		if(getCell(84) !== " "){
-			$encadrement_pd_employeur = getCell(84);
+		if(getCell("Etablissement ou organisme employeur PD") !== " "){
+			$encadrement_pd_employeur = getCell("Etablissement ou organisme employeur PD");
 		}
 
 		$year = date('Y');
@@ -2222,7 +2603,7 @@ function block11(): string{
 		<label for="encadrement_pd_date_entree">Date d'entrée (MM/AAAA)</label>
 			<input type="date" name="encadrement_pd_date_entree" id="encadrement_pd_date_entree" value="$encadrement_pd_date_entree" required>
 		<label for="encadrement_pd_date_sortie">Date de sortie (MM/AAAA)</label>
-			<input type="date" name="encadrement_pd_date_sortie" id="encadrement_pd_date_sortie" value="$encadrement_pd_date_sortie" required>
+			<input type="date" name="encadrement_pd_date_sortie" id="encadrement_pd_date_sortie" value="$encadrement_pd_date_sortie">
 		<label for="encadrement_pd_annee_naissance">Année de naissance</label>
 			<input type="number" name="encadrement_pd_annee_naissance" min="1900" max="$year" id="encadrement_pd_annee_naissance" value="$encadrement_pd_annee_naissance" required>
 		<label for="encadrement_pd_employeur">Etablissement ou organisme employeur</label>
@@ -2247,18 +2628,24 @@ function block12(): string{
 				sanitize_text_field($_POST["distinction_intitule"]),
 				$_POST["distinction_annee"]
 			];
-			replace_or_pushes_values(86, $data);
+			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifiques"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$distinction_intitule = null;
 		$distinction_annee = null;
 
-		if(getCell(86) !== " "){
-			$distinction_intitule = getCell(86);
+		if(getCell("Intitule de l element de distinction (nom du prix par exemple)") !== " "){
+			$distinction_intitule = getCell("Intitule de l element de distinction (nom du prix par exemple)");
 		}
 
-		if(getCell(87) !== " "){
-			$distinction_annee = getCell(87);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) D") !== " "){
+			$distinction_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) D");
 		}
 
 		return <<<HTML
@@ -2287,18 +2674,24 @@ function block13(): string{
 				sanitize_text_field($_POST["iuf_intitule"]),
 				$_POST["iuf_annee"]
 			];
-			replace_or_pushes_values(89, $data);
+			replace_or_pushes_values(getHeaderId("Appartenance a l IUF"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$iuf_intitule = null;
 		$iuf_annee = null;
 
-		if(getCell(89) !== " "){
-			$iuf_intitule = getCell(89);
+		if(getCell("Intitule de l element (membre, fonction …)") !== " "){
+			$iuf_intitule = getCell("Intitule de l element (membre, fonction …)");
 		}
 
-		if(getCell(90) !== " "){
-			$iuf_annee = getCell(90);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF") !== " "){
+			$iuf_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF");
 		}
 
 		return <<<HTML
@@ -2327,18 +2720,24 @@ function block14(): string{
 				sanitize_text_field($_POST["sejour_lieu"]),
 				$_POST["sejour_annee"]
 			];
-			replace_or_pushes_values(92, $data);
+			replace_or_pushes_values(getHeaderId("Sejours dans des laboratoires etrangers"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$sejour_lieu = null;
 		$sejour_annee = null;
 
-		if(getCell(92) !== " "){
-			$sejour_lieu = getCell(92);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) S") !== " "){
+			$sejour_lieu = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) S");
 		}
 
-		if(getCell(93) !== " "){
-			$sejour_annee = getCell(93);
+		if(getCell("Lieu, fonction") !== " "){
+			$sejour_annee = getCell("Lieu, fonction");
 		}
 
 		return <<<HTML
@@ -2368,18 +2767,24 @@ function block15(): string{
 				sanitize_text_field($_POST["organisation_nom"]),
 				$_POST["organisation_annee"]
 			];
-			replace_or_pushes_values(95, $data);
+			replace_or_pushes_values(getHeaderId("Organisations de colloques/congres internationaux"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$organisation_nom = null;
 		$organisation_annee = null;
 
-		if(getCell(95) !== " "){
-			$organisation_nom = getCell(95);
+		if(getCell("Nom de l evenement, fonction O") !== " "){
+			$organisation_nom = getCell("Nom de l evenement, fonction O");
 		}
 
-		if(getCell(96) !== " "){
-			$organisation_annee = getCell(96);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) O") !== " "){
+			$organisation_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) O");
 		}
 
 		return <<<HTML
@@ -2409,18 +2814,24 @@ function block16(): string{
 				sanitize_text_field($_POST["societe_savantes_nom"]),
 				$_POST["societe_savantes_annee"]
 			];
-			replace_or_pushes_values(98, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilites dans des societes savantes"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$societe_savantes_nom = null;
 		$societe_savantes_annee = null;
 
-		if(getCell(98) !== " "){
-			$societe_savantes_nom = getCell(98);
+		if(getCell("Nom de la societe, fonction SS") !== " "){
+			$societe_savantes_nom = getCell("Nom de la societe, fonction SS");
 		}
 
-		if(getCell(99) !== " "){
-			$societe_savantes_annee = getCell(99);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS") !== " "){
+			$societe_savantes_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS");
 		}
 
 		return <<<HTML
@@ -2448,17 +2859,27 @@ function block17(): string{
 			$data = [
 				$_POST["responsabilite1_region_montant"],
 				sanitize_text_field($_POST["responsabilite1_region_nom"]),
+				sanitize_text_field($_POST["responsabilite1_fonction_regional"]),
 				"|",
 				$_POST["responsabilite1_national_montant"],
 				sanitize_text_field($_POST["responsabilite1_national_nom"]),
+				sanitize_text_field($_POST["responsabilite1_national_fonction"]),
 				"|",
 				$_POST["responsabilite1_international_montant"],
 				sanitize_text_field($_POST["responsabilite1_international_nom"]),
+				sanitize_text_field($_POST["responsabilite1_international_fonction"]),
 				"|",
 				$_POST["responsabilite1_partenariat_montant"],
-				sanitize_text_field($_POST["responsabilite1_partenariat_nom"])
+				sanitize_text_field($_POST["responsabilite1_partenariat_nom"]),
+				sanitize_text_field($_POST["responsabilite1_fonction_partenariat"]),
 			];
-			replace_or_pushes_values(101, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilite de projets de recherche dans les formations (ou tasks independantes)"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$responsabilite1_region_montant = null;
@@ -2470,68 +2891,154 @@ function block17(): string{
 		$responsabilite1_partenariat_montant = null;
 		$responsabilite1_partenariat_nom = null;
 
-		if(getCell(101) !== " "){
-			$responsabilite1_region_montant = getCell(101);
+		if(getCell("montant (k€) RL") !== " "){
+			$responsabilite1_region_montant = getCell("montant (k€) RL");
 		}
 
-		if(getCell(102) !== " "){
-			$responsabilite1_region_nom = getCell(102);
+		if(getCell("Nom projet (titre et acronyme) RL") !== " "){
+			$responsabilite1_region_nom = getCell("Nom projet (titre et acronyme) RL");
 		}
 
-		if(getCell(104) !== " "){
-			$responsabilite1_national_montant = getCell(104);
+		if(getCell("montant (k€) N") !== " "){
+			$responsabilite1_national_montant = getCell("montant (k€) N");
 		}
 
-		if(getCell(105) !== " "){
-			$responsabilite1_national_nom = getCell(105);
+		if(getCell("Nom projet (titre et acronyme) N") !== " "){
+			$responsabilite1_national_nom = getCell("Nom projet (titre et acronyme) N");
 		}
 
-		if(getCell(107) !== " "){
-			$responsabilite1_international_montant = getCell(107);
+		if(getCell("montant (k€) I") !== " "){
+			$responsabilite1_international_montant = getCell("montant (k€) I");
 		}
 
-		if(getCell(108) !== " "){
-			$responsabilite1_international_nom = getCell(108);
+		if(getCell("Nom projet (titre et acronyme) I") !== " "){
+			$responsabilite1_international_nom = getCell("Nom projet (titre et acronyme) I");
 		}
 
-		if(getCell(110) !== " "){
-			$responsabilite1_partenariat_montant = getCell(110);
+		if(getCell("montant (k€) P") !== " "){
+			$responsabilite1_partenariat_montant = getCell("montant (k€) P");
 		}
 
-		if(getCell(111) !== " "){
-			$responsabilite1_partenariat_nom = getCell(111);
+		if(getCell("Nom projet (titre et acronyme) P") !== " "){
+			$responsabilite1_partenariat_nom = getCell("Nom projet (titre et acronyme) P");
 		}
 
-		return <<<HTML
+		$fonctions = [
+			"PI",
+			"coPI",
+			"Partenaire",
+			"Participant"
+		];
+
+		$selectedFoncR = getCell("Fonction Regionale");
+		$selectedFoncN = getCell("Fonction Nationale");
+		$selectedFoncI = getCell("Fonction Internationale");
+		$selectedFoncP = getCell("Fonction Partenariat");
+
+		$html = <<<HTML
 	<form method="POST" class="data-table-form">
 		<h4>Responsabilité de projets de recherche (ou tasks indépendantes)</h4>
 		
 		<h5>Régional et local</h5>
 		<label for="responsabilite1_region_montant">montant (k€)</label>
-			<input type="number" min="0" name="responsabilite1_region_montant" id="responsabilite1_region_montant" value="$responsabilite1_region_montant" required>
+			<input type="number" min="0" name="responsabilite1_region_montant" id="responsabilite1_region_montant" value="$responsabilite1_region_montant">
 		<label for="responsabilite1_region_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_region_nom"  id="responsabilite1_region_nom" value="$responsabilite1_region_nom" required>
+			<input type="text" name="responsabilite1_region_nom"  id="responsabilite1_region_nom" value="$responsabilite1_region_nom">
+		<label for="responsabilite1_fonction_regional">Fonction</label>
+			<select name="responsabilite1_fonction_regional" id="responsabilite1_fonction_regional">
+				<option value=" "></option>
+HTML;
+
+		$selectedFR = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncR){
+				$selectedFR = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFR>$fonctions[$i]</option>
+HTML;
+			$selectedFR = "";
+		}
+
+		$html .= <<<HTML
+			</select>
 		
 		<h5>National</h5>
 		<label for="responsabilite1_national_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_national_montant"  min="0" id="responsabilite1_national_montant" value="$responsabilite1_national_montant" required>
-		<label for="responsabilite1_national_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_national_nom"  id="responsabilite1_national_nom" value="$responsabilite1_national_nom" required>
+			<input type="number" name="responsabilite1_national_montant"  min="0" id="responsabilite1_national_montant" value="$responsabilite1_national_montant">
+		<label for="responsabilite1_national_nom">Nom projet (titre et acronyme)</label>
+			<input type="text" name="responsabilite1_national_nom"  id="responsabilite1_national_nom" value="$responsabilite1_national_nom">
+		<label for="responsabilite1_national_fonction">Fonction</label>
+			<select name="responsabilite1_national_fonction" id="responsabilite1_national_fonction">
+				<option value=" "></option>
+HTML;
+
+		$selectedFN = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncN){
+				$selectedFN = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFN>$fonctions[$i]</option>
+HTML;
+			$selectedFN = "";
+		}
+
+		$html .= <<<HTML
+			</select>
 		
 		<h5>International</h5>
 		<label for="responsabilite1_international_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_international_montant" min="0" id="responsabilite1_international_montant" value="$responsabilite1_international_montant" required>
-		<label for="responsabilite1_international_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_international_nom"  id="responsabilite1_international_nom" value="$responsabilite1_international_nom" required>
+			<input type="number" name="responsabilite1_international_montant" min="0" id="responsabilite1_international_montant" value="$responsabilite1_international_montant">
+		<label for="responsabilite1_international_nom">Nom projet (titre et acronyme)</label>
+			<input type="text" name="responsabilite1_international_nom"  id="responsabilite1_international_nom" value="$responsabilite1_international_nom">
+		<label for="responsabilite1_international_fonction">Fonction</label>
+		<select name="responsabilite1_international_fonction" id="responsabilite1_international_fonction">
+			<option value=" "></option>
+HTML;
+
+		$selectedFI = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncI){
+				$selectedFI = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFI>$fonctions[$i]</option>
+HTML;
+			$selectedFI = "";
+		}
+
+		$html .= <<<HTML
+			</select>
 		
 		<h5>Partenariat (industrie, EPIC)</h5>
 		<label for="responsabilite1_partenariat_montant">montant (k€)</label>
-			<input type="number" name="responsabilite1_partenariat_montant"  min="0" id="responsabilite1_partenariat_montant" value="$responsabilite1_partenariat_montant" required>
-		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme) Fonction (PI, co-PI, partenaire, participant)</label>
-			<input type="text" name="responsabilite1_partenariat_nom"  id="responsabilite1_partenariat_nom" value="$responsabilite1_partenariat_nom" required>
+			<input type="number" name="responsabilite1_partenariat_montant"  min="0" id="responsabilite1_partenariat_montant" value="$responsabilite1_partenariat_montant">
+		<label for="responsabilite1_partenariat_nom">Nom projet (titre et acronyme)</label>
+			<input type="text" name="responsabilite1_partenariat_nom"  id="responsabilite1_partenariat_nom" value="$responsabilite1_partenariat_nom">
+		<label for="responsabilite1_fonction_partenariat">Fonction</label>
+			<select name="responsabilite1_fonction_partenariat" id="responsabilite1_fonction_partenariat">
+				<option value=" "></option>
+HTML;
+
+		$selectedFP = "";
+		for ($i = 0; $i < count($fonctions); $i++){
+			if($fonctions[$i] === $selectedFoncP){
+				$selectedFP = "selected";
+			}
+			$html .= <<<HTML
+			<option value="$fonctions[$i]" $selectedFP>$fonctions[$i]</option>
+HTML;
+			$selectedFP = "";
+		}
+
+		$html .= <<<HTML
+		</select>
 		<button type="submit" name="submit17">Envoyer</button>
 	</form>
 HTML;
+
+		return $html;
 	} else{
 		return <<<HTML
 			<p class="acces_denied">Accès non autorisé</p>
@@ -2554,7 +3061,13 @@ function block18(): string{
 				sanitize_text_field($_POST["responsabilite2_international_intitule"]),
 				$_POST["responsabilite2_international_annee"]
 			];
-			replace_or_pushes_values(113, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilites, Expertises & administration de la recherche"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$responsabilite2_locale_intitule = null;
@@ -2564,28 +3077,28 @@ function block18(): string{
 		$responsabilite2_international_intitule = null;
 		$responsabilite2_international_annee = null;
 
-		if(getCell(113) !== " "){
-			$responsabilite2_locale_intitule = getCell(113);
+		if(getCell("Intitule de l element et fonction L") !== " "){
+			$responsabilite2_locale_intitule = getCell("Intitule de l element et fonction L");
 		}
 
-		if(getCell(114) !== " "){
-			$responsabilite2_locale_annee = getCell(114);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) L") !== " "){
+			$responsabilite2_locale_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) L");
 		}
 
-		if(getCell(116) !== " "){
-			$responsabilite2_regional_intitule = getCell(116);
+		if(getCell("Intitule de l element et fonction R") !== " "){
+			$responsabilite2_regional_intitule = getCell("Intitule de l element et fonction R");
 		}
 
-		if(getCell(117) !== " "){
-			$responsabilite2_regional_annee = getCell(117);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) R") !== " "){
+			$responsabilite2_regional_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) R");
 		}
 
-		if(getCell(119) !== " "){
-			$responsabilite2_international_intitule = getCell(119);
+		if(getCell("Intitule de l element et fonction I") !== " "){
+			$responsabilite2_international_intitule = getCell("Intitule de l element et fonction I");
 		}
 
-		if(getCell(120) !== " "){
-			$responsabilite2_international_annee = getCell(120);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) I") !== " "){
+			$responsabilite2_international_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) I");
 		}
 
 		return <<<HTML
@@ -2594,21 +3107,21 @@ function block18(): string{
 		
 		<h5>Locale</h5>
 		<label for="responsabilite2_locale_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_locale_intitule" id="responsabilite2_locale_intitule" value="$responsabilite2_locale_intitule" required>
+			<input type="text" name="responsabilite2_locale_intitule" id="responsabilite2_locale_intitule" value="$responsabilite2_locale_intitule">
 		<label for="responsabilite2_locale_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_locale_annee" min="1900" id="responsabilite2_locale_annee" value="$responsabilite2_locale_annee" required>
+			<input type="text" name="responsabilite2_locale_annee" min="1900" id="responsabilite2_locale_annee" value="$responsabilite2_locale_annee">
 		
 		<h5>Régional</h5>
 		<label for="responsabilite2_regional_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_regional_intitule" id="responsabilite2_regional_intitule" value="$responsabilite2_regional_intitule" required>
+			<input type="text" name="responsabilite2_regional_intitule" id="responsabilite2_regional_intitule" value="$responsabilite2_regional_intitule">
 		<label for="responsabilite2_regional_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_regional_annee" min="1900" id="responsabilite2_regional_annee" value="$responsabilite2_regional_annee" required>
+			<input type="text" name="responsabilite2_regional_annee" min="1900" id="responsabilite2_regional_annee" value="$responsabilite2_regional_annee">
 		
 		<h5>Internationale</h5>
 		<label for="responsabilite2_international_intitule">Intitulé de l'élément et fonction</label>
-			<input type="text" name="responsabilite2_international_intitule" id="responsabilite2_international_intitule" value="$responsabilite2_international_intitule" required>
+			<input type="text" name="responsabilite2_international_intitule" id="responsabilite2_international_intitule" value="$responsabilite2_international_intitule">
 		<label for="responsabilite2_international_annee">Année ou période (début MM/AAAA - fin MM/AAAA)</label>
-			<input type="text" name="responsabilite2_international_annee" min="1900" id="responsabilite2_international_annee" value="$responsabilite2_international_annee" required>
+			<input type="text" name="responsabilite2_international_annee" min="1900" id="responsabilite2_international_annee" value="$responsabilite2_international_annee">
 		<button type="submit" name="submit18">Envoyer</button>
 	</form>
 HTML;
@@ -2628,18 +3141,24 @@ function block19(): string{
 				sanitize_text_field($_POST["responsabilite3_intitule"]),
 				$_POST["responsabilite3_annee"]
 			];
-			replace_or_pushes_values(122, $data);
+			replace_or_pushes_values(getHeaderId("Responsabilites & administration de la formation/enseignement"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$responsabilite3_intitule = null;
 		$responsabilite3_annee = null;
 
-		if(getCell(122) !== " "){
-			$responsabilite3_intitule = getCell(122);
+		if(getCell("Intitule de l element et votre fonction Res") !== " "){
+			$responsabilite3_intitule = getCell("Intitule de l element et votre fonction Res");
 		}
 
-		if(getCell(123) !== " "){
-			$responsabilite3_annee = getCell(123);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res") !== " "){
+			$responsabilite3_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res");
 		}
 
 		return <<<HTML
@@ -2668,18 +3187,24 @@ function block20(): string{
 				sanitize_text_field($_POST["vulgarisation_intitule"]),
 				$_POST["vulgarisation_annee"]
 			];
-			replace_or_pushes_values(125, $data);
+			replace_or_pushes_values(getHeaderId("Vulgarisation, dissemination scientifique"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$vulgarisation_intitule = null;
 		$vulgarisation_annee = null;
 
-		if(getCell(125) !== " "){
-			$vulgarisation_intitule = getCell(125);
+		if(getCell("Intitule de l element (evenement, video, livre, …) et fonction V") !== " "){
+			$vulgarisation_intitule = getCell("Intitule de l element (evenement, video, livre, …) et fonction V");
 		}
 
-		if(getCell(126) !== " "){
-			$vulgarisation_annee = getCell(126);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) V") !== " "){
+			$vulgarisation_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) V");
 		}
 
 		return <<<HTML
@@ -2707,13 +3232,19 @@ function block21(): string{
 			$data = [
 				sanitize_text_field($_POST["rayonnement"])
 			];
-			replace_or_pushes_values(128, $data);
+			replace_or_pushes_values(getHeaderId("Rayonnement / resultats majeurs sur la periode a mettre en avant"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$rayonnement = null;
 
-		if(getCell(128) !== " "){
-			$rayonnement = getCell(128);
+		if(getCell("Rayonnement / resultats majeurs sur la periode a mettre en avant") !== " "){
+			$rayonnement = getCell("Rayonnement / resultats majeurs sur la periode a mettre en avant");
 		}
 
 		return <<<HTML
@@ -2739,18 +3270,24 @@ function block22(): string{
 				sanitize_text_field($_POST["brevet_intitule"]),
 				$_POST["brevet_annee"]
 			];
-			replace_or_pushes_values(130, $data);
+			replace_or_pushes_values(getHeaderId("Brevet"), $data);
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/hceres/";
+  </script>
+HTML;
 		}
 
 		$brevet_intitule = null;
 		$brevet_annee = null;
 
-		if(getCell(130) !== " "){
-			$brevet_intitule = getCell(130);
+		if(getCell("Intitule de l element et votre fonction B") !== " "){
+			$brevet_intitule = getCell("Intitule de l element et votre fonction B");
 		}
 
-		if(getCell(131) !== " "){
-			$brevet_annee = getCell(131);
+		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) B") !== " "){
+			$brevet_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) B");
 		}
 
 		return <<<HTML
