@@ -1284,7 +1284,7 @@ HTML;
 			<div class="backup__buttons">
 				<button class="hceres__download__button"><a class="hceres__download" href="/wp-admin/backup-hceres/$file" download>Télécharger</a></button>
 				<form method="post" name="delete__backup">
-					<button class="backup__delete" type="submit" name="submit$i">Supprimer</button>
+					<button class="backup__delete" onclick="return confirmDeleteBackup()" type="submit" name="submit$i">Supprimer</button>
 				</form>
 			</div>
 		</div>

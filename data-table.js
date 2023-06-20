@@ -81,10 +81,12 @@ try{
     }
 } catch (e){}
 
-
-
 function confirmDelete() {
     return window.confirm("Voulez-vous vraiment supprimer vos données?");
+}
+
+function confirmDeleteBackup() {
+    return window.confirm("Voulez-vous vraiment supprimer cette backup?");
 }
 
 const currentPage = window.location.pathname;
