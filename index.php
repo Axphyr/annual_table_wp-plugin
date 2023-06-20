@@ -45,7 +45,7 @@ function annual_data_table_install(): void
 
 	// defines the csv file's headers
 	$data = array(
-		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilite de projets de recherche dans les formations (ou tasks independantes)', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilites, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
+		array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', ' ', 'Responsabilite de projets de recherche dans les formations (ou tasks independantes)', ' ','  ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'Responsabilites, Expertises & administration de la recherche', ' ', ' ', ' ', ' ', '|'),
 		// categories (a backspace per categories and spaces to align)
 		// ' ' are here only to center the headers
 		array(' ', ' ', ' ', ' ', ' ', ' ', 'Informations generales', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|',
@@ -81,17 +81,17 @@ function annual_data_table_install(): void
 			'Discipline 1', 'Discipline 2', '|',
 			'Themes de recherche','|',
 			'Nombre de publi de rang A', 'Nombre de publi de rang A en 1ier auteur ou derriere un doctorant', 'nombre de citations (isi-web of science)', 'h-factor (Isi-Web)', 'nombre de citations (google scholar)', 'h-factor (google scholar)', 'Nbre de resume a conference avec comite de lecture', '|',
-			'Nombre de publications de rang A', 'Nbre article en 1er auteur ', 'Nbre article  derriere un doctorant', "Nbre d'articles rang A avec des collab. (autres laboratoires)", "Chapitre d ouvrage / livre", 'Nombre de resume a des congres avec comite de lecture', '|',
+			'Nombre de publications de rang A', 'Nbre article en 1er auteur ', 'Nbre article derriere un doctorant', "Nbre d articles rang A avec des collab. (autres laboratoires)", "Chapitre d ouvrage / livre", 'Nombre de resume a des congres avec comite de lecture', '|',
 			'nb heures enseignees 2022-2023', 'nb heures enseignees 2023-2024', 'nb heures enseignees 2024-2025', 'nb heures enseignees 2025-2026', '|',
 			'Nom M1', 'Prenom M1', 'Annee M1', 'NOM Prenom des Co-encadrants M1', 'Titre sujet (indiquer si hors ISTeP) M1', '|',
 			'Nom M2', 'Prenom M2', 'Annee M2', 'NOM Prenom des Co-encadrants M2', 'Titre sujet (indiquer si hors ISTeP) M2', '|',
-			'Nom I', 'Prenom I', 'H/F I', "Date d'inscription en these (MM/AAAA) I", 'Date de soutenance (MM/AAAA) I', 'NOM Prenom des Co-directeurs I', 'Titre these I', 'Etablissement ayant delivre le master (ou diplome equivalent) I', "Numero de l ED de rattachement I", 'Financement du doctorat I', 'Fonction de direction ou encadrement ? I', '|',
+			'Nom I', 'Prenom I', 'H/F I', "Date d inscription en these (MM/AAAA) I", 'Date de soutenance (MM/AAAA) I', 'NOM Prenom des Co-directeurs I', 'Titre these I', 'Etablissement ayant delivre le master (ou diplome equivalent) I', "Numero de l ED de rattachement I", 'Financement du doctorat I', 'Fonction de direction ou encadrement ? I', '|',
 			'Nom HI', 'Prenom HI', 'H/F HI', "Date d inscription en these (MM/AAAA) HI", 'Date de soutenance (MM/AAAA) HI', 'Direction de these (Nom, Prenom) HI', 'Titre these HI', 'Etablissement ayant delivre le master (ou diplome equivalent) HI', "Numero de l ED de rattachement HI", "Etablissement de rattachement de la direction de these HI", 'Financement du doctorat HI', 'Fonction de direction ou encadrement ? HI', '|',
 			'Nom PD', 'Prenom PD', 'H/F PD', "Date d entree (MM/AAAA) PD", 'Date de sortie (MM/AAAA) PD', 'Annee de naissance PD', 'Etablissement ou organisme employeur PD', '|',
 			"Intitule de l element de distinction (nom du prix par exemple)",'Annee ou periode (debut MM/AAAA - fin MM/AAAA) D', '|',
 			"Intitule de l element (membre, fonction …)", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF', '|',
 			"Lieu, fonction", "Annee ou periode (debut MM/AAAA - fin MM/AAAA) S", "|",
-			"Nom de l'evenement, fonction O", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) O', '|',
+			"Nom de l evenement, fonction O", 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) O', '|',
 			'Nom de la societe, fonction SS', 'Annee ou periode (debut MM/AAAA - fin MM/AAAA) SS', '|',
 			'montant (k€) RL', 'Nom projet (titre et acronyme) RL', 'Fonction Regionale', '|',
 			'montant (k€) N', 'Nom projet (titre et acronyme) N', 'Fonction Nationale', '|',
@@ -497,10 +497,6 @@ function replace_or_pushes_values(int $column, array $values): void
 	}
 }
 
-function lowerString($str): array|string {
-	return str_replace(' ', '_', strtolower($str));
-}
-
 
 function getCell(string $str, int $offset = 0): string {
 	// opens the file
@@ -808,7 +804,6 @@ function getAbsentUsers(string $roles = ''): array {
  * @return bool True if the directory contains files, false otherwise.
  */
 function hasFilesInDirectory(string $directory): bool {
-	var_dump($directory);
 	// Open the directory
 	if ($handle = opendir($directory)) {
 		// Read each entry in the directory
@@ -923,9 +918,9 @@ HTML;
 
 	$backback = "";
 
-	if(hasFilesInDirectory(ABSPATH . "/wp-admin/hceres-backups/")){
+	if(hasFilesInDirectory(ABSPATH . "/wp-admin/backup-hceres/")){
 		$backback = <<<HTML
-		<button class="hceres__buttons" onclick="window.location.href='/backups-hceres'"> Backups des données HCERES </button>
+		<button class="hceres__buttons" onclick="window.location.href='/hceres-backups'"> Backups des données HCERES </button>
 HTML;
 
 	}
@@ -967,7 +962,7 @@ add_shortcode('add_istep_annual_table_summary','summary');
  */
 function summary(): string{
 	$lst = ["Informations Generales", "Discipline", "Theme de recherche", "Publications 1", "Publications 2", "Enseignement", "Master 1", "Master 2", "Encadrement these ISTeP", "Encadrement these hors ISTeP", "Encadrement post-doctorats", "Prix ou Distinctions", "Appartenance IUF", "Sejours", "Colloques/Congres", "Societes Savantes", "Responsabilites de projets de recherche dans les formations", "Responsabilites, Expertises & administration de la recherche", "Responsabilites administratives", "Vulgarisation & dissemination scientifique", "Rayonnement", "Brevet" ];
-	$year = date('Y');
+
 	$html = <<<HTML
 		<div class="annual_data_table_summary">
 			<p> Liste des formulaires HCERES</p>
@@ -1435,7 +1430,7 @@ HTML;
 		$prisme = "selected";
 	}
 
-	$selectedRang = getCell("Rang");
+	$selectedRang = getCell("Sections disciplinaires");
 	$year = date('Y');
 
 	$annee_naissance = null;
@@ -2227,7 +2222,7 @@ HTML;
 		}
 
 		if(getCell("Date d inscription en these (MM/AAAA) I") !== " "){
-			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d'inscription en these (MM/AAAA) I"))));
+			$encadrement_istep_date_inscription_these = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d inscription en these (MM/AAAA) I"))));
 		}
 
 		if(getCell("Date de soutenance (MM/AAAA) I") !== " "){
@@ -2420,7 +2415,7 @@ HTML;
 		if(getCell("Etablissement ayant delivre le master (ou diplome equivalent) HI") !== " "){
 			$encadrement_histep_etablissement = getCell("Etablissement ayant delivre le master (ou diplome equivalent) HI");
 		}
-		if(getCell("Numero de l'ED de rattachement HI") !== " "){
+		if(getCell("Numero de l ED de rattachement HI") !== " "){
 			$encadrement_histep_numero_ed = getCell("Numero de l ED de rattachement HI");
 		}
 
@@ -2633,7 +2628,7 @@ function block12(): string{
 				sanitize_text_field($_POST["distinction_intitule"]),
 				$_POST["distinction_annee"]
 			];
-			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifique	"), $data);
+			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifiques"), $data);
 
 			return <<<HTML
   <script>
@@ -2691,8 +2686,8 @@ HTML;
 		$iuf_intitule = null;
 		$iuf_annee = null;
 
-		if(getCell("Intitule de l'element (membre, fonction …)") !== " "){
-			$iuf_intitule = getCell("Intitule de l'element (membre, fonction …)");
+		if(getCell("Intitule de l element (membre, fonction …)") !== " "){
+			$iuf_intitule = getCell("Intitule de l element (membre, fonction …)");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) IUF") !== " "){
@@ -2784,8 +2779,8 @@ HTML;
 		$organisation_nom = null;
 		$organisation_annee = null;
 
-		if(getCell("Nom de l'evenement, fonction O") !== " "){
-			$organisation_nom = getCell("Nom de l'evenement, fonction O");
+		if(getCell("Nom de l evenement, fonction O") !== " "){
+			$organisation_nom = getCell("Nom de l evenement, fonction O");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) O") !== " "){
@@ -3082,24 +3077,24 @@ HTML;
 		$responsabilite2_international_intitule = null;
 		$responsabilite2_international_annee = null;
 
-		if(getCell("Intitule de l'element et fonction L") !== " "){
-			$responsabilite2_locale_intitule = getCell("Intitule de l'element et fonction L");
+		if(getCell("Intitule de l element et fonction L") !== " "){
+			$responsabilite2_locale_intitule = getCell("Intitule de l element et fonction L");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) L") !== " "){
 			$responsabilite2_locale_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) L");
 		}
 
-		if(getCell("Intitule de l'element et fonction R") !== " "){
-			$responsabilite2_regional_intitule = getCell("Intitule de l'element et fonction R");
+		if(getCell("Intitule de l element et fonction R") !== " "){
+			$responsabilite2_regional_intitule = getCell("Intitule de l element et fonction R");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) R") !== " "){
 			$responsabilite2_regional_annee = getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) R");
 		}
 
-		if(getCell("Intitule de l'element et fonction I") !== " "){
-			$responsabilite2_international_intitule = getCell("Intitule de l'element et fonction I");
+		if(getCell("Intitule de l element et fonction I") !== " "){
+			$responsabilite2_international_intitule = getCell("Intitule de l element et fonction I");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) I") !== " "){
@@ -3158,8 +3153,8 @@ HTML;
 		$responsabilite3_intitule = null;
 		$responsabilite3_annee = null;
 
-		if(getCell("Intitule de l'element et votre fonction Res") !== " "){
-			$responsabilite3_intitule = getCell("Intitule de l'element et votre fonction Res");
+		if(getCell("Intitule de l element et votre fonction Res") !== " "){
+			$responsabilite3_intitule = getCell("Intitule de l element et votre fonction Res");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) Res") !== " "){
@@ -3204,8 +3199,8 @@ HTML;
 		$vulgarisation_intitule = null;
 		$vulgarisation_annee = null;
 
-		if(getCell("Intitule de l'element (evenement, video, livre, …) et fonction V") !== " "){
-			$vulgarisation_intitule = getCell("Intitule de l'element (evenement, video, livre, …) et fonction V");
+		if(getCell("Intitule de l element (evenement, video, livre, …) et fonction V") !== " "){
+			$vulgarisation_intitule = getCell("Intitule de l element (evenement, video, livre, …) et fonction V");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) V") !== " "){
@@ -3287,8 +3282,8 @@ HTML;
 		$brevet_intitule = null;
 		$brevet_annee = null;
 
-		if(getCell("Intitule de l'element et votre fonction B") !== " "){
-			$brevet_intitule = getCell("Intitule de l'element et votre fonction B");
+		if(getCell("Intitule de l element et votre fonction B") !== " "){
+			$brevet_intitule = getCell("Intitule de l element et votre fonction B");
 		}
 
 		if(getCell("Annee ou periode (debut MM/AAAA - fin MM/AAAA) B") !== " "){
