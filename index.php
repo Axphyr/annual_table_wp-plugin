@@ -750,14 +750,14 @@ function getUsersFromCSV(): array {
 
 /** Gets every WP users in the database from given roles
  *
- * @param string $roles
+ * @param array $roles
  *
  * @return array
  */
-function getUsersFromWordPress(string $roles = ''): array {
+function getUsersFromWordPress(array $roles = []): array {
 
 	// if the role isn't specified, returns every user
-	if ($roles === ''){
+	if (count($roles) === 0){
 		$users = get_users();
 	} else {
 		// returns every user of a given role
@@ -771,11 +771,12 @@ function getUsersFromWordPress(string $roles = ''): array {
 }
 
 /** Gets the users from the WP database that are absent from the csv file
- * @param string $roles
+ *
+ * @param array $roles
  *
  * @return array
  */
-function getAbsentUsers(string $roles = ''): array {
+function getAbsentUsers(array $roles = []): array {
 
 	// initializes the array of absent users
 	$absent = [];
@@ -831,10 +832,11 @@ add_shortcode('add_istep_annual_table_panel','panel');
  */
 function panel(): string {
 
-	$nbUsers = round(count(getUsersFromCSV()) * 100 / count(get_users()));
+	$roles = ["technicien", "secrtariat", "ingenieur_etude", "assiatant_ingenieur", "enseignant_chercheur", "chercheur", "ingenieur_de_recherche"];
+	$nbUsers = round(count(getUsersFromCSV()) * 100 / count(getUsersFromWordPress($roles)));
 	$nbUsersDone = round(haveAnswered());
 	$avg = round(averageAnswer());
-	$absent = getAbsentUsers();
+	$absent = getAbsentUsers($roles);
 
 	$html = <<<HTML
 	<div class="dt__panel">
@@ -942,6 +944,26 @@ HTML;
 	return $html;
 }
 
+/**
+ * Check if the current WordPress user has any of the specified roles.
+ *
+ * @param array $roles An array of roles to check against.
+ *
+ * @return bool True if the user has any of the specified roles, false otherwise.
+ */
+function hasUserRole(array $roles): bool {
+	$user = wp_get_current_user();
+	$user_roles = $user->roles;
+	foreach ($roles as $role) {
+		if (in_array($role, $user_roles)) {
+			return true; // User has one of the specified roles, return true
+		}
+	}
+
+	return false; // User doesn't have any of the specified roles, return false
+}
+
+
 /** Transforms a string into a string usable as an url
  * @param $str
  *
@@ -969,23 +991,39 @@ function summary(): string{
 			<div class="bouttons">
 HTML;
 
+	$hceresUsers = ["enseignant_chercheur", "chercheur", "ingénieur_de_recherche", "direction", "administrator"];
+
 	$count = count($lst);
-	if(!isRegistered()){
+	if(!isRegistered() || !hasUserRole($hceresUsers)){
 		$count = 1;
 	}
 
 	$colored = hasAnswered();
 
+
 	for ($i = 0; $i < $count; $i++) {
-		$page = transformString("(DT) Formulaire " . $lst[$i]);
-		if($colored[$i]){
-			$class = 'class = "dt__green"';
-		}else{
-			$class = "";
-		}
-		$html .= <<<HTML
+		if($i === 0){
+			$page = transformString("(DT) Formulaire " . $lst[$i]);
+			if($colored[$i]){
+				$class = 'class = "dt__green"';
+			}else{
+				$class = "";
+			}
+			$html .= <<<HTML
 				<button type="button" $class onclick="window.location.href = '$page'">$lst[$i]</button>
 HTML;
+		}
+		if($i >= 1 && hasUserRole($hceresUsers)){
+			$page = transformString("(DT) Formulaire " . $lst[$i]);
+			if($colored[$i]){
+				$class = 'class = "dt__green"';
+			}else{
+				$class = "";
+			}
+			$html .= <<<HTML
+				<button type="button" $class onclick="window.location.href = '$page'">$lst[$i]</button>
+HTML;
+		}
 	}
 	$html .= "</div>";
 	$html .= <<<HTML
