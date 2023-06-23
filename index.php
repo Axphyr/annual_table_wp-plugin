@@ -1171,6 +1171,10 @@ function addCSVExtension(string $filename): string {
 		return $filename . $extension;
 	}
 
+	if (substr($filename, -4) !== $extension) {
+		$filename .= $extension;
+	}
+
 	return $filename;
 }
 
