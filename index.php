@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: HCERES
-Plugin URI: https://axphyr.github.io/
+Plugin URI: https://github.com/Axphyr/hceres
 Description: Crée et gère un tableau de données pour l'ISTeP
 Author: Arbër Jonuzi
 Version: 1.0
