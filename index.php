@@ -1679,10 +1679,8 @@ function block2(): string{
 
 	if(isRegistered()){
 		if(isset($_POST["submit2"])) {
-			$data = [
-				sanitize_text_field($_POST["discipline1"]),
-				sanitize_text_field($_POST["discipline2"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Discipline"), $data);
 
 			return <<<HTML
@@ -1773,9 +1771,8 @@ function block3(): string{
 
 	if(isRegistered()){
 			if(isset($_POST["submit3"])){
-				$data = [
-					sanitize_text_field($_POST["theme_recherche"])
-				];
+				$data = sanitize_form_values($_POST);
+
 				replace_or_pushes_values(getHeaderId("Themes de recherche"), $data);
 
 				return <<<HTML
@@ -1811,15 +1808,8 @@ function block4(): string{
 
 	if(isRegistered()){
 		if(isset($_POST["submit4"])){
-			$data = [
-				$_POST["nb_publi_rang_a1"],
-				$_POST["nb_publi_rang_premier"],
-				$_POST["nb_citations_isi"],
-				sanitize_text_field($_POST["h_factor_isi"]),
-				$_POST["nb_citations_isi_google"],
-				sanitize_text_field($_POST["h_factor_google"]),
-				$_POST["nb_resume_conference"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Publications sur l ensemble de la carriere jusqu a aujourd hui"), $data);
 
 			return <<<HTML
@@ -2003,12 +1993,8 @@ function block6(): string{
 
 	if(isRegistered()){
 		if(isset($_POST["submit6"])){
-			$data = [
-				$_POST["enseignement1"],
-				$_POST["enseignement2"],
-				$_POST["enseignement3"],
-				$_POST["enseignement4"],
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Enseignement"), $data);
 
 			return <<<HTML
@@ -2067,13 +2053,8 @@ function block7(): string{
 
 	if (isRegistered()){
 		if(isset($_POST["submit7"])){
-			$data = [
-				sanitize_text_field($_POST["master1_nom"]),
-				sanitize_text_field($_POST["master1_prenom"]),
-				$_POST["master1_annee"],
-				sanitize_text_field($_POST["master1_nom_prenom_co-encadrants"]),
-				sanitize_text_field($_POST["master1_sujet"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Encadrement Master 1 (a partir de 2022)"), $data);
 
 			return <<<HTML
@@ -2141,13 +2122,8 @@ function block8(): string{
 
 	if (isRegistered()){
 		if(isset($_POST["submit8"])){
-			$data = [
-				sanitize_text_field($_POST["master2_nom"]),
-				sanitize_text_field($_POST["master2_prenom"]),
-				$_POST["master2_annee"],
-				sanitize_text_field($_POST["master2_nom_prenom_co-encadrants"]),
-				sanitize_text_field($_POST["master2_sujet"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Encadrement Master 2 (a partir de 2022)"), $data);
 
 			return <<<HTML
@@ -2214,19 +2190,8 @@ function block9(): string{
 
 	if (isRegistered()){
 		if(isset($_POST["submit9"])){
-			$data = [
-				sanitize_text_field($_POST["encadrement_istep_nom"]),
-				sanitize_text_field($_POST["encadrement_istep_prenom"]),
-				$_POST["encadrement_istep_hf"],
-				date("m/Y", strtotime($_POST["encadrement_istep_date_inscription_these"])),
-				date("m/Y", strtotime($_POST["encadrement_istep_date_soutenance"])),
-				sanitize_text_field($_POST["encadrement_istep_nom_prenom_co-directerurs"]),
-				sanitize_text_field($_POST["encadrement_istep_titre_these"]),
-				sanitize_text_field($_POST["encadrement_istep_etablissement"]),
-				sanitize_text_field($_POST["encadrement_istep_numero_ed"]),
-				sanitize_text_field($_POST["encadrement_istep_financement_doctorat"]),
-				sanitize_text_field($_POST["encadrement_istep_fonction"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Encadrement these ISTeP a partir de 2022"), $data);
 
 			return <<<HTML
@@ -2387,20 +2352,8 @@ function block10(): string{
 
 	if (isRegistered()){
 		if(isset($_POST["submit10"])){
-			$data = [
-				sanitize_text_field($_POST["encadrement_histep_nom"]),
-				sanitize_text_field($_POST["encadrement_histep_prenom"]),
-				$_POST["encadrement_histep_hf"],
-				date("m/Y", strtotime($_POST["encadrement_histep_date_inscription_these"])),
-				date("m/Y", strtotime($_POST["encadrement_histep_date_soutenance"])),
-				sanitize_text_field($_POST["encadrement_histep_direction_these"]),
-				sanitize_text_field($_POST["encadrement_histep_titre_these"]),
-				sanitize_text_field($_POST["encadrement_histep_etablissement"]),
-				sanitize_text_field($_POST["encadrement_histep_numero_ed"]),
-				sanitize_text_field($_POST["encadrement_histep_etablissement_rattachement_direction_these"]),
-				sanitize_text_field($_POST["encadrement_histep_financement_doctorat"]),
-				sanitize_text_field($_POST["encadrement_histep_fonction"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Encadrement these hors ISTeP a partir de 2022"), $data);
 
 			return <<<HTML
@@ -2567,15 +2520,8 @@ add_shortcode('add_istep_annual_table_form_block_11','block11');
 function block11(): string{
 	if(isRegistered()){
 		if(isset($_POST["submit11"])){
-			$data = [
-				sanitize_text_field($_POST["encadrement_pd_nom"]),
-				sanitize_text_field($_POST["encadrement_pd_prenom"]),
-				$_POST["encadrement_pd_hf"],
-				date("m/Y", strtotime($_POST["encadrement_pd_date_entree"])),
-				date("m/Y", strtotime($_POST["encadrement_pd_date_sortie"])),
-				$_POST["encadrement_pd_annee_naissance"],
-				sanitize_text_field($_POST["encadrement_pd_employeur"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Encadrement de post-doctorats a partir de 2022"), $data);
 
 			return <<<HTML
@@ -2666,10 +2612,8 @@ add_shortcode('add_istep_annual_table_form_block_12','block12');
 function block12(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit12"])){
-			$data = [
-				sanitize_text_field($_POST["distinction_intitule"]),
-				$_POST["distinction_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Prix ou distinctions scientifiques"), $data);
 
 			return <<<HTML
@@ -2712,10 +2656,8 @@ add_shortcode('add_istep_annual_table_form_block_13','block13');
 function block13(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit13"])){
-			$data = [
-				sanitize_text_field($_POST["iuf_intitule"]),
-				$_POST["iuf_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Appartenance a l IUF"), $data);
 
 			return <<<HTML
@@ -2758,10 +2700,8 @@ add_shortcode('add_istep_annual_table_form_block_14','block14');
 function block14(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit14"])){
-			$data = [
-				sanitize_text_field($_POST["sejour_lieu"]),
-				$_POST["sejour_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Sejours dans des laboratoires etrangers"), $data);
 
 			return <<<HTML
@@ -2805,10 +2745,8 @@ add_shortcode('add_istep_annual_table_form_block_15','block15');
 function block15(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit15"])){
-			$data = [
-				sanitize_text_field($_POST["organisation_nom"]),
-				$_POST["organisation_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Organisations de colloques/congres internationaux"), $data);
 
 			return <<<HTML
@@ -2852,10 +2790,8 @@ add_shortcode('add_istep_annual_table_form_block_16','block16');
 function block16(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit16"])){
-			$data = [
-				sanitize_text_field($_POST["societe_savantes_nom"]),
-				$_POST["societe_savantes_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Responsabilites dans des societes savantes"), $data);
 
 			return <<<HTML
@@ -3179,10 +3115,8 @@ add_shortcode('add_istep_annual_table_form_block_19','block19');
 function block19(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit19"])){
-			$data = [
-				sanitize_text_field($_POST["responsabilite3_intitule"]),
-				$_POST["responsabilite3_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Responsabilites & administration de la formation/enseignement"), $data);
 
 			return <<<HTML
@@ -3225,10 +3159,8 @@ add_shortcode('add_istep_annual_table_form_block_20','block20');
 function block20(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit20"])){
-			$data = [
-				sanitize_text_field($_POST["vulgarisation_intitule"]),
-				$_POST["vulgarisation_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Vulgarisation, dissemination scientifique"), $data);
 
 			return <<<HTML
@@ -3271,9 +3203,8 @@ add_shortcode('add_istep_annual_table_form_block_21','block21');
 function block21(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit21"])){
-			$data = [
-				sanitize_text_field($_POST["rayonnement"])
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Rayonnement / resultats majeurs sur la periode a mettre en avant"), $data);
 
 			return <<<HTML
@@ -3308,10 +3239,8 @@ add_shortcode('add_istep_annual_table_form_block_22','block22');
 function block22(): string{
 	if (isRegistered()){
 		if(isset($_POST["submit22"])){
-			$data = [
-				sanitize_text_field($_POST["brevet_intitule"]),
-				$_POST["brevet_annee"]
-			];
+			$data = sanitize_form_values($_POST);
+
 			replace_or_pushes_values(getHeaderId("Brevet"), $data);
 
 			return <<<HTML
