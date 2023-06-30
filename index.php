@@ -1035,10 +1035,12 @@ HTML;
 HTML;
 
 	$del = deleteUser();
+	$data = getUserData();
 
 	$html .= <<<HTML
 		<p class="donnees__hceres__delete">Données HCERES</p>
 		$del
+		$data
 		</div>
 		<div class="nb__buttons">$count</div>
 HTML;
@@ -1342,7 +1344,64 @@ HTML;
 
 }
 
+/**
+ * Create a CSV file with the first 3 rows and specified row from an existing file.
+ *
+ * @return string
+ */
+function getData(): string {
+	$existingFile = fopen(ABSPATH . 'wp-admin/hceres/data-table.csv', 'r');
 
+	$theFile = ABSPATH . 'wp-content/uploads/2023/06/' . transformString(wp_get_current_user()->first_name . " " . wp_get_current_user()->last_name) . "_data.csv";
+	$newFile = fopen($theFile, 'w');
+	$rowCounter = 0;
+	$lines = 0;
+
+	while (($row = fgetcsv($existingFile)) !== false) {
+		if ($rowCounter < 3) {
+			fputcsv($newFile, $row);
+		}
+		if ($row[0] === ucfirst(wp_get_current_user()->last_name)){
+			fputcsv($newFile, $row);
+			$lines++;
+		}
+		$rowCounter++;
+	}
+
+	if($lines === 0){
+		unlink($theFile);
+	}
+
+	fclose($newFile);
+	fclose($existingFile);
+
+	return 'wp-content/uploads/2023/06/' . transformString(wp_get_current_user()->first_name . " " . wp_get_current_user()->last_name) . "_data.csv";
+}
+
+/** Shows a delete button using the deleteSelf feature
+ * @return string
+ */
+function getUserData(): string{
+	if (isRegistered()){
+		if(isset($_POST["hceres__user__data"])){
+			$file = getData();
+
+			return <<<HTML
+  <script>
+    window.location.href = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + "/$file";
+  </script>
+HTML;
+		}
+
+		return <<<HTML
+	<form class="data-table-data" method="post">
+		<button class="hceres__user__data" name="hceres__user__data" type="submit">Récupérer mes données HCERES</button>
+	</form>
+HTML;
+	}else{
+		return "";
+	}
+}
 
 /** Gets and sanitizes the data from a form depending on the data's type
  * @param $form_data
@@ -2557,11 +2616,11 @@ HTML;
 			$femme = "selected";
 		}
 
-		if(getCell("Date d entree (MM/AAAA) PD") !== " "){
+		if(getCell("Date d entree (MM/AAAA) PD") !== ""){
 			$encadrement_pd_date_entree = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date d entree (MM/AAAA) PD"))));
 		}
 
-		if(getCell("Date de sortie (MM/AAAA) PD") !== " "){
+		if(getCell("Date de sortie (MM/AAAA) PD") !== ""){
 			$encadrement_pd_date_sortie = date('Y-m-d', strtotime('01-' . str_replace('/', '-', getCell("Date de sortie (MM/AAAA) PD"))));
 		}
 

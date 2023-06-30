@@ -291,6 +291,11 @@ form.data-table-delete > button.dt__delete{
     padding: 13px;
 }
 
+form.data-table-data > button.hceres__user__data{
+    margin: 20px 0 20px 10px;
+    padding: 13px;
+}
+
 form.data-table-delete > button.dt__delete:hover{
     background-color: #cc4646;
 }
